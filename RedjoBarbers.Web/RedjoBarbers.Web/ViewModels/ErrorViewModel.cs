@@ -1,4 +1,4 @@
-namespace RedjoBarbers.Web.Models
+namespace RedjoBarbers.Web.ViewModels
 {
     public class ErrorViewModel
     {

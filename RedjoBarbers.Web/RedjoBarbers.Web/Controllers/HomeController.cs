@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using RedjoBarbers.Web.Models;
+using RedjoBarbers.Web.ViewModels;
 
 namespace RedjoBarbers.Web.Controllers
 {
