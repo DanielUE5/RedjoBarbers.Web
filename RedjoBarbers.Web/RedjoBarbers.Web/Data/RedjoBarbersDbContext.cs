@@ -14,5 +14,11 @@ namespace RedjoBarbers.Web.Data
         public virtual DbSet<BarberService> BarberServices { get; set; } = null!;
         public virtual DbSet<Appointment> Appointments { get; set; } = null!;
         public virtual DbSet<Review> Reviews { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(RedjoBarbersDbContext).Assembly);
+        }
     }
 }

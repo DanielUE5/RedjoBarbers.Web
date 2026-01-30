@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
+using RedjoBarbers.Web.Data.Configuration;
 
 namespace RedjoBarbers.Web
 {
@@ -12,6 +13,17 @@ namespace RedjoBarbers.Web
             builder.Services.AddDbContext<RedjoBarbersDbContext>(opt =>
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection"));
+
+                // Belt-and-suspenders seeding approach
+                opt.UseSeeding((context, migrated) =>
+                {
+                    BarberServiceConfig.Seed((RedjoBarbersDbContext)context);
+                });
+
+                opt.UseAsyncSeeding(async (context, migrated, ct) =>
+                {
+                    await BarberServiceConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
+                });
             });
 
             // Add services to the container.
