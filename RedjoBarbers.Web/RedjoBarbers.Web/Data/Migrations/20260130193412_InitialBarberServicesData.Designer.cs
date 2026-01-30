@@ -12,8 +12,8 @@ using RedjoBarbers.Web.Data;
 namespace RedjoBarbers.Web.Data.Migrations
 {
     [DbContext(typeof(RedjoBarbersDbContext))]
-    [Migration("20260130144151_InitialDb")]
-    partial class InitialDb
+    [Migration("20260130193412_InitialBarberServicesData")]
+    partial class InitialBarberServicesData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,7 +81,9 @@ namespace RedjoBarbers.Web.Data.Migrations
                         .HasColumnType("nvarchar(1000)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
