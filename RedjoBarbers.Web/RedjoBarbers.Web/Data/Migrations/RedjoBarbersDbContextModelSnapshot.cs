@@ -8,7 +8,7 @@ using RedjoBarbers.Web.Data;
 
 #nullable disable
 
-namespace RedjoBarbers.Web.Migrations
+namespace RedjoBarbers.Web.Data.Migrations
 {
     [DbContext(typeof(RedjoBarbersDbContext))]
     partial class RedjoBarbersDbContextModelSnapshot : ModelSnapshot

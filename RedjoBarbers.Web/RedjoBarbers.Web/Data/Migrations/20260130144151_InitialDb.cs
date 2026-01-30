@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RedjoBarbers.Web.Migrations
+namespace RedjoBarbers.Web.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialDb : Migration
