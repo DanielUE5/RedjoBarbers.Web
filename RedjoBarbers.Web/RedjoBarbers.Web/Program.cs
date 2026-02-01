@@ -6,7 +6,7 @@ namespace RedjoBarbers.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +30,22 @@ namespace RedjoBarbers.Web
             builder.Services.AddControllersWithViews();
 
             WebApplication app = builder.Build();
+
+            /// <summary>
+            /// Here we apply any pending migrations automatically during development.
+            /// </summary>
+            if (app.Environment.IsDevelopment())
+            {
+                using IServiceScope scope = app.Services.CreateScope();
+                RedjoBarbersDbContext db = scope.ServiceProvider.GetRequiredService<RedjoBarbersDbContext>();
+
+                IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+
+                if (pendingMigrations.Any())
+                {
+                    await db.Database.MigrateAsync();
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
