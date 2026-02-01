@@ -25,6 +25,9 @@ namespace RedjoBarbers.Web.Data.Configuration
 
             builder.Property(x => x.IsActive)
                 .HasDefaultValue(true);
+
+            builder.HasIndex(x => x.Name)
+                .IsUnique();
         }
 
         public static async Task SeedAsync(RedjoBarbersDbContext db, CancellationToken ct)
@@ -33,36 +36,36 @@ namespace RedjoBarbers.Web.Data.Configuration
             [
                 new BarberService
                 {
-                    Name = "Мъжко подстригване.",
-                    Description = "Подстригване на косата и стайлинг.",
+                    Name = "Мъжко подстригване",
+                    Description = "Подстригване на косата и стайлинг",
                     Price = 15.34m,
                     IsActive = true
                 },
                 new BarberService
                 {
-                    Name = "Мъжко подстригване + оформяне на брада.",
-                    Description = "Подстигване и стайлинг на косата, както и отделно оформяне на брадата.",
+                    Name = "Мъжко подстригване + оформяне на брада",
+                    Description = "Подстигване и стайлинг на косата, както и отделно оформяне на брадата",
                     Price = 20.45m,
                     IsActive = true
                 },
                 new BarberService
                 {
-                    Name = "Детско подстригване за момчета.",
-                    Description = "Подстригване и стайлинг на косата за момчета до 10 години.",
+                    Name = "Детско подстригване за момчета",
+                    Description = "Подстригване и стайлинг на косата за момчета до 10 години",
                     Price = 12.78m,
                     IsActive = true
                 },
                 new BarberService
                 {
-                    Name = "Оформяне на брада.",
-                    Description = "Оформяне цялостната визия на брадата.",
+                    Name = "Оформяне на брада",
+                    Description = "Оформяне цялостната визия на брадата",
                     Price = 10.23m,
                     IsActive = true
                 },
                 new BarberService
                 {
-                    Name = "Оформяне на вежди.",
-                    Description = "Оформяне на вежди с бръснач за мъже.",
+                    Name = "Оформяне на вежди",
+                    Description = "Оформяне на вежди с бръснач за мъже",
                     Price = 2.56m,
                     IsActive = true
                 },
