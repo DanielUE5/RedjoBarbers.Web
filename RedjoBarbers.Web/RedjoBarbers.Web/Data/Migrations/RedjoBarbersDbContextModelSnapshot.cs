@@ -61,7 +61,7 @@ namespace RedjoBarbers.Web.Data.Migrations
 
                     b.HasIndex("BarberServiceId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.BarberService", b =>
@@ -95,7 +95,7 @@ namespace RedjoBarbers.Web.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BarberServices");
+                    b.ToTable("BarberServices", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.Review", b =>
@@ -128,7 +128,7 @@ namespace RedjoBarbers.Web.Data.Migrations
 
                     b.HasIndex("BarberServiceId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.Appointment", b =>

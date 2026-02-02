@@ -1,0 +1,46 @@
+﻿@using RedjoBarbers.Web.Data.Models
+@using System.Globalization
+@model IEnumerable<BarberService>
+
+    @{
+        ViewData["Title"] = "Barber Services";
+}
+
+<h2>Barber Services</h2>
+
+@if (!Model.Any())
+{
+    <p>В момента няма валидни бръснарски услуги.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Услуга</th>
+                <th>Описание</th>
+                <th>Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var service in Model)
+        {
+            <tr>
+                <td>
+                     <h3>@service.Name</h3>
+                     <p>@service.Description</p>
+                     <p>@service.Price лв.</p>
+
+                     <a asp-controller="Reviews"
+                        asp-action="Index"
+                        asp-route-barberServiceId="@service.Id">
+                         Виж отзиви
+                        </a>
+                </td>
+                <td>@service.Description</td>
+                <td>@service.Price.ToString("C", new CultureInfo("fr-FR"))</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
