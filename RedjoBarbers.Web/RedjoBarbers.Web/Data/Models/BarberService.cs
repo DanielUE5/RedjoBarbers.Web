@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using static RedjoBarbers.Web.Common.EntityValidation.BarberService;
 
 namespace RedjoBarbers.Web.Data.Models
@@ -21,5 +22,9 @@ namespace RedjoBarbers.Web.Data.Models
         public decimal Price { get; set; }
 
         public bool IsActive { get; set; }
+
+        // Navigation properties
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }
 }
