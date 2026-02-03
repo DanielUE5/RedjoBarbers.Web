@@ -17,17 +17,20 @@ namespace RedjoBarbers.Web.Data.Models
         public string Bio { get; set; } = null!;
 
         [Required]
-        [MaxLength(BarberPhotoUrlMaxLength)]
+        [MaxLength(UrlMaxLength)]
         public string PhotoUrl { get; set; } = null!;
 
         [Required]
         [MaxLength(BarberPhoneNumberMaxLength)]
+        [Url]
         public string PhoneNumber { get; set; } = null!;
 
         [Url]
+        [MaxLength(UrlMaxLength)]
         public string? InstagramUrl { get; set; }
 
         [Url]
+        [MaxLength(UrlMaxLength)]
         public string? FacebookUrl { get; set; }
 
         // Navigation properties

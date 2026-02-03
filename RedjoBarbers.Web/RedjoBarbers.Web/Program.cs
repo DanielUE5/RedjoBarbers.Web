@@ -14,15 +14,22 @@ namespace RedjoBarbers.Web
             {
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection"));
 
-                // Belt-and-suspenders seeding approach
+                /// <summary>
+                /// I chose belt-and-suspenders seeding cause its recommended to implement both methods using similar logic.
+                /// EF Core currently relies on the synchonous version of the method and will not seed the database correctly
+                /// if the UseSeeding method is not implemented. (Information from the official documentation: https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding)
+                /// </summary>
+
                 opt.UseSeeding((context, migrated) =>
                 {
                     BarberServiceConfig.Seed((RedjoBarbersDbContext)context);
+                    BarberConfig.Seed((RedjoBarbersDbContext)context);
                 });
 
                 opt.UseAsyncSeeding(async (context, migrated, ct) =>
                 {
                     await BarberServiceConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
+                    await BarberConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
                 });
             });
 
@@ -31,20 +38,12 @@ namespace RedjoBarbers.Web
 
             WebApplication app = builder.Build();
 
-            /// <summary>
-            /// Here we apply any pending migrations automatically during development.
-            /// </summary>
             if (app.Environment.IsDevelopment())
             {
                 using IServiceScope scope = app.Services.CreateScope();
                 RedjoBarbersDbContext db = scope.ServiceProvider.GetRequiredService<RedjoBarbersDbContext>();
 
-                IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
-
-                if (pendingMigrations.Any())
-                {
-                    await db.Database.MigrateAsync();
-                }
+                await db.Database.MigrateAsync();
             }
 
             // Configure the HTTP request pipeline.
