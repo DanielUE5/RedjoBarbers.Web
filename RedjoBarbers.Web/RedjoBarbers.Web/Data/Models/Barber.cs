@@ -22,7 +22,7 @@ namespace RedjoBarbers.Web.Data.Models
 
         [Required]
         [MaxLength(BarberPhoneNumberMaxLength)]
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = null!;
 
         [Url]
         public string? InstagramUrl { get; set; }
