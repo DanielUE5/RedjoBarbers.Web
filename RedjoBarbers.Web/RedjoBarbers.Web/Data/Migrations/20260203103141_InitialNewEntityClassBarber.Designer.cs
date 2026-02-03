@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RedjoBarbers.Web.Data;
 
@@ -11,9 +12,11 @@ using RedjoBarbers.Web.Data;
 namespace RedjoBarbers.Web.Data.Migrations
 {
     [DbContext(typeof(RedjoBarbersDbContext))]
-    partial class RedjoBarbersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260203103141_InitialNewEntityClassBarber")]
+    partial class InitialNewEntityClassBarber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,20 +100,10 @@ namespace RedjoBarbers.Web.Data.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<string>("FacebookUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstagramUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("int");
 
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
