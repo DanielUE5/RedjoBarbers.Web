@@ -32,5 +32,9 @@ namespace RedjoBarbers.Web.Data.Models
         // Foreign Key to BarberService
         public int BarberServiceId { get; set; }
         public BarberService BarberService { get; set; } = null!;
+
+        // Foreign Key to Barber
+        public int BarberId { get; set; }
+        public Barber Barber { get; set; } = null!;
     }
 }

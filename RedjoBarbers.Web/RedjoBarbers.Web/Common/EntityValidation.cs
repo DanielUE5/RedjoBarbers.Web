@@ -23,5 +23,13 @@
             public const int CustomerNameMaxLength = 100;
             public const int CommentsMaxLength = 1000;
         }
+
+        public class Barber
+        {
+            public const int BarberNameMaxLength = 100;
+            public const int BarberBioMaxLength = 2000;
+            public const int BarberPhotoUrlMaxLength = 2048;
+            public const int BarberPhoneNumberMaxLength = 20;
+        }
     }
 }
