@@ -18,12 +18,12 @@ namespace RedjoBarbers.Web.Controllers
 
         public IActionResult About()
         {
-            return View();
+            return Ok("Works!");
         }
 
-        public IActionResult Contact()
+        public IActionResult Contacts()
         {
-            return View();
+            return Ok("Works!");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
