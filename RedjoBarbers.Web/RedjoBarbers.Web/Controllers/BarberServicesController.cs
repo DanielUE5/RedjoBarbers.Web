@@ -13,6 +13,7 @@ namespace RedjoBarbers.Web.Controllers
             this.dbContext = dbContext;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             List<BarberService> allServices = await dbContext
