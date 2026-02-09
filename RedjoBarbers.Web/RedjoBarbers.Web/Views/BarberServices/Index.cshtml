@@ -23,13 +23,12 @@ else
             </tr>
         </thead>
         <tbody>
-        @foreach (var service in Model)
+        @foreach (BarberService service in Model)
         {
             <tr>
                 <td>
                      <h3>@service.Name</h3>
                      <p>@service.Description</p>
-                     <p>@service.Price лв.</p>
 
                      <a asp-controller="Reviews"
                         asp-action="Index"

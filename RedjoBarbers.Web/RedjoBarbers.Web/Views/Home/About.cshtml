@@ -1,5 +1,49 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@* TODO: Да реша дали това ще е финалния cshtml със съответната информация *@
 @{
+    ViewData["Title"] = "За нас";
 }
+
+<section class="about-hero">
+    <div class="container">
+        <h2>За нас</h2>
+        <p>
+            Добре дошли в <strong>Redjo Barbers</strong> – място, създадено с уважение към
+            класическото бръснарско изкуство и модерния мъжки стил.
+        </p>
+    </div>
+</section>
+
+<section class="about-story">
+    <div class="container">
+        <h2>Нашата история</h2>
+        <p>
+            Ние сме малък екип, но с огромна страст. Това е не просто бизнес, а начин на живот.
+            С времето изградихме място, където традицията среща модерния стил,
+            а всеки детайл е подбран с грижа.
+        </p>
+    </div>
+</section>
+
+<section class="about-care">
+    <div class="container">
+        <h2>Отношение към клиентите</h2>
+        <p>
+            При нас всеки клиент е специален. Слушаме, съветваме и се стремим да надминем всички очаквания.
+            За нас е важно не само да предоставим качествена услуга, но и да създадем приятелска атмосфера, 
+            където всеки мъж може да се почувства добре дошъл.
+        </p>
+    </div>
+</section>
+
+<section class="about-team">
+    <div class="container">
+        <h2>Нашите бръснари</h2>
+        <p>
+            Екипът ни е съставен от бръснари с опит и постоянен стремеж към развитие.
+            Следим тенденциите, но ценим и класиката.
+            <a asp-controller="Home" asp-action="Contacts">Запознай се с нашия екип</a>.
+        </p>
+    </div>
+</section>
+<partial name="_GoogleLocation"/>
+<br />

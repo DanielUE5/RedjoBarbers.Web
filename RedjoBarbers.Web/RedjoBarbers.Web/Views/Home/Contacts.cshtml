@@ -1,5 +1,81 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using RedjoBarbers.Web.Data.Models
+@model IEnumerable<RedjoBarbers.Web.Data.Models.Barber>
+
 @{
+    ViewData["Title"] = "Контакти";
 }
+
+<section class="contacts-hero">
+    <div class="container">
+        <h1>Контакти</h1>
+        <p>
+            Обадете ни се директно или ни пишете в социалните мрежи. По-долу ще намериш бърз контакт с всеки наш бръснар.
+        </p>
+    </div>
+</section>
+
+<section class="contacts-info">
+    <div class="container">
+        <h2>Запознай се с нашите бръснари оттук:</h2>
+
+        <div class="contacts-list">
+            @foreach (Barber b in Model)
+            {
+                <div class="contact-item">
+                    @if (!string.IsNullOrWhiteSpace(b.PhotoUrl))
+                    {
+                        <img class="contact-photo" src="@b.PhotoUrl" alt="@b.Name" loading="lazy" />
+                    }
+
+                    <div class="contact-details">
+                        <div class="contact-header">
+                            <span class="contact-name">@b.Name</span>
+
+                            @if (!string.IsNullOrWhiteSpace(b.PhoneNumber))
+                            {
+                                // href="tel:" provides a clickable link that will open the phone dialer on mobile devices
+                                <a class="contact-phone"
+                                   href="tel:@b.PhoneNumber"
+                                   aria-label="Обади се на @b.Name на телефон @b.PhoneNumber">
+                                    @b.PhoneNumber
+                                </a>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(b.Bio))
+                        {
+                            <p class="contact-bio">@b.Bio</p>
+                        }
+
+                        <div class="contact-links">
+                            @if (!string.IsNullOrWhiteSpace(b.InstagramUrl))
+                            {
+                                <a href="@b.InstagramUrl"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="social-link"
+                                   aria-label="Instagram профил на @b.Name">
+                                    <i class="bi bi-instagram"></i>
+                                </a>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(b.FacebookUrl))
+                            {
+                                <a href="@b.FacebookUrl"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="social-link"
+                                   aria-label="Facebook профил на @b.Name">
+                                    <i class="bi bi-facebook"></i>
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+        <partial name="_GoogleLocation" />
+        <br />
+    </div>
+</section>

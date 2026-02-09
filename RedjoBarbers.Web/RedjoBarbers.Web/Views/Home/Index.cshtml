@@ -1,8 +1,70 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Начална страница";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="home-hero">
+    <div class="container text-center">
+        <h1 class="display-4">Redjo Barbers</h1>
+        <p class="lead">
+            Място, където класическото бръснарство среща модерния стил.
+        </p>
+    </div>
+</section>
+
+<section class="home-about">
+    <div class="container">
+        <h2>Защо да избереш нас</h2>
+        <p>
+            В Redjo Barbers вярваме, че добрата визия започва с внимание към детайла.
+            Независимо дали търсиш класическо подстригване, модерна прическа или
+            прецизно оформяне на брада, при нас ще получиш професионално отношение
+            и индивидуален подход.
+        </p>
+        <p>
+            Работим с качествени инструменти и продукти, защото за нас
+            бръснарството не е просто услуга, а занаят.
+        </p>
+    </div>
+</section>
+
+@* TODO: Да добавя реални услуги от базата данни и да ги показвам тук, вместо статични текстове. *@
+<section class="home-services">
+    <div class="container">
+        <h2>Нашите услуги</h2>
+        <ul>
+            <li>Мъжко подстригване</li>
+            <li>Оформяне и поддръжка на брада</li>
+            <li>Бръснене с класическа техника</li>
+            <li>Комбинирани услуги</li>
+        </ul>
+    </div>
+</section>
+
+@* TODO: Да добавя реални ревюта от базата данни и да ги показвам тук, вместо статични текстове. *@
+<section class="home-reviews">
+    <div class="container">
+        <h2>Ревюта</h2>
+        <ul>
+            <li>Най-доброто място.</li>
+            <li>Давам 5 звезди.</li>
+            <li>Супер добро.</li>
+            <li>Нямам търпение отново да дойда.</li>
+        </ul>
+    </div>
+</section>
+
+<section class="home-cta">
+    <div class="container text-center">
+        <h2>Готов ли си за нова визия?</h2>
+        <p>
+            Обади се и запази своя час още днес.
+        </p>
+        <a asp-controller="Appointment"
+           asp-action="Create"
+           class="btn btn-primary">
+            Запазете час
+        </a>
+    </div>
+</section>
+<partial name="_GoogleLocation" />
+<br />
