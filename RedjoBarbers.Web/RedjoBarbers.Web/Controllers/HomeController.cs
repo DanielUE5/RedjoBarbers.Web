@@ -15,14 +15,58 @@ namespace RedjoBarbers.Web.Controllers
             this.dbContext = dbContext;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public async Task <IActionResult> Index()
         {
-            return View();
+            List<BarberService> services = await dbContext
+                .BarberServices
+                .AsNoTracking()
+                .OrderBy(s => s.Id)
+                .Select(s => new BarberService
+                {
+                    Name = s.Name,
+                    Description = s.Description
+                })
+                .ToListAsync();
+
+            List<Review> reviews = await dbContext
+                .Reviews
+                .AsNoTracking()
+                .OrderBy(r => r.Id)
+                .Select(r => new Review
+                {
+                    CustomerName = r.CustomerName,
+                    Comments = r.Comments,
+                    Rating = r.Rating
+                })
+                .ToListAsync();
+
+
+            HomeIndexViewModel vm = new HomeIndexViewModel
+            {
+                Services = services,
+                Reviews = reviews
+            };
+
+            return View(vm);
         }
 
-        public IActionResult Privacy()
+        [HttpGet]
+        public async Task<IActionResult> Privacy()
         {
-            return View();
+            Barber? owner = await dbContext
+                .Barbers
+                .AsNoTracking()
+                .OrderBy(b => b.Id)
+                .Where(b => b.Name == "Реджеп")
+                .Select(b => new Barber
+                {
+                    Name = b.Name,
+                    PhoneNumber = b.PhoneNumber,
+                })
+                .FirstOrDefaultAsync();
+
+            return View(owner);
         }
 
         public IActionResult About()

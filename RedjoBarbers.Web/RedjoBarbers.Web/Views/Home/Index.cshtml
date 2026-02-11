@@ -1,4 +1,5 @@
-﻿@{
+﻿@model HomeIndexViewModel
+@{
     ViewData["Title"] = "Начална страница";
 }
 
@@ -27,29 +28,97 @@
     </div>
 </section>
 
-@* TODO: Да добавя реални услуги от базата данни и да ги показвам тук, вместо статични текстове. *@
 <section class="home-services">
     <div class="container">
-        <h2>Нашите услуги</h2>
-        <ul>
-            <li>Мъжко подстригване</li>
-            <li>Оформяне и поддръжка на брада</li>
-            <li>Бръснене с класическа техника</li>
-            <li>Комбинирани услуги</li>
-        </ul>
+        <h2 class="text-center mb-4">Какво предлагаме</h2>
+
+        <div class="row g-4 justify-content-center">
+            @if (Model.Services != null && Model.Services.Any())
+            {
+                @foreach (var s in Model.Services.Take(3))
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-card">
+                            <h4>@s.Name</h4>
+                            <p>@s.Description</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">В момента няма налични услуги.</p>
+            }
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="BarberServices"
+               asp-action="Index"
+               class="btn btn-primary btn-lg">
+                Разгледай пълния ни каталог
+            </a>
+        </div>
     </div>
 </section>
 
-@* TODO: Да добавя реални ревюта от базата данни и да ги показвам тук, вместо статични текстове. *@
+
 <section class="home-reviews">
     <div class="container">
-        <h2>Ревюта</h2>
-        <ul>
-            <li>Най-доброто място.</li>
-            <li>Давам 5 звезди.</li>
-            <li>Супер добро.</li>
-            <li>Нямам търпение отново да дойда.</li>
-        </ul>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="mb-0">Нашите отзиви</h2>
+
+            <div class="d-flex gap-2">
+            <a asp-controller="Review"
+               asp-action="Index"
+               class="btn btn-outline-secondary btn-sm">
+                Виж всички
+            </a>
+
+            <a asp-controller="Review"
+               asp-action="Create"
+               class="btn btn-primary btn-sm">
+                Напишете отзив
+            </a>
+            </div>
+        </div>
+        @if (Model.Reviews != null && Model.Reviews.Any())
+        {
+            <div class="row g-4">
+                @foreach (var r in Model.Reviews)
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>@r.CustomerName</strong>
+                                    <small class="text-muted">@r.ReviewDate.ToString("dd.MM.yyyy")</small>
+                                </div>
+
+                                <div class="mb-2 text-warning">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= r.Rating)
+                                        {
+                                            <i class="bi bi-star-fill"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star"></i>
+                                        }
+                                    }
+                                </div>
+
+                                <p class="mb-0">@r.Comments</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mt-2">Все още няма публикувани отзиви.</p>
+        }
     </div>
 </section>
 
@@ -61,10 +130,11 @@
         </p>
         <a asp-controller="Appointment"
            asp-action="Create"
-           class="btn btn-primary">
+           class="btn btn-primary btn-lg">
             Запазете час
         </a>
     </div>
 </section>
+
 <partial name="_GoogleLocation" />
 <br />

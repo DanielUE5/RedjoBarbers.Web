@@ -1,12 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RedjoBarbers.Web.Data;
+using RedjoBarbers.Web.Data.Models;
 
 namespace RedjoBarbers.Web.Controllers
 {
     public class ReviewController : Controller
     {
-        public IActionResult Index()
+        private readonly RedjoBarbersDbContext dbContext;
+        public ReviewController(RedjoBarbersDbContext dbContext)
         {
-            return Ok("Works!");
+            this.dbContext = dbContext;
+        }
+
+        public async Task<IActionResult> Index(int barberServiceId)
+        {
+            IEnumerable<Review> reviews = await dbContext
+                .Reviews
+                .AsNoTracking()
+                .OrderByDescending(r => r.ReviewDate)
+                .ToListAsync();
+
+            return View(reviews);
         }
 
         public IActionResult Create()

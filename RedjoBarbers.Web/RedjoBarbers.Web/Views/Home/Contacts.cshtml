@@ -1,5 +1,5 @@
 ﻿@using RedjoBarbers.Web.Data.Models
-@model IEnumerable<RedjoBarbers.Web.Data.Models.Barber>
+@model IEnumerable<Barber>
 
 @{
     ViewData["Title"] = "Контакти";
@@ -9,7 +9,7 @@
     <div class="container">
         <h1>Контакти</h1>
         <p>
-            Обадете ни се директно или ни пишете в социалните мрежи. По-долу ще намериш бърз контакт с всеки наш бръснар.
+            Обадете ни се директно или ни пишете в социалните мрежи. По-долу ще намерите бърз контакт с всеки наш бръснар.
         </p>
     </div>
 </section>
@@ -17,7 +17,12 @@
 <section class="contacts-info">
     <div class="container">
         <h2>Запознай се с нашите бръснари оттук:</h2>
-
+        @if (!Model.Any())
+        {
+            <p>В момента няма налични контакти на бръснари. Моля, свържете се с нас на общия имейл или телефон за повече информация.</p>
+        }
+        else
+        {
         <div class="contacts-list">
             @foreach (Barber b in Model)
             {
@@ -75,6 +80,7 @@
                 </div>
             }
         </div>
+        }
         <partial name="_GoogleLocation" />
         <br />
     </div>
