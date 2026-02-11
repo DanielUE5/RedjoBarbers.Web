@@ -1,4 +1,5 @@
-﻿@{
+﻿@model RedjoBarbers.Web.Data.Models.Barber
+@{
     ViewData["Title"] = "Политика за поверителност";
 }
 
@@ -19,8 +20,29 @@
         <p>
             Администратор на лични данни: <strong>Redjo Barbers</strong><br />
             Адрес: <strong>ж.к. Илинден, ул. „Ружа“ 1, 1309 София</strong><br />
-            Имейл за контакт по защита на данните: <strong>privacy@redjobarbers.com</strong><br />
-            Телефон: <strong>+359 88 123 4567</strong>
+            Имейл за контакт по защита на данните: 
+            <strong>
+                <a href="mailto:privacy@redjobarbers.com">
+                    privacy@redjobarbers.com
+                </a>.
+            </strong>
+            <br />
+            Телефон:
+            <strong>
+                @if (Model != null && !string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                {
+                    <a href="tel:@Model.PhoneNumber" aria-label="Обади се на @Model.Name">
+                        @Model.PhoneNumber
+                    </a>
+                    <span> (контакт: @Model.Name - собственик)</span>
+                }
+                else
+                {
+                    <span class="no-number">
+                        В момента телефонният номер не е наличен. Моля, свържете се с нас на посочения имейл.    
+                    </span>
+                }
+            </strong>
         </p>
 
         <h2>2. Какви лични данни събираме</h2>
