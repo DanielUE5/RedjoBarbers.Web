@@ -83,7 +83,7 @@ namespace RedjoBarbers.Web.Controllers
                 BarberServiceId = model.BarberServiceId,
                 CustomerName = model.CustomerName,
                 Rating = model.Rating,
-                Comments = model.Comments ?? "",
+                Comments = model.Comments ?? string.Empty,
                 ReviewDate = DateTime.Now
             };
 
@@ -94,15 +94,73 @@ namespace RedjoBarbers.Web.Controllers
                 new { barberServiceId = model.BarberServiceId });
         }
 
-        // TODO: Implement Edit and Delete actions for reviews
-        public IActionResult Delete()
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
-            return Ok("Works!");
+            Review? review = await dbContext.Reviews.FindAsync(id);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            dbContext.Reviews.Remove(review);
+            await dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Update()
+
+        [HttpGet]
+        public async Task<IActionResult> Update(int id)
         {
-            return Ok("Works!");
+            Review? review = await dbContext.Reviews
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            ReviewUpdateViewModel model = new ReviewUpdateViewModel
+            {
+                Id = review.Id,
+                BarberServiceId = review.BarberServiceId,
+                CustomerName = review.CustomerName,
+                Rating = review.Rating,
+                Comments = review.Comments
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(ReviewUpdateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            Review? review = await dbContext.Reviews.FindAsync(model.Id);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            review.CustomerName = model.CustomerName;
+            review.Rating = model.Rating;
+            review.Comments = model.Comments ?? string.Empty;
+
+            await dbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index), 
+                new { barberServiceId = review.BarberServiceId });
         }
     }
 }

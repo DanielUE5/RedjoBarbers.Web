@@ -2,14 +2,16 @@
 
 namespace RedjoBarbers.Web.ViewModels
 {
-    public class ReviewCreateViewModel
+    public class ReviewUpdateViewModel
     {
-        [Range(1, int.MaxValue, ErrorMessage = "Избери услуга.")]
+        public int Id { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Невалидна услуга.")]
         public int BarberServiceId { get; set; }
 
         [Required(ErrorMessage = "Името е задължително.")]
-        [StringLength(100, MinimumLength = 2)]
-        public string CustomerName { get; set; } = "";
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Името трябва да е между 2 и 100 символа.")]
+        public string CustomerName { get; set; } = string.Empty;
 
         [Range(1, 5, ErrorMessage = "Рейтингът трябва да е между 1 и 5.")]
         public int Rating { get; set; }
