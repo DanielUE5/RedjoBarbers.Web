@@ -1,1 +1,75 @@
-﻿
+﻿@using RedjoBarbers.Web.Data.Models
+@model RedjoBarbers.Web.ViewModels.ReviewCreateViewModel
+
+@{
+    ViewData["Title"] = "Създайте отзив";
+}
+
+<section class="py-5">
+    <div class="container" style="max-width: 720px;">
+
+        <div class="text-center mb-4">
+            <h2>Сподели своето мнение</h2>
+            <p class="text-muted">
+                Вашата обратна връзка ни помага да ставаме по-добри.
+            </p>
+        </div>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="BarberServiceId" class="form-label">Услуга</label>
+                <select asp-for="BarberServiceId" class="form-select">
+                    <option value="0">-- Избери услуга --</option>
+                    @foreach (BarberService service in ViewBag.Services)
+                    {
+                        <option value="@service.Id">@service.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="BarberServiceId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CustomerName" class="form-label">Твоето име</label>
+                <input asp-for="CustomerName" class="form-control" placeholder="Напишете името си..." />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Rating" class="form-label">Оценка</label>
+                <select asp-for="Rating" class="form-select">
+                    <option value="0">-- Избери оценка --</option>
+                    <option value="1">⭐ 1</option>
+                    <option value="2">⭐⭐ 2</option>
+                    <option value="3">⭐⭐⭐ 3</option>
+                    <option value="4">⭐⭐⭐⭐ 4</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 5</option>
+                </select>
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Comments" class="form-label">Коментар</label>
+                <textarea asp-for="Comments"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Разкажи ни за своето преживяване..."></textarea>
+                <span asp-validation-for="Comments" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index"
+                   asp-route-barberServiceId="@Model.BarberServiceId"
+                   class="btn btn-outline-secondary">
+                    Назад
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Публикувай отзив
+                </button>
+            </div>
+        </form>
+
+    </div>
+</section>

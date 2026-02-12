@@ -2,11 +2,11 @@
 @using System.Globalization
 @model IEnumerable<BarberService>
 
-    @{
-        ViewData["Title"] = "Barber Services";
+@{
+    ViewData["Title"] = "Нашите услуги";
 }
 
-<h2>Barber Services</h2>
+<h2>Избери своята нова визия:</h2>
 
 @if (!Model.Any())
 {
@@ -30,7 +30,7 @@ else
                      <h3>@service.Name</h3>
                      <p>@service.Description</p>
 
-                     <a asp-controller="Reviews"
+                     <a asp-controller="Review"
                         asp-action="Index"
                         asp-route-barberServiceId="@service.Id">
                          Виж отзиви
