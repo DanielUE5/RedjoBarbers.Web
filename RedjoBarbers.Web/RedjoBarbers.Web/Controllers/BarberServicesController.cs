@@ -16,7 +16,7 @@ namespace RedjoBarbers.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            List<BarberService> allServices = await dbContext
+            IEnumerable<BarberService> allServices = await dbContext
                 .BarberServices
                 .OrderByDescending(bs => bs.Price)
                 .Include(bs => bs.Reviews)

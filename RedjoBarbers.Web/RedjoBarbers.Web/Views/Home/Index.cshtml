@@ -1,4 +1,5 @@
-﻿@model HomeIndexViewModel
+﻿@using RedjoBarbers.Web.Data.Models
+@model HomeIndexViewModel
 @{
     ViewData["Title"] = "Начална страница";
 }
@@ -30,12 +31,12 @@
 
 <section class="home-services">
     <div class="container">
-        <h2 class="text-center mb-4">Какво предлагаме</h2>
+        <h2 class="text-center mb-4">Най-популярните ни услуги</h2>
 
         <div class="row g-4 justify-content-center">
-            @if (Model.Services != null && Model.Services.Any())
+            @if (Model.Services.Any())
             {
-                @foreach (var s in Model.Services.Take(3))
+                @foreach (BarberService s in Model.Services.Take(3))
                 {
                     <div class="col-md-6 col-lg-3">
                         <div class="service-card">
@@ -81,17 +82,17 @@
             </a>
             </div>
         </div>
-        @if (Model.Reviews != null && Model.Reviews.Any())
+        @if (Model.Reviews.Any())
         {
             <div class="row g-4">
-                @foreach (var r in Model.Reviews)
+                @foreach (Review r in Model.Reviews)
                 {
                     <div class="col-md-6 col-lg-3">
                         <div class="card h-100 shadow-sm">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <strong>@r.CustomerName</strong>
-                                    <small class="text-muted">@r.ReviewDate.ToString("dd.MM.yyyy")</small>
+                                    <small class="text-muted">@r.ReviewDate.ToString("d")</small>
                                 </div>
 
                                 <div class="mb-2 text-warning">

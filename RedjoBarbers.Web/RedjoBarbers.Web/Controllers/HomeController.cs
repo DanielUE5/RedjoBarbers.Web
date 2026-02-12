@@ -32,15 +32,20 @@ namespace RedjoBarbers.Web.Controllers
             List<Review> reviews = await dbContext
                 .Reviews
                 .AsNoTracking()
-                .OrderBy(r => r.Id)
+                .OrderByDescending(r => r.ReviewDate)
+                .ThenBy(r => r.Rating)
+                .Where(r => r.Rating == 5 &&
+                            !string.IsNullOrWhiteSpace(r.Comments))
+                .Take(4)
                 .Select(r => new Review
                 {
+                    BarberServiceId = r.BarberServiceId,
                     CustomerName = r.CustomerName,
                     Comments = r.Comments,
-                    Rating = r.Rating
+                    Rating = r.Rating,
+                    ReviewDate = r.ReviewDate,
                 })
                 .ToListAsync();
-
 
             HomeIndexViewModel vm = new HomeIndexViewModel
             {
@@ -57,14 +62,13 @@ namespace RedjoBarbers.Web.Controllers
             Barber? owner = await dbContext
                 .Barbers
                 .AsNoTracking()
-                .OrderBy(b => b.Id)
-                .Where(b => b.Name == "Реджеп")
+                .Where(b => b.Name.Contains("Реджеп"))
                 .Select(b => new Barber
                 {
                     Name = b.Name,
                     PhoneNumber = b.PhoneNumber,
                 })
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             return View(owner);
         }
@@ -80,7 +84,6 @@ namespace RedjoBarbers.Web.Controllers
             IEnumerable<Barber> contacts = await dbContext
                 .Barbers
                 .OrderBy(b => b.Id)
-                .ThenBy(b => b.Name)
                 .AsNoTracking()
                 .ToListAsync();
 
