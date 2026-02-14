@@ -1,5 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model RedjoBarbers.Web.Data.Models.Appointment
+
+<h2>Delete</h2>
+
+<p class="text-danger">Сигурни ли сте, че искаш да изтриете този час?</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Дата на посещение:</dt>
+    <dd class="col-sm-9">@Model.AppointmentDate</dd>
+
+    <dt class="col-sm-3">Клиент:</dt>
+    <dd class="col-sm-9">@Model.CustomerName</dd>
+
+    <dt class="col-sm-3">Бръснар:</dt>
+    <dd class="col-sm-9">@Model.Barber?.Name</dd>
+
+    <dt class="col-sm-3">Услуга:</dt>
+    <dd class="col-sm-9">@Model.BarberService?.Name</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

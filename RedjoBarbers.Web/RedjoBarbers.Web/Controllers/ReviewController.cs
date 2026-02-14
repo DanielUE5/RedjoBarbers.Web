@@ -49,7 +49,7 @@ namespace RedjoBarbers.Web.Controllers
         {
             IEnumerable<BarberService> services = await dbContext.BarberServices
                 .AsNoTracking()
-                .OrderBy(s => s.Name)
+                .OrderBy(s => s.Id)
                 .ToListAsync();
 
             ViewBag.Services = services;
@@ -68,7 +68,7 @@ namespace RedjoBarbers.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var services = await dbContext.BarberServices
+                IEnumerable<BarberService> services = await dbContext.BarberServices
                     .AsNoTracking()
                     .OrderBy(s => s.Name)
                     .ToListAsync();
@@ -109,16 +109,17 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Reviews.Remove(review);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), 
+                new { barberServiceId = review.BarberServiceId });
         }
 
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            Review? review = await dbContext.Reviews
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == id);
+            Review? review = await dbContext
+                .Reviews
+                .FindAsync(id);
 
             if (review == null)
             {

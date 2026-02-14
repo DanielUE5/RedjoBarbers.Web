@@ -1,0 +1,32 @@
+﻿@model RedjoBarbers.Web.Data.Models.Appointment
+
+<h2>Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Дата на посещение:</dt>
+    <dd class="col-sm-9">@Model.AppointmentDate</dd>
+
+    <dt class="col-sm-3">Клиент:</dt>
+    <dd class="col-sm-9">@Model.CustomerName</dd>
+
+    <dt class="col-sm-3">Имейл:</dt>
+    <dd class="col-sm-9">@Model.CustomerEmail</dd>
+
+    <dt class="col-sm-3">Телефон:</dt>
+    <dd class="col-sm-9">@Model.CustomerPhone</dd>
+
+    <dt class="col-sm-3">Забележка:</dt>
+    <dd class="col-sm-9">@Model.Notes</dd>
+
+    <dt class="col-sm-3">Статус:</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Бръснар</dt>
+    <dd class="col-sm-9">@Model.Barber?.Name</dd>
+
+    <dt class="col-sm-3">Услуга</dt>
+    <dd class="col-sm-9">@Model.BarberService?.Name</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back</a>
