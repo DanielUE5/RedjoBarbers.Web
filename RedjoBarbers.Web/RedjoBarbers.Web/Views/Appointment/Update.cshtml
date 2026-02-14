@@ -1,5 +1,59 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@using RedjoBarbers.Web.Data.Models.Enums
+@model AppointmentFormViewModel
+
+<h2>Промяна на час</h2>
+
+<form asp-action="Update" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="AppointmentDate" class="form-label"></label>
+        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CustomerName" class="form-label"></label>
+        <input asp-for="CustomerName" class="form-control" />
+        <span asp-validation-for="CustomerName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CustomerEmail" class="form-label"></label>
+        <input asp-for="CustomerEmail" class="form-control" />
+        <span asp-validation-for="CustomerEmail" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CustomerPhone" class="form-label"></label>
+        <input asp-for="CustomerPhone" class="form-control" />
+        <span asp-validation-for="CustomerPhone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" class="form-control"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BarberId" class="form-label"></label>
+        <select asp-for="BarberId" class="form-select" asp-items="Model.Barbers"></select>
+        <span asp-validation-for="BarberId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BarberServiceId" class="form-label"></label>
+        <select asp-for="BarberServiceId" class="form-select" asp-items="Model.BarberServices"></select>
+        <span asp-validation-for="BarberServiceId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Back</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
