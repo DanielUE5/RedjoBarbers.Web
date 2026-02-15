@@ -13,7 +13,7 @@ namespace RedjoBarbers.Web.ViewModels
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Името трябва да е между 2 и 100 символа.")]
         public string CustomerName { get; set; } = string.Empty;
 
-        [Range(1, 5, ErrorMessage = "Рейтингът трябва да е между 1 и 5.")]
+        [Range(1, 5, ErrorMessage = "Рейтингът трябва да е между 1 и 5 звезди.")]
         public int Rating { get; set; }
 
         [StringLength(1000, ErrorMessage = "Коментарът не може да надвишава 1000 символа.")]

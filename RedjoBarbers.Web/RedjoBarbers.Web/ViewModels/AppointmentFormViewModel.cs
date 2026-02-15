@@ -27,6 +27,7 @@ public class AppointmentFormViewModel
     [Required(ErrorMessage = "Моля въведете телефонен номер.")]
     [MaxLength(CustomerPhoneMaxLength)]
     [RegularExpression(PhoneRegexPattern, ErrorMessage = "Невалиден телефонен номер.")]
+    [Phone]
     [Display(Name = "Телефонен номер")]
     public string CustomerPhone { get; set; } = null!;
 

@@ -37,7 +37,7 @@ namespace RedjoBarbers.Web.Controllers
                 query = query.Where(r => r.BarberServiceId == barberServiceId.Value);
             }
 
-            List<ReviewIndexItemViewModel> reviews = await query
+            IEnumerable<ReviewIndexItemViewModel> reviews = await query
                 .ToListAsync();
 
             return View(reviews);
@@ -109,8 +109,7 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Reviews.Remove(review);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), 
-                new { barberServiceId = review.BarberServiceId });
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -160,8 +159,7 @@ namespace RedjoBarbers.Web.Controllers
 
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index), 
-                new { barberServiceId = review.BarberServiceId });
+            return RedirectToAction("MyAppointments", "Appointment");
         }
     }
 }

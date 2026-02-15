@@ -10,6 +10,7 @@ namespace RedjoBarbers.Web.Controllers
     public class AppointmentController : Controller
     {
         private readonly RedjoBarbersDbContext dbContext;
+
         public AppointmentController(RedjoBarbersDbContext dbContext)
         {
             this.dbContext = dbContext;
@@ -18,194 +19,305 @@ namespace RedjoBarbers.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Appointment> appointments = await dbContext
-            .Appointments
-            .AsNoTracking()
-            .Include(a => a.Barber)
-            .Include(a => a.BarberService)
-            .AsSplitQuery()
-            .OrderByDescending(a => a.AppointmentDate)
-            .ToListAsync();
+            IEnumerable<Appointment> allAppointments = await dbContext.Appointments
+                .AsNoTracking()
+                .Include(appointment => appointment.Barber)
+                .Include(appointment => appointment.BarberService)
+                .AsSplitQuery()
+                .OrderBy(appointment => appointment.AppointmentDate)
+                .ToListAsync();
 
-            return View(appointments);
+            return View(allAppointments);
         }
 
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id is null) return NotFound();
+            if (id is null)
+            {
+                return NotFound();
+            }
 
-            Appointment? detail = await dbContext.Appointments
+            Appointment? selectedAppointment = await dbContext.Appointments
                 .AsNoTracking()
-                .Include(a => a.Barber)
-                .Include(a => a.BarberService)
+                .Include(appointment => appointment.Barber)
+                .Include(appointment => appointment.BarberService)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(a => a.Id == id.Value);
+                .FirstOrDefaultAsync(appointment => appointment.Id == id.Value);
 
-            if (detail is null) return NotFound();
+            if (selectedAppointment is null)
+            {
+                return NotFound();
+            }
 
-            return View(detail);
+            return View(selectedAppointment);
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            AppointmentFormViewModel vm = new AppointmentFormViewModel
+            AppointmentFormViewModel appointmentForm = new AppointmentFormViewModel
             {
                 AppointmentDate = DateTime.Now
             };
 
-            await PopulateDropdowns(vm);
-            return View(vm);
+            await PopulateDropdowns(appointmentForm);
+            return View(appointmentForm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AppointmentFormViewModel vm)
+        public async Task<IActionResult> Create(AppointmentFormViewModel appointmentForm)
         {
             if (!ModelState.IsValid)
             {
-                await PopulateDropdowns(vm);
-                return View(vm);
+                await PopulateDropdowns(appointmentForm);
+                return View(appointmentForm);
             }
 
-            Appointment? entity = new Appointment
+            bool timeSlotIsTaken = await HasTooManyAppointmentsInWindowAsync(
+                appointmentForm.AppointmentDate,
+                null,
+                appointmentForm.BarberId);
+
+            if (timeSlotIsTaken)
             {
-                AppointmentDate = vm.AppointmentDate,
-                CustomerName = vm.CustomerName,
-                CustomerEmail = vm.CustomerEmail,
-                CustomerPhone = vm.CustomerPhone,
-                Notes = vm.Notes,
+                ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
+                    "Вече има запазен час в този диапазон. Диапазона за записване на час е 45мин. спрямо предишния.");
+
+                await PopulateDropdowns(appointmentForm);
+                return View(appointmentForm);
+            }
+
+            Appointment newAppointment = new Appointment
+            {
+                AppointmentDate = appointmentForm.AppointmentDate,
+                CustomerName = appointmentForm.CustomerName,
+                CustomerEmail = appointmentForm.CustomerEmail,
+                CustomerPhone = appointmentForm.CustomerPhone,
+                Notes = appointmentForm.Notes,
                 Status = AppointmentStatus.Pending,
-                BarberId = vm.BarberId,
-                BarberServiceId = vm.BarberServiceId
+                BarberId = appointmentForm.BarberId,
+                BarberServiceId = appointmentForm.BarberServiceId
             };
 
-            dbContext.Appointments.Add(entity);
+            dbContext.Appointments.Add(newAppointment);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyAppointments));
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int? id)
         {
-            if (id is null) 
+            if (id is null)
             {
                 return NotFound();
             }
 
-            Appointment? appointment = await dbContext
-                .Appointments
-                .FindAsync(id.Value);
+            Appointment? appointmentToEdit = await dbContext.Appointments.FindAsync(id.Value);
 
-            if (appointment is null) return NotFound();
-
-            AppointmentFormViewModel vm = new AppointmentFormViewModel
+            if (appointmentToEdit is null)
             {
-                Id = appointment.Id,
-                AppointmentDate = appointment.AppointmentDate,
-                CustomerName = appointment.CustomerName,
-                CustomerEmail = appointment.CustomerEmail,
-                CustomerPhone = appointment.CustomerPhone,
-                Notes = appointment.Notes,
-                Status = AppointmentStatus.Pending,
-                BarberId = appointment.BarberId,
-                BarberServiceId = appointment.BarberServiceId
+                return NotFound();
+            }
+
+            AppointmentFormViewModel appointmentForm = new AppointmentFormViewModel
+            {
+                Id = appointmentToEdit.Id,
+                AppointmentDate = appointmentToEdit.AppointmentDate,
+                CustomerName = appointmentToEdit.CustomerName,
+                CustomerEmail = appointmentToEdit.CustomerEmail,
+                CustomerPhone = appointmentToEdit.CustomerPhone,
+                Notes = appointmentToEdit.Notes,
+                Status = appointmentToEdit.Status,
+                BarberId = appointmentToEdit.BarberId,
+                BarberServiceId = appointmentToEdit.BarberServiceId
             };
 
-            await PopulateDropdowns(vm);
-            return View(vm);
+            await PopulateDropdowns(appointmentForm);
+            return View(appointmentForm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, AppointmentFormViewModel vm)
+        public async Task<IActionResult> Update(int id, AppointmentFormViewModel appointmentForm)
         {
-            if (vm.Id is null || id != vm.Id.Value) return NotFound();
+            if (appointmentForm.Id is null || id != appointmentForm.Id.Value)
+            {
+                return NotFound();
+            }
 
             if (!ModelState.IsValid)
             {
-                await PopulateDropdowns(vm);
-                return View(vm);
+                await PopulateDropdowns(appointmentForm);
+                return View(appointmentForm);
             }
 
-            Appointment? entity = await dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
-            if (entity is null) return NotFound();
+            bool timeSlotIsTaken = await HasTooManyAppointmentsInWindowAsync(
+                appointmentForm.AppointmentDate,
+                id,
+                appointmentForm.BarberId);
 
-            entity.AppointmentDate = vm.AppointmentDate;
-            entity.CustomerName = vm.CustomerName;
-            entity.CustomerEmail = vm.CustomerEmail;
-            entity.CustomerPhone = vm.CustomerPhone;
-            entity.Notes = vm.Notes;
-            entity.Status = vm.Status;
-            entity.BarberId = vm.BarberId;
-            entity.BarberServiceId = vm.BarberServiceId;
+            if (timeSlotIsTaken)
+            {
+                ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
+                    "Вече има запазен час в този диапазон. Диапазона за записване на час е 45мин. спрямо предишния.");
+
+                await PopulateDropdowns(appointmentForm);
+                return View(appointmentForm);
+            }
+
+            Appointment? existingAppointment = await dbContext.Appointments.FindAsync(id);
+
+            if (existingAppointment is null)
+            {
+                return NotFound();
+            }
+
+            existingAppointment.AppointmentDate = appointmentForm.AppointmentDate;
+            existingAppointment.CustomerName = appointmentForm.CustomerName;
+            existingAppointment.CustomerEmail = appointmentForm.CustomerEmail;
+            existingAppointment.CustomerPhone = appointmentForm.CustomerPhone;
+            existingAppointment.Notes = appointmentForm.Notes;
+            existingAppointment.Status = appointmentForm.Status;
+            existingAppointment.BarberId = appointmentForm.BarberId;
+            existingAppointment.BarberServiceId = appointmentForm.BarberServiceId;
 
             await dbContext.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(MyAppointments));
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id is null) return NotFound();
+            if (id is null)
+            {
+                return NotFound();
+            }
 
-            Appointment? item = await dbContext.Appointments
+            Appointment? appointmentForDeletion = await dbContext.Appointments
                 .AsNoTracking()
-                .Include(a => a.Barber)
-                .Include(a => a.BarberService)
+                .Include(appointment => appointment.Barber)
+                .Include(appointment => appointment.BarberService)
                 .AsSplitQuery()
-                .SingleOrDefaultAsync(a => a.Id == id.Value);
+                .SingleOrDefaultAsync(appointment => appointment.Id == id.Value);
 
-            if (item is null) return NotFound();
+            if (appointmentForDeletion is null)
+            {
+                return NotFound();
+            }
 
-            return View(item);
+            return View(appointmentForDeletion);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            Appointment? entity = await dbContext.Appointments.FindAsync(id);
-            if (entity == null)
-                return RedirectToAction(nameof(Index));
+            Appointment? appointmentToRemove = await dbContext.Appointments.FindAsync(id);
 
-            dbContext.Appointments.Remove(entity);
+            if (appointmentToRemove is null)
+            {
+                return RedirectToAction(nameof(MyAppointments),
+                    new { phone = string.Empty });
+            }
+
+            string customerPhone = appointmentToRemove.CustomerPhone;
+
+            dbContext.Appointments.Remove(appointmentToRemove);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyAppointments));
         }
 
-        /// <summary>
-        /// Populates the barbers and barber services dropdown lists in the specified appointment form view model.
-        /// </summary>
-        /// <remarks>This method retrieves the lists of barbers and barber services asynchronously from
-        /// the database and assigns them to the corresponding properties of the view model. The data is retrieved
-        /// without tracking to improve performance when the entities are not being updated.</remarks>
-        /// <param name="vm">The view model that contains the dropdown lists to be populated with available barbers and barber services.</param>
-        /// <returns></returns>
-        private async Task PopulateDropdowns(AppointmentFormViewModel vm)
+        [HttpGet]
+        public async Task<IActionResult> MyAppointments(string phone)
         {
-            vm.Barbers = await dbContext.Barbers
+            IEnumerable<Appointment> customerAppointments = await dbContext.Appointments
                 .AsNoTracking()
-                .OrderBy(b => b.Id)
-                .Select(b => new SelectListItem
+                .Include(appointment => appointment.Barber)
+                .Include(appointment => appointment.BarberService)
+                .AsSplitQuery()
+                .Where(appointment =>
+                    string.IsNullOrWhiteSpace(phone) ||
+                    appointment.CustomerPhone == phone)
+                .OrderBy(appointment => appointment.AppointmentDate)
+                .ToListAsync();
+
+            IEnumerable<Review> latestReviews = await dbContext.Reviews
+                .AsNoTracking()
+                .Include(review => review.BarberService)
+                .AsSplitQuery()
+                .OrderByDescending(review => review.ReviewDate)
+                .ToListAsync();
+
+            MyAppointmentsPageViewModel pageViewModel = new MyAppointmentsPageViewModel
+            {
+                Appointments = customerAppointments,
+                Reviews = latestReviews
+            };
+
+            return View(pageViewModel);
+        }
+
+        private async Task PopulateDropdowns(AppointmentFormViewModel appointmentForm)
+        {
+            IEnumerable<SelectListItem> availableBarbers = await dbContext.Barbers
+                .AsNoTracking()
+                .OrderBy(barber => barber.Id)
+                .Select(barber => new SelectListItem
                 {
-                    Value = b.Id.ToString(),
-                    Text = b.Name
+                    Value = barber.Id.ToString(),
+                    Text = barber.Name
                 })
                 .ToListAsync();
 
-            vm.BarberServices = await dbContext.BarberServices
+            IEnumerable<SelectListItem> availableServices = await dbContext.BarberServices
                 .AsNoTracking()
-                .OrderBy(s => s.Name)
-                .Select(s => new SelectListItem
+                .OrderBy(service => service.Name)
+                .Select(service => new SelectListItem
                 {
-                    Value = s.Id.ToString(),
-                    Text = s.Name
+                    Value = service.Id.ToString(),
+                    Text = service.Name
                 })
                 .ToListAsync();
+
+            appointmentForm.Barbers = availableBarbers;
+            appointmentForm.BarberServices = availableServices;
+        }
+
+        private async Task<bool> HasTooManyAppointmentsInWindowAsync(
+            DateTime targetDate,
+            int? excludedAppointmentId,
+            int? barberId)
+        {
+            DateTime windowStart = targetDate.AddMinutes(-45);
+            DateTime windowEnd = targetDate.AddMinutes(45);
+
+            IQueryable<Appointment> appointmentsInTimeRange = dbContext.Appointments
+                .AsNoTracking()
+                .Where(appointment =>
+                    appointment.AppointmentDate >= windowStart &&
+                    appointment.AppointmentDate <= windowEnd &&
+                    appointment.Status != AppointmentStatus.Cancelled);
+
+            if (excludedAppointmentId != null)
+            {
+                appointmentsInTimeRange =
+                    appointmentsInTimeRange.Where(appointment =>
+                        appointment.Id != excludedAppointmentId.Value);
+            }
+
+            if (barberId != null)
+            {
+                appointmentsInTimeRange =
+                    appointmentsInTimeRange.Where(appointment =>
+                        appointment.BarberId == barberId.Value);
+            }
+
+            return await appointmentsInTimeRange.AnyAsync();
         }
     }
 }

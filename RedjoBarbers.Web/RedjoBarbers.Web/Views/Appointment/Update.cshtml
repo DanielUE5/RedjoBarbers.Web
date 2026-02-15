@@ -10,7 +10,8 @@
 
     <div class="mb-3">
         <label asp-for="AppointmentDate" class="form-label"></label>
-        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+        <input asp-for="AppointmentDate" type="datetime-local" class="form-control" 
+        step="2700" asp-format="{0:yyyy-MM-ddTHH:mm}"/>
         <span asp-validation-for="AppointmentDate" class="text-danger"></span>
     </div>
 
@@ -50,8 +51,8 @@
         <span asp-validation-for="BarberServiceId" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
+    <button type="submit" class="btn btn-success">Запази</button>
+    <a asp-action="MyAppointments" class="btn btn-secondary">Назад</a>
 </form>
 
 @section Scripts {

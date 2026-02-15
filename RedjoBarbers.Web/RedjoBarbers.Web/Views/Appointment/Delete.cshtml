@@ -16,10 +16,13 @@
 
     <dt class="col-sm-3">Услуга:</dt>
     <dd class="col-sm-9">@Model.BarberService?.Name</dd>
+
+    <dt class="col-sm-3">Забележка:</dt>
+    <dd class="col-sm-9">@Model.Notes</dd>
 </dl>
 
 <form asp-action="Delete" method="post">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Изтриване</button>
+    <a asp-action="MyAppointments" class="btn btn-secondary">Отказ</a>
 </form>
