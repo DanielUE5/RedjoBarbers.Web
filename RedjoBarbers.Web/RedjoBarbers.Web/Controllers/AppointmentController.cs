@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
@@ -17,6 +18,7 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             IEnumerable<Appointment> allAppointments = await dbContext.Appointments
@@ -31,6 +33,7 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id is null)
@@ -54,6 +57,7 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             AppointmentFormViewModel appointmentForm = new AppointmentFormViewModel
@@ -67,6 +71,7 @@ namespace RedjoBarbers.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(AppointmentFormViewModel appointmentForm)
         {
             if (!ModelState.IsValid)
@@ -104,10 +109,13 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Appointments.Add(newAppointment);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(MyAppointments));
+            return RedirectToAction(User.IsInRole("Admin") ? "Index" : nameof(MyAppointments)
+);
+
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Update(int? id)
         {
             if (id is null)
@@ -141,6 +149,7 @@ namespace RedjoBarbers.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Update(int id, AppointmentFormViewModel appointmentForm)
         {
             if (appointmentForm.Id is null || id != appointmentForm.Id.Value)
@@ -190,6 +199,7 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id is null)
@@ -197,31 +207,31 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
-            Appointment? appointmentForDeletion = await dbContext.Appointments
+            Appointment? appointmentForDelete = await dbContext.Appointments
                 .AsNoTracking()
                 .Include(appointment => appointment.Barber)
                 .Include(appointment => appointment.BarberService)
                 .AsSplitQuery()
                 .SingleOrDefaultAsync(appointment => appointment.Id == id.Value);
 
-            if (appointmentForDeletion is null)
+            if (appointmentForDelete is null)
             {
                 return NotFound();
             }
 
-            return View(appointmentForDeletion);
+            return View(appointmentForDelete);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             Appointment? appointmentToRemove = await dbContext.Appointments.FindAsync(id);
 
             if (appointmentToRemove is null)
             {
-                return RedirectToAction(nameof(MyAppointments),
-                    new { phone = string.Empty });
+                return RedirectToAction(nameof(MyAppointments));
             }
 
             string customerPhone = appointmentToRemove.CustomerPhone;
@@ -233,6 +243,7 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> MyAppointments(string phone)
         {
             IEnumerable<Appointment> customerAppointments = await dbContext.Appointments

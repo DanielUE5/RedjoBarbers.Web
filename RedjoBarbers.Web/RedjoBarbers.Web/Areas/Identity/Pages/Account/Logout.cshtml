@@ -1,0 +1,46 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Изход";
+}
+
+<div class="container mt-5">
+    <div class="text-center">
+
+        <h2 class="mb-4">Изход от профила</h2>
+
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <div class="alert alert-warning">
+                Сигурни ли сте, че искате да излезете от профила си?
+            </div>
+
+            <form asp-area="Identity"
+                  asp-page="/Account/Logout"
+                  method="post"
+                  class="d-inline">
+                <button type="submit" class="btn btn-danger me-2">
+                    Изход
+                </button>
+            </form>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Към началната страница
+            </a>
+        }
+        else
+        {
+            <div class="alert alert-success">
+                Успешно излязохте от профила си.
+            </div>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary mt-3">
+                Към началната страница
+            </a>
+        }
+    </div>
+</div>

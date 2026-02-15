@@ -3,8 +3,26 @@
 
 <h2>Записани часове</h2>
 
+@{
+    string returnUrl = Url.Action("Create", "Appointment")!;
+}
 <p>
-    <a asp-action="Create" class="btn btn-primary">Планирай посещение</a>
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <a asp-action="Create"
+           class="btn btn-primary">
+            Планирай посещение
+        </a>
+    }
+    else
+    {
+        <a asp-area="Identity"
+           asp-page="/Account/Login"
+           asp-route-returnUrl="@returnUrl"
+           class="btn btn-primary">
+            Планирай посещение
+        </a>
+    }
 </p>
 
 <table class="table">

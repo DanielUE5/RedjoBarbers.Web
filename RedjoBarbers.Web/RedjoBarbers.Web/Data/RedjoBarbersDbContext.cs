@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data.Models;
 
 namespace RedjoBarbers.Web.Data
 {
-    public class RedjoBarbersDbContext : DbContext
+    public class RedjoBarbersDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         public RedjoBarbersDbContext(DbContextOptions<RedjoBarbersDbContext> dbContextOptions)
             : base(dbContextOptions)

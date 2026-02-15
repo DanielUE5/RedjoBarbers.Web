@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
@@ -45,6 +46,7 @@ namespace RedjoBarbers.Web.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Create(int? barberServiceId)
         {
             IEnumerable<BarberService> services = await dbContext.BarberServices
@@ -64,6 +66,7 @@ namespace RedjoBarbers.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create(ReviewCreateViewModel model)
         {
             if (!ModelState.IsValid)
@@ -90,13 +93,13 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Reviews.Add(review);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index),
-                new { barberServiceId = model.BarberServiceId });
+            return RedirectToAction(nameof(Index));
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             Review? review = await dbContext.Reviews.FindAsync(id);
@@ -109,11 +112,12 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Reviews.Remove(review);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("MyAppointments", "Appointment");
         }
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Update(int id)
         {
             Review? review = await dbContext
@@ -139,6 +143,7 @@ namespace RedjoBarbers.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Update(ReviewUpdateViewModel model)
         {
             if (!ModelState.IsValid)

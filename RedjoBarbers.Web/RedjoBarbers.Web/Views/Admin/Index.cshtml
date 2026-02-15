@@ -1,0 +1,142 @@
+﻿@model RedjoBarbers.Web.ViewModels.AdminPanelViewModel
+@using RedjoBarbers.Web.Data.Models
+@using RedjoBarbers.Web.Data.Models.Enums
+
+<div class="container py-4">
+
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <h2 class="mb-0">Админ панел</h2>
+        <span class="badge bg-danger">ADMIN</span>
+    </div>
+
+    <h4 class="mb-3">Часове</h4>
+
+    @if (!Model.Appointments.Any())
+    {
+        <div class="alert alert-success shadow-sm">Няма записани часове.</div>
+    }
+    else
+    {
+        <div class="table-responsive mb-5">
+            <table class="table table-hover align-middle shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Услуга</th>
+                        <th>Бръснар</th>
+                        <th>Клиент</th>
+                        <th>Дата</th>
+                        <th>Статус</th>
+                        <th class="text-end">Промени</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Appointment a in Model.Appointments)
+                    {
+                        string statusClass = a.Status switch
+                        {
+                            AppointmentStatus.Pending => "bg-primary",
+                            AppointmentStatus.Confirmed => "bg-success",
+                            AppointmentStatus.Cancelled => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+
+                        <tr>
+                            <td class="fw-semibold">@a.BarberService?.Name</td>
+                            <td>@a.Barber?.Name</td>
+                            <td>@a.CustomerPhone</td>
+                            <td>@a.AppointmentDate.ToString("g")</td>
+
+                            <td>
+                                <span class="badge @statusClass">@a.Status</span>
+                            </td>
+
+                            <td class="text-end">
+                                <form asp-controller="Admin"
+                                      asp-action="UpdateStatus"
+                                      method="post"
+                                      class="d-inline-flex gap-2 align-items-center">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@a.Id" />
+
+                                    <select name="status"
+                                            class="form-select form-select-sm"
+                                            style="max-width: 170px;">
+                                        @foreach (AppointmentStatus s in Enum.GetValues(typeof(AppointmentStatus)))
+                                        {
+                                            <option value="@s" selected="@(a.Status == s ? "selected" : null)">
+                                                @s
+                                            </option>
+                                        }
+                                    </select>
+
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        Запази
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <h4 class="mb-3">Отзиви</h4>
+
+    @if (!Model.Reviews.Any())
+    {
+        <div class="alert alert-secondary shadow-sm">Няма отзиви.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle shadow-sm">
+                <thead class="table-light">
+                    <tr>
+                        <th>Потребител</th>
+                        <th>Оценка</th>
+                        <th>Коментар</th>
+                        <th>Дата</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Review r in Model.Reviews)
+                    {
+                        <tr>
+                            <td>@(r.CustomerName)</td>
+
+                            <td>
+                                <span class="badge bg-warning text-dark">
+                                    @r.Rating / 5
+                                </span>
+                            </td>
+
+                            <td style="max-width: 520px; white-space: normal;">
+                                @r.Comments
+                            </td>
+
+                            <td>@r.ReviewDate.ToString("g")</td>
+
+                            <td class="text-end">
+                                <form asp-controller="Admin"
+                                      asp-action="DeleteReview"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Да изтрия ли този отзив?');">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
