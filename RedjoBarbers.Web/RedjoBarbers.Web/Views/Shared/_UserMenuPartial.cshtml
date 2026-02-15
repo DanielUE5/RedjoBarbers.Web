@@ -1,19 +1,125 @@
-﻿<div class="dropdown">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Моят профил
-    </button>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@{
+    bool isSignedIn = SignInManager.IsSignedIn(User);
+
+    string email = User.Identity?.Name ?? string.Empty;
+    string displayName = "Моят профил";
+
+    if (isSignedIn)
+    {
+        // If the user is signed in, we can try to extract a friendly name from the email
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            int atIndex = email.IndexOf('@');
+            string beforeAt = atIndex > 0 ? email.Substring(0, atIndex) : email;
+            displayName = "Добре дошли, " + beforeAt;
+        }
+        else
+        {
+            displayName = "Добре дошли";
+        }
+    }
+}
+
+<div class="dropdown">
+    @if (!isSignedIn)
+    {
+        <a class="btn btn-outline-secondary dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           asp-area="Identity"
+           asp-page="/Account/Login">
+            @displayName
+        </a>
+    }
+    else
+    {
+        <a class="btn btn-outline-secondary dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           asp-controller="Appointment"
+           asp-action="MyAppointments">
+            @displayName
+        </a>
+    }
+
     <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-            <a class="dropdown-item" href="#">Влез</a>
-        </li>
-        <li>
-            <a class="dropdown-item" href="#">Регистрирай се</a>
-        </li>
-        <li><hr class="dropdown-divider" /></li>
-        <li>
-            <a class="dropdown-item" asp-controller="Appointment" asp-action="MyAppointments">
-                Моят профил
-            </a>
-        </li>
+        @if (!isSignedIn)
+        {
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Identity"
+                   asp-page="/Account/Login">
+                    Влез
+                </a>
+            </li>
+
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Identity"
+                   asp-page="/Account/Register">
+                    Регистрирай се
+                </a>
+            </li>
+
+            <li><hr class="dropdown-divider" /></li>
+
+            <li>
+                <a class="dropdown-item"
+                   asp-area="Identity"
+                   asp-page="/Account/Login">
+                    Моите часове
+                </a>
+            </li>
+        }
+        else
+        {
+            if (User.IsInRole("Admin"))
+            {
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Admin"
+                       asp-action="Index">
+                        Админ панел
+                    </a>
+                </li>
+
+                <li><hr class="dropdown-divider" /></li>
+
+                <li>
+                    <form method="post"
+                          asp-area="Identity"
+                          asp-page="/Account/Logout">
+                        <button type="submit" class="dropdown-item">
+                            Изход
+                        </button>
+                    </form>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Appointment"
+                       asp-action="MyAppointments">
+                        Моят профил
+                    </a>
+                </li>
+
+                <li><hr class="dropdown-divider" /></li>
+
+                <li>
+                    <form method="post"
+                          asp-area="Identity"
+                          asp-page="/Account/Logout">
+                        <button type="submit" class="dropdown-item">
+                            Изход
+                        </button>
+                    </form>
+                </li>
+            }
+        }
     </ul>
 </div>

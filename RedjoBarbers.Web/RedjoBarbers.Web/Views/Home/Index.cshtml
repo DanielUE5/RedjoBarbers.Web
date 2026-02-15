@@ -1,7 +1,9 @@
 ﻿@using RedjoBarbers.Web.Data.Models
 @model HomeIndexViewModel
+
 @{
     ViewData["Title"] = "Начална страница";
+    string returnUrl = Url.Action("Index", "Home") ?? "/";
 }
 
 <section class="home-hero">
@@ -62,26 +64,27 @@
     </div>
 </section>
 
-
 <section class="home-reviews">
     <div class="container">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h2 class="mb-0">Препоръчани от клиенти</h2>
 
             <div class="d-flex gap-2">
-            <a asp-controller="Review"
-               asp-action="Index"
-               class="btn btn-outline-secondary btn-sm">
-                Виж всички
-            </a>
+                <a asp-controller="Review"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary btn-sm">
+                    Виж всички
+                </a>
 
-            <a asp-controller="Review"
-               asp-action="Create"
-               class="btn btn-primary btn-sm">
-                Напишете отзив
-            </a>
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   asp-route-returnUrl="@returnUrl"
+                   class="btn btn-primary btn-sm">
+                    Напишете отзив
+                </a>
             </div>
         </div>
+
         @if (Model.Reviews.Any())
         {
             <div class="row g-4">
@@ -129,11 +132,24 @@
         <p>
             Обади се и запази своя час още днес.
         </p>
-        <a asp-controller="Appointment"
-           asp-action="Create"
-           class="btn btn-primary btn-lg">
-            Запазете час
-        </a>
+
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <a asp-controller="Appointment"
+               asp-action="Create"
+               class="btn btn-primary btn-lg">
+                Запазете час
+            </a>
+        }
+        else
+        {
+            <a asp-area="Identity"
+               asp-page="/Account/Login"
+               asp-route-returnUrl="@returnUrl"
+               class="btn btn-primary btn-lg">
+                Запазете час
+            </a>
+        }
     </div>
 </section>
 

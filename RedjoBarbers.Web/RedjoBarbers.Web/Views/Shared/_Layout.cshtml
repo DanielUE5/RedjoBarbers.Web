@@ -54,9 +54,24 @@
                     </ul>
 
                     <div class="d-flex align-items-center gap-2">
-                        <a class="btn btn-dark" asp-controller="Appointment" asp-action="Create">
+                        @{
+                            bool isLogged = User.Identity?.IsAuthenticated ?? false;
+
+                            string homeUrl = Url.Action("Index", "Home") ?? "/";
+
+                            string url = isLogged
+                            ? Url.Action("Create", "Appointment") ?? "/Appointment/Create"
+                            : Url.Page("/Account/Login", new
+                            {
+                                area = "Identity",
+                                returnUrl = homeUrl
+                            }) ?? "/Identity/Account/Login";
+                        }
+
+                        <a class="btn btn-dark" href="@url">
                             Запазете час
                         </a>
+
                         <partial name="_UserMenuPartial" />
                     </div>
                 </div>
@@ -79,7 +94,6 @@
             <div class="d-flex gap-3">
                 <a class="text-muted text-decoration-none" asp-controller="Home" asp-action="Privacy">Политика за поверителност</a>
                 <a class="text-muted text-decoration-none" asp-controller="BarberServices" asp-action="Index">Услуги</a>
-                <a class="btn btn-dark" asp-controller="Appointment" asp-action="Create">Запазете час</a>
             </div>
         </div>
     </footer>

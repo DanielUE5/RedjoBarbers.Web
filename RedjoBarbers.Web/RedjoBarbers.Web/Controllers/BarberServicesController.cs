@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
 
 namespace RedjoBarbers.Web.Controllers
 {
+    [AllowAnonymous]
     public class BarberServicesController : Controller
     {
         private readonly RedjoBarbersDbContext dbContext;
