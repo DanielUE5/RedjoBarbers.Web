@@ -6,7 +6,7 @@
     ViewData["Title"] = "Нашите услуги";
 }
 
-<h2>Избери своята нова визия:</h2>
+<h2>Избери своята нова визия</h2>
 
 @if (!Model.Any())
 {
@@ -33,7 +33,7 @@ else
                      <a asp-controller="Review"
                         asp-action="Index"
                         asp-route-barberServiceId="@service.Id">
-                         Виж отзиви
+                         Вижте отзивите за тази услуга
                         </a>
                 </td>
                 <td>@service.Description</td>

@@ -18,7 +18,7 @@ namespace RedjoBarbers.Web.Controllers
         {
             IEnumerable<BarberService> allServices = await dbContext
                 .BarberServices
-                .OrderByDescending(bs => bs.Price)
+                .OrderBy(bs => bs.Id)
                 .Include(bs => bs.Reviews)
                 .AsSplitQuery()
                 .AsNoTracking()
