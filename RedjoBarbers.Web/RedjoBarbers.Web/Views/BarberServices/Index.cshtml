@@ -32,7 +32,8 @@ else
 
                      <a asp-controller="Review"
                         asp-action="Index"
-                        asp-route-barberServiceId="@service.Id">
+                        asp-route-barberServiceId="@service.Id"
+                        class="btn btn-sm dark-cta-btn">
                          Вижте отзивите за тази услуга
                         </a>
                 </td>
@@ -44,4 +45,3 @@ else
     </table>
 }
 <partial name="_GoogleLocation" />
-<br />

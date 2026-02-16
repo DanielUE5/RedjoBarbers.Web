@@ -16,7 +16,7 @@
 </section>
 
 <section class="home-about">
-    <div class="container">
+    <div class="container text-center">
         <h2>Защо да избереш нас</h2>
         <p>
             В Redjo Barbers вярваме, че добрата визия започва с внимание към детайла.
@@ -57,7 +57,7 @@
         <div class="text-center mt-4">
             <a asp-controller="BarberServices"
                asp-action="Index"
-               class="btn btn-primary btn-lg">
+               class="btn btn-primary btn-lg cta-btn">
                 Разгледай пълния ни каталог
             </a>
         </div>
@@ -72,16 +72,27 @@
             <div class="d-flex gap-2">
                 <a asp-controller="Review"
                    asp-action="Index"
-                   class="btn btn-outline-secondary btn-sm">
+                   class="btn btn-sm dark-cta-btn">
                     Виж всички
                 </a>
 
-                <a asp-area="Identity"
-                   asp-page="/Account/Login"
-                   asp-route-returnUrl="@returnUrl"
-                   class="btn btn-primary btn-sm">
-                    Напишете отзив
-                </a>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <a asp-controller="Appointment"
+                       asp-action="Create"
+                       class="btn btn-primary btn-sm cta-btn">
+                        Напишете отзив
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity"
+                       asp-page="/Account/Login"
+                       asp-route-returnUrl="@returnUrl"
+                       class="btn btn-primary btn-sm cta-btn">
+                        Напишете отзив
+                    </a>
+                }
             </div>
         </div>
 
@@ -137,7 +148,7 @@
         {
             <a asp-controller="Appointment"
                asp-action="Create"
-               class="btn btn-primary btn-lg">
+               class="btn btn-primary btn-lg cta-btn">
                 Запазете час
             </a>
         }
@@ -146,7 +157,7 @@
             <a asp-area="Identity"
                asp-page="/Account/Login"
                asp-route-returnUrl="@returnUrl"
-               class="btn btn-primary btn-lg">
+               class="btn btn-primary btn-lg cta-btn">
                 Запазете час
             </a>
         }
@@ -154,4 +165,3 @@
 </section>
 
 <partial name="_GoogleLocation" />
-<br />
