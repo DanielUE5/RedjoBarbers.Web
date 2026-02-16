@@ -10,7 +10,7 @@
     @if (User.Identity?.IsAuthenticated ?? false)
     {
         <a asp-action="Create"
-           class="btn btn-primary">
+           class="btn btn-primary cta-btn">
             Планирай посещение
         </a>
     }
@@ -19,7 +19,7 @@
         <a asp-area="Identity"
            asp-page="/Account/Login"
            asp-route-returnUrl="@returnUrl"
-           class="btn btn-primary">
+           class="btn btn-primary cta-btn">
             Планирай посещение
         </a>
     }
