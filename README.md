@@ -142,7 +142,7 @@ Database.MigrateAsync()
 -   Тя ще бъде автоматично приложена при стартиране,
 -   Без необходимост от ръчно изпълнение на `Update-Database` в PMC.
 
-⚠️ Ръчно изпълнение на `Add-Migration` и `Update-Database` е необходимо
+⚠️ Ръчно изпълнение на `Add-Migration` е необходимо
 само при създаване на нова миграция.
 
 ------------------------------------------------------------------------
@@ -293,7 +293,7 @@ On application startup:
 -   It will automatically be applied to the database,
 -   No need to manually run `Update-Database`.
 
-⚠️ Manual migration commands are required only when creating a new
+⚠️ Manual migration command `Add-Migration` is required only when creating a new
 migration.
 
 ------------------------------------------------------------------------
