@@ -121,7 +121,7 @@ Enum: - AppointmentStatus
 
 ``` json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\MSSQLLocalDB;Database=RedjoBarbersDb;Trusted_Connection=True;"
+  "DevConnection": "Server=(localdb)\MSSQLLocalDB;Database=RedjoBarbersDb;Trusted_Connection=True;"
 }
 ```
 
