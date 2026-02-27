@@ -15,25 +15,8 @@ Core](https://img.shields.io/badge/EF_Core-Code_First-informational)
 
 ## 📋 Table of Contents
 
--   [🇧🇬 Документация (Български)](#-документация-български)
-    -   [Обща информация](#-обща-информация)
-    -   [Използвани технологии](#-използвани-технологии)
-    -   [Ролева система](#-ролева-система)
-    -   [Архитектура](#-архитектура)
-    -   [Основни функционалности](#-основни-функционалности)
-    -   [База данни](#-база-данни)
-    -   [Инсталация и стартиране](#-инсталация-и-стартиране)
-    -   [Конфигурация](#-конфигурация)
-    -   [Цел на проекта](#-цел-на-проекта)
--   [🇬🇧 Documentation (English)](#-documentation-english)
-    -   [Overview](#-overview)
-    -   [Tech Stack](#-tech-stack)
-    -   [Role-Based Authorization](#-role-based-authorization)
-    -   [Architecture](#-architecture-1)
-    -   [Core Features](#-core-features)
-    -   [Database](#-database-1)
-    -   [Installation & Run](#-installation--run)
-    -   [Project Purpose](#-project-purpose)
+-   🇧🇬 Документация (Български)
+-   🇬🇧 Documentation (English)
 
 ------------------------------------------------------------------------
 
@@ -82,37 +65,9 @@ ViewModels → Presentation Layer
 
 ------------------------------------------------------------------------
 
-## ✨ Основни функционалности
-
-### 👤 Потребители
-
--   Регистрация
--   Вход / Изход
--   Role-based система
-
-### 📅 Запазване на час
-
--   Създаване на резервация
--   Редактиране
--   Изтриване
--   Преглед на „Моите часове"
-
-### ⭐ Отзиви
-
--   Създаване
--   Редактиране
--   Преглед на всички отзиви
-
-### 🛠️ Административен панел
-
--   Достъпен само за Admin
--   Управление на данни
-
-------------------------------------------------------------------------
-
 ## 🗄️ База данни
 
-Използва се **Entity Framework Core -- Code First**.
+Проектът използва **Entity Framework Core -- Code First**.
 
 Основни модели:
 
@@ -124,21 +79,38 @@ ViewModels → Presentation Layer
 
 Enum: - AppointmentStatus
 
+### 🔄 Автоматични миграции и Seeding
+
+При стартиране на приложението автоматично се изпълнява:
+
+    Database.MigrateAsync();
+
+Това означава:
+
+-   Всички pending миграции се прилагат автоматично
+-   Базата данни се създава, ако не съществува
+-   Изпълнява се автоматичен seeding (ролите `User` и `Admin`, начални
+    данни и др.)
+
+Ръчно изпълнение на `dotnet ef database update` не е необходимо в
+стандартен сценарий.
+
 ------------------------------------------------------------------------
 
 ## 🚀 Инсталация и стартиране
 
-``` bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
-dotnet restore
-dotnet ef database update
-dotnet run
-```
+    git clone https://github.com/your-username/your-repo-name.git
+    cd your-repo-name
+    dotnet restore
+    dotnet run
 
-Application URL:
+Приложението ще бъде достъпно на:
 
 https://localhost:7137
+
+### ⚠️ Optional (при нужда)
+
+    dotnet ef database update
 
 ------------------------------------------------------------------------
 
@@ -146,11 +118,9 @@ https://localhost:7137
 
 Файл: appsettings.json
 
-``` json
-"ConnectionStrings": {
-  "DevConnection": "Server=(localdb)\\MSSQLLocalDB;Database=RedjoBarbersDb;Trusted_Connection=True;"
-}
-```
+    "ConnectionStrings": {
+      "DevConnection": "Server=(localdb)\MSSQLLocalDB;Database=RedjoBarbersDb;Trusted_Connection=True;"
+    }
 
 ------------------------------------------------------------------------
 
@@ -169,8 +139,8 @@ https://localhost:7137
 
 ## 📌 Overview
 
-**Redjo Barbers** is a barber shop management web application built with
-**ASP.NET Core MVC (.NET 10)** using **Entity Framework Core (Code
+**Redjo Barbers** is a barber shop management web application, developed
+with **ASP.NET Core MVC (.NET 10)** using **Entity Framework Core (Code
 First)** and **ASP.NET Core Identity**.
 
 The application runs locally at:
@@ -179,7 +149,7 @@ https://localhost:7137
 
 ------------------------------------------------------------------------
 
-## 🛠️ Tech Stack
+## 🛠️ Technologies Used
 
 -   .NET 10
 -   ASP.NET Core MVC
@@ -191,15 +161,15 @@ https://localhost:7137
 
 ------------------------------------------------------------------------
 
-## 🔐 Role-Based Authorization
+## 🔐 Role System
 
 Supported roles:
 
 -   User
 -   Admin
 
-Only users with the **Admin** role can access the administrative
-section.
+Only users with the **Admin** role have access to the administrative
+panel.
 
 ------------------------------------------------------------------------
 
@@ -211,21 +181,11 @@ ViewModels → Presentation Layer
 
 ------------------------------------------------------------------------
 
-## ✨ Core Features
-
--   User registration and login
--   Role-based system (Admin / User)
--   Appointment management
--   Review management
--   Admin-only panel
-
-------------------------------------------------------------------------
-
 ## 🗄️ Database
 
 The project uses **Entity Framework Core -- Code First**.
 
-Main entities:
+Main models:
 
 -   Barber
 -   BarberService
@@ -235,21 +195,48 @@ Main entities:
 
 Enum: - AppointmentStatus
 
+### 🔄 Automatic Migrations and Seeding
+
+On application startup, the following is executed automatically:
+
+    Database.MigrateAsync();
+
+This means:
+
+-   All pending migrations are automatically applied
+-   The database is created if it does not exist
+-   Automatic seeding is executed (roles `User` and `Admin`, initial
+    data, etc.)
+
+Manual execution of `dotnet ef database update` is not required in the
+standard scenario.
+
 ------------------------------------------------------------------------
 
-## 🚀 Installation & Run
+## 🚀 Installation and Run
 
-``` bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
-dotnet restore
-dotnet ef database update
-dotnet run
-```
+    git clone https://github.com/your-username/your-repo-name.git
+    cd your-repo-name
+    dotnet restore
+    dotnet run
 
-Application URL:
+The application will be available at:
 
 https://localhost:7137
+
+### ⚠️ Optional (if needed)
+
+    dotnet ef database update
+
+------------------------------------------------------------------------
+
+## ⚙️ Configuration
+
+File: appsettings.json
+
+    "ConnectionStrings": {
+      "DevConnection": "Server=(localdb)\MSSQLLocalDB;Database=RedjoBarbersDb;Trusted_Connection=True;"
+    }
 
 ------------------------------------------------------------------------
 
@@ -259,6 +246,5 @@ This project demonstrates:
 
 -   ASP.NET Core MVC architecture
 -   CRUD operations
--   EF Core Code First approach
--   Identity authentication
--   Role-based authorization
+-   Working with EF Core
+-   Identity and Role-based Authorization
