@@ -109,10 +109,8 @@ namespace RedjoBarbers.Web.Controllers
             dbContext.Appointments.Add(newAppointment);
             await dbContext.SaveChangesAsync();
 
-            return RedirectToAction(User.IsInRole("Admin") ? "Index" : nameof(MyAppointments)
-);
-
-        }
+            return RedirectToAction(User.IsInRole("Admin") ? "Index" : nameof(MyAppointments));
+}
 
         [HttpGet]
         [Authorize]

@@ -13,6 +13,14 @@ h1, h2, h3, strong {
     color: #d6b15a !important
 }
 
+span.fw-semibold {
+    color: #d6b15a !important
+}
+
+.text-muted {
+    color: rgba(234,230,223,.6) !important
+}
+
 /* Navbar */
 .navbar {
     background: #111319 !important;
