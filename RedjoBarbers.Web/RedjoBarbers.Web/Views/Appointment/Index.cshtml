@@ -25,21 +25,32 @@
     }
 </p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Дата</th>
-            <th>Статус</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (Appointment a in Model)
-        {
+@if (Model == null || !Model.Any())
+{
+    <tr> 
+        <td colspan="3" class="text-lg text-muted mt-2"> 
+            <i class="bi bi-calendar-x me-2"></i> Все още няма записани часове. Натиснете "Планирай посещение".
+        </td> 
+    </tr>
+}
+else
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@a.AppointmentDate</td>
-                <td>@a.Status</td>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (Appointment a in Model)
+            {
+                <tr>
+                    <td>@a.AppointmentDate</td>
+                    <td>@a.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
