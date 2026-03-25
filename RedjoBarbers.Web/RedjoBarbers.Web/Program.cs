@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Configuration;
+using RedjoBarbers.Web.Services;
+using RedjoBarbers.Web.Services.Contracts;
 
 namespace RedjoBarbers.Web
 {
@@ -55,6 +57,11 @@ namespace RedjoBarbers.Web
             .AddDefaultTokenProviders();
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IBarberServiceService, BarberServiceService>();
+            builder.Services.AddScoped<IHomeService, HomeService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();

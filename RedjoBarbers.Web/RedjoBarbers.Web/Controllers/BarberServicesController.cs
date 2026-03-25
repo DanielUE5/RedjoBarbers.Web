@@ -1,31 +1,24 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
+using RedjoBarbers.Web.Services.Contracts;
 
 namespace RedjoBarbers.Web.Controllers
 {
     [AllowAnonymous]
     public class BarberServicesController : Controller
     {
-        private readonly RedjoBarbersDbContext dbContext;
-        public BarberServicesController(RedjoBarbersDbContext dbContext)
+        private readonly IBarberServiceService barberServiceService;
+
+        public BarberServicesController(IBarberServiceService barberServiceService)
         {
-            this.dbContext = dbContext;
+            this.barberServiceService = barberServiceService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            IEnumerable<BarberService> allServices = await dbContext
-                .BarberServices
-                .OrderBy(bs => bs.Id)
-                .Include(bs => bs.Reviews)
-                .AsSplitQuery()
-                .AsNoTracking()
-                .ToListAsync();
-
+            IEnumerable<BarberService> allServices = await barberServiceService.GetAllAsync();
             return View(allServices);
         }
     }
