@@ -75,14 +75,14 @@ namespace RedjoBarbers.Web.Services
             return model;
         }
 
-        public async Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string? phone)
+        public async Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string userId)
         {
             IEnumerable<Appointment> customerAppointments = await dbContext.Appointments
                 .AsNoTracking()
                 .Include(a => a.Barber)
                 .Include(a => a.BarberService)
                 .AsSplitQuery()
-                .Where(a => string.IsNullOrWhiteSpace(phone) || a.CustomerPhone == phone)
+                .Where(a => a.UserId == userId)
                 .OrderBy(a => a.AppointmentDate)
                 .ToListAsync();
 
@@ -123,7 +123,7 @@ namespace RedjoBarbers.Web.Services
                 .ToListAsync();
         }
 
-        public async Task<bool> CreateAsync(AppointmentFormViewModel model)
+        public async Task<bool> CreateAsync(AppointmentFormViewModel model, string userId)
         {
             bool hasBusySlot = await HasBusyTimeSlotAsync(
                 model.AppointmentDate,
@@ -144,13 +144,35 @@ namespace RedjoBarbers.Web.Services
                 Notes = model.Notes,
                 Status = AppointmentStatus.Pending,
                 BarberId = model.BarberId,
-                BarberServiceId = model.BarberServiceId
+                BarberServiceId = model.BarberServiceId,
+                UserId = userId
             };
 
             dbContext.Appointments.Add(appointment);
             await dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<bool> IsOwnerAsync(int appointmentId, string userId)
+        {
+            return await dbContext.Appointments
+                .AsNoTracking()
+                .AnyAsync(a => a.Id == appointmentId && a.UserId == userId);
+        }
+
+        public async Task<bool> IsOwnerOrAdminAsync(int appointmentId, string userId, bool isAdmin)
+        {
+            if (isAdmin)
+            {
+                return await dbContext.Appointments
+                    .AsNoTracking()
+                    .AnyAsync(a => a.Id == appointmentId);
+            }
+
+            return await dbContext.Appointments
+                .AsNoTracking()
+                .AnyAsync(a => a.Id == appointmentId && a.UserId == userId);
         }
 
         public async Task<bool> UpdateAsync(int id, AppointmentFormViewModel model)

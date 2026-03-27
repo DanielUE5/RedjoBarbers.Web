@@ -11,13 +11,15 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task<AppointmentFormViewModel?> GetFormModelByIdAsync(int id);
 
-        Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string? phone);
+        Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string userId);
 
         Task<AppointmentFormViewModel> GetCreateFormModelAsync();
 
         Task PopulateDropdownsAsync(AppointmentFormViewModel model);
 
-        Task<bool> CreateAsync(AppointmentFormViewModel model);
+        Task<bool> CreateAsync(AppointmentFormViewModel model, string userId);
+        Task<bool> IsOwnerAsync(int appointmentId, string userId);
+        Task<bool> IsOwnerOrAdminAsync(int appointmentId, string userId, bool isAdmin);
 
         Task<bool> UpdateAsync(int id, AppointmentFormViewModel model);
 
