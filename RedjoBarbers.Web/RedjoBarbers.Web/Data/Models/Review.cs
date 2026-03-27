@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static RedjoBarbers.Web.Common.EntityValidation.Review;
 
 namespace RedjoBarbers.Web.Data.Models
@@ -24,5 +26,9 @@ namespace RedjoBarbers.Web.Data.Models
         // Foreign Key to BarberService
         public int BarberServiceId { get; set; }
         public BarberService BarberService { get; set; } = null!;
+
+        [ForeignKey(nameof(User))]
+        public string UserId { get; set; } = null!;
+        public IdentityUser User { get; set; } = null!;
     }
 }

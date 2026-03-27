@@ -90,6 +90,7 @@ namespace RedjoBarbers.Web.Services
                 .AsNoTracking()
                 .Include(r => r.BarberService)
                 .AsSplitQuery()
+                .Where (r => r.UserId == userId)
                 .OrderByDescending(r => r.ReviewDate)
                 .ToListAsync();
 
