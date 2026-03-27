@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Services.Contracts;
 using RedjoBarbers.Web.ViewModels;
+using System.Security.Claims;
 
 namespace RedjoBarbers.Web.Controllers
 {
@@ -32,6 +33,23 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
+                id.Value,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             Appointment? appointment = await appointmentService.GetByIdAsync(id.Value);
 
             if (appointment == null)
@@ -55,13 +73,20 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Create(AppointmentFormViewModel appointmentForm)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 await appointmentService.PopulateDropdownsAsync(appointmentForm);
                 return View(appointmentForm);
             }
 
-            bool created = await appointmentService.CreateAsync(appointmentForm);
+            bool created = await appointmentService.CreateAsync(appointmentForm, userId);
 
             if (!created)
             {
@@ -84,6 +109,23 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
+                id.Value,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             AppointmentFormViewModel? model = await appointmentService.GetFormModelByIdAsync(id.Value);
 
             if (model == null)
@@ -102,6 +144,23 @@ namespace RedjoBarbers.Web.Controllers
             if (appointmentForm.Id == null || id != appointmentForm.Id.Value)
             {
                 return NotFound();
+            }
+
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
+                id,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
             }
 
             if (!ModelState.IsValid)
@@ -133,6 +192,23 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
+                id.Value,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             Appointment? appointmentForDelete = await appointmentService.GetByIdAsync(id.Value);
 
             if (appointmentForDelete == null)
@@ -148,15 +224,39 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
+                id,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             await appointmentService.DeleteAsync(id);
             return RedirectToAction(nameof(MyAppointments));
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> MyAppointments(string phone)
+        public async Task<IActionResult> MyAppointments()
         {
-            MyAppointmentsPageViewModel vm = await appointmentService.GetMyAppointmentsPageAsync(phone);
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            MyAppointmentsPageViewModel vm = await appointmentService.GetMyAppointmentsPageAsync(userId);
             return View(vm);
         }
     }
