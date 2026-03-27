@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RedjoBarbers.Web.Services.Contracts;
 using RedjoBarbers.Web.ViewModels;
+using System.Security.Claims;
 
 namespace RedjoBarbers.Web.Controllers
 {
@@ -36,14 +37,21 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Create(ReviewCreateViewModel model)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Services = await reviewService.GetAllServicesAsync();
                 return View(model);
             }
 
-            await reviewService.CreateAsync(model);
-            return RedirectToAction(nameof(Index));
+            await reviewService.CreateAsync(model, userId);
+            return RedirectToAction("MyAppointments", "Appointment");
         }
 
 
@@ -52,6 +60,23 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await reviewService.IsOwnerOrAdminAsync(
+                id,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             bool deleted = await reviewService.DeleteAsync(id);
 
             if (!deleted)
@@ -67,6 +92,23 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Update(int id)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await reviewService.IsOwnerOrAdminAsync(
+                id,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             ReviewUpdateViewModel? model = await reviewService.GetUpdateModelAsync(id);
 
             if (model == null)
@@ -82,6 +124,23 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Update(ReviewUpdateViewModel model)
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            bool canAccess = await reviewService.IsOwnerOrAdminAsync(
+                model.Id,
+                userId,
+                User.IsInRole("Admin"));
+
+            if (!canAccess)
+            {
+                return Forbid();
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);

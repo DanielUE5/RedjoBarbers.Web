@@ -55,7 +55,7 @@ namespace RedjoBarbers.Web.Services
             });
         }
 
-        public async Task<bool> CreateAsync(ReviewCreateViewModel model)
+        public async Task<bool> CreateAsync(ReviewCreateViewModel model, string userId)
         {
             Review review = new Review
             {
@@ -63,13 +63,45 @@ namespace RedjoBarbers.Web.Services
                 CustomerName = model.CustomerName,
                 Rating = model.Rating,
                 Comments = model.Comments ?? string.Empty,
-                ReviewDate = DateTime.Now
+                ReviewDate = DateTime.Now,
+                UserId = userId
             };
 
             dbContext.Reviews.Add(review);
             await dbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<bool> IsOwnerAsync(int reviewId, string userId)
+        {
+            return await dbContext.Reviews
+                .AsNoTracking()
+                .AnyAsync(r => r.Id == reviewId && r.UserId == userId);
+        }
+
+        public async Task<bool> IsOwnerOrAdminAsync(int reviewId, string userId, bool isAdmin)
+        {
+            if (isAdmin)
+            {
+                return await dbContext.Reviews
+                    .AsNoTracking()
+                    .AnyAsync(r => r.Id == reviewId);
+            }
+
+            return await dbContext.Reviews
+                .AsNoTracking()
+                .AnyAsync(r => r.Id == reviewId && r.UserId == userId);
+        }
+
+        public async Task<IEnumerable<Review>> GetUserReviewsAsync(string userId)
+        {
+            return await dbContext.Reviews
+                .AsNoTracking()
+                .Include(r => r.BarberService)
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.ReviewDate)
+                .ToListAsync();
         }
 
         public async Task<ReviewUpdateViewModel?> GetUpdateModelAsync(int id)

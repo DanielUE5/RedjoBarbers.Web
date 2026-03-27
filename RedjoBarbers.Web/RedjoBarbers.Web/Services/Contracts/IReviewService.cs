@@ -11,12 +11,16 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task<ReviewCreateViewModel> GetCreateModelAsync(int? barberServiceId);
 
-        Task<bool> CreateAsync(ReviewCreateViewModel model);
+        Task<bool> CreateAsync(ReviewCreateViewModel model, string userId);
 
         Task<ReviewUpdateViewModel?> GetUpdateModelAsync(int id);
 
         Task<bool> UpdateAsync(ReviewUpdateViewModel model);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<bool> IsOwnerAsync(int reviewId, string userId);
+        Task<bool> IsOwnerOrAdminAsync(int reviewId, string userId, bool isAdmin);
+        Task<IEnumerable<Review>> GetUserReviewsAsync(string userId);
     }
 }
