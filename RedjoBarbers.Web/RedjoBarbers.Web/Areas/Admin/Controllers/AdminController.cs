@@ -6,8 +6,9 @@ using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Data.Models.Enums;
 using RedjoBarbers.Web.ViewModels;
 
-namespace RedjoBarbers.Web.Controllers
+namespace RedjoBarbers.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {

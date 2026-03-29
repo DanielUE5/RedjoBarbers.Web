@@ -30,7 +30,8 @@ else
                      <h3>@service.Name</h3>
                      <p>@service.Description</p>
 
-                     <a asp-controller="Review"
+                     <a asp-area=""
+                        asp-controller="Review"
                         asp-action="Index"
                         asp-route-barberServiceId="@service.Id"
                         class="btn btn-sm dark-cta-btn">

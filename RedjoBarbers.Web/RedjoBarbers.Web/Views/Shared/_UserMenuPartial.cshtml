@@ -39,6 +39,7 @@
         <a class="btn btn-outline-secondary dropdown-toggle"
            role="button"
            data-bs-toggle="dropdown"
+           asp-area=""
            asp-controller="Appointment"
            asp-action="MyAppointments">
             @displayName
@@ -80,6 +81,7 @@
             {
                 <li>
                     <a class="dropdown-item"
+                       asp-area="Admin"
                        asp-controller="Admin"
                        asp-action="Index">
                         Админ панел
@@ -102,6 +104,7 @@
             {
                 <li>
                     <a class="dropdown-item"
+                       asp-area=""
                        asp-controller="Appointment"
                        asp-action="MyAppointments">
                         Моят профил
