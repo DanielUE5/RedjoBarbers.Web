@@ -22,7 +22,7 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            _logger.LogInformation("Потребителят е излязъл от профила си.");
             if (returnUrl != null)
             {
                 return LocalRedirect(returnUrl);

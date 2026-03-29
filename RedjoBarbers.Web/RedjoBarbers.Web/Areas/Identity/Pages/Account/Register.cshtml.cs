@@ -17,12 +17,16 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
-            ILogger<RegisterModel> logger
+            ILogger<RegisterModel> logger,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration
             )
         {
             _userManager = userManager;
@@ -30,6 +34,8 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -63,7 +69,7 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             [EmailAddress]
-            [Display(Name = "Email")]
+            [Display(Name = "Имейл адрес")]
             public string Email { get; set; }
 
             /// <summary>
@@ -71,9 +77,9 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} трябва да е с дължина поне {2} и максимум {1} знака.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Парола")]
             public string Password { get; set; }
 
             /// <summary>
@@ -81,8 +87,8 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Потвърдете паролата")]
+            [Compare("Password", ErrorMessage = "Паролата и паролата за потвърждение не съвпадат.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -96,26 +102,63 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                IdentityUser user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                IdentityResult result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    string adminEmail = _configuration["AdminSettings:Email"];
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
+                    string roleName = string.Equals(Input.Email, adminEmail, StringComparison.OrdinalIgnoreCase)
+                        ? "Admin"
+                        : "User";
+
+                    if (!await _roleManager.RoleExistsAsync(roleName))
+                    {
+                        IdentityResult createRoleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+                        if (!createRoleResult.Succeeded)
+                        {
+                            foreach (IdentityError error in createRoleResult.Errors)
+                            {
+                                ModelState.AddModelError(string.Empty, error.Description);
+                            }
+
+                            return Page();
+                        }
+                    }
+
+                    IdentityResult roleResult = await _userManager.AddToRoleAsync(user, roleName);
+
+                    if (!roleResult.Succeeded)
+                    {
+                        foreach (IdentityError error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        return Page();
+                    }
+
+                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    {
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    }
+                    else
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
+                    }
                 }
 
-                foreach (var error in result.Errors)
+                foreach (IdentityError error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
@@ -133,9 +176,9 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
-                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                throw new InvalidOperationException($"Не може да се създаде екземпляр на '{nameof(IdentityUser)}'." +
+                    $"Уверете се, че '{nameof(IdentityUser)}' не е абстрактен клас и има конструктор без параметри, или алтернативно " +
+                    $"замени страницата за регистрация в /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
@@ -143,7 +186,7 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
+                throw new NotSupportedException("Подразбиращият се потребителски интерфейс изисква потребителски магазин с поддръжка по имейл.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
         }

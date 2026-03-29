@@ -301,3 +301,12 @@ a:has(.bi-facebook):hover {
     color: #fff !important;
     transform: translateY(-3px)
 }
+
+#logoutMessage {
+    opacity: 1;
+    transition: opacity 0.8s ease;
+}
+
+    #logoutMessage.fade-out {
+        opacity: 0;
+    }

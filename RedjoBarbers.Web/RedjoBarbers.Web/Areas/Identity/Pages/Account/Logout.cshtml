@@ -24,7 +24,8 @@
                 </button>
             </form>
 
-            <a asp-controller="Home"
+            <a asp-area=""
+               asp-controller="Home"
                asp-action="Index"
                class="btn btn-secondary">
                 Към началната страница
@@ -32,15 +33,28 @@
         }
         else
         {
-            <div class="alert alert-success">
-                Успешно излязохте от профила си.
-            </div>
+            <div id="logoutMessage"
+                 class="alert alert-success text-center"
+                 data-redirect="@Url.Action("Index", "Home", new { area = "" })">
 
-            <a asp-controller="Home"
-               asp-action="Index"
-               class="btn btn-primary mt-3">
-                Към началната страница
-            </a>
+                <h5>Успешно излязохте от профила си.</h5>
+
+                <p class="mt-2 mb-2">
+                    Ще бъдете пренасочени към началната страница след
+                    <strong id="countdown">2</strong> секунди...
+                </p>
+
+                <div class="mt-2">
+                    <div class="spinner-border text-success" role="status"></div>
+                </div>
+
+                <a asp-area=""
+                       asp-controller="Home"
+                       asp-action="Index"
+                       class="btn btn-primary mt-3">
+                    Към началната страница
+                </a>
+            </div>
         }
     </div>
 </div>
