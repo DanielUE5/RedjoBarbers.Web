@@ -123,6 +123,13 @@ namespace RedjoBarbers.Web
             app.UseAuthorization();
 
             app.MapStaticAssets();
+
+            // Areas route should be registered before the default one, otherwise it will never be hit.
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")

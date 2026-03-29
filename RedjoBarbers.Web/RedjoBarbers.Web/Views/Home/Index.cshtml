@@ -55,7 +55,8 @@
         </div>
 
         <div class="text-center mt-4">
-            <a asp-controller="BarberServices"
+            <a asp-area=""
+               asp-controller="BarberServices"
                asp-action="Index"
                class="btn btn-primary btn-lg cta-btn">
                 Разгледай пълния ни каталог
@@ -70,7 +71,8 @@
             <h2 class="mb-0">Препоръчани от клиенти</h2>
 
             <div class="d-flex gap-2">
-                <a asp-controller="Review"
+                <a asp-area=""
+                   asp-controller="Review"
                    asp-action="Index"
                    class="btn btn-sm dark-cta-btn">
                     Виж всички
@@ -78,7 +80,8 @@
 
                 @if (User.Identity?.IsAuthenticated ?? false)
                 {
-                    <a asp-controller="Review"
+                    <a asp-area=""
+                       asp-controller="Review"
                        asp-action="Create"
                        class="btn btn-primary btn-sm cta-btn">
                         Напишете отзив
@@ -146,7 +149,8 @@
 
         @if (User.Identity?.IsAuthenticated ?? false)
         {
-            <a asp-controller="Appointment"
+            <a asp-area=""
+               asp-controller="Appointment"
                asp-action="Create"
                class="btn btn-primary btn-lg cta-btn">
                 Запазете час

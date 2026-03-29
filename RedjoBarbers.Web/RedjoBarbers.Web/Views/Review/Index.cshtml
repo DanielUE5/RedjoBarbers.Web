@@ -12,7 +12,8 @@
 
             @if (User.Identity?.IsAuthenticated ?? false)
             {
-            <a asp-controller="Review"
+            <a asp-area=""
+            asp-controller="Review"
             asp-action="Create"
             class="btn btn-primary cta-btn">
                 Напишете отзив
