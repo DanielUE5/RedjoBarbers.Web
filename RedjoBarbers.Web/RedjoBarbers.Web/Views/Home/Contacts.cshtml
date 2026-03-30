@@ -1,4 +1,5 @@
 ﻿@using RedjoBarbers.Web.Data.Models
+@using RedjoBarbers.Web.Helpers
 @model IEnumerable<Barber>
 
 @{
@@ -23,64 +24,68 @@
         }
         else
         {
-        <div class="contacts-list">
-            @foreach (Barber b in Model)
-            {
-                <div class="contact-item">
-                    @if (!string.IsNullOrWhiteSpace(b.PhotoUrl))
-                    {
-                        <img class="contact-photo" src="@b.PhotoUrl" alt="@b.Name" loading="lazy" />
-                    }
+            <div class="contacts-list">
+                @foreach (Barber b in Model)
+                {
+                    string? safePhotoUrl = UrlSecurityHelper.SafeHttpUrlOrNull(b.PhotoUrl);
+                    string? safeInstagramUrl = UrlSecurityHelper.SafeHttpUrlOrNull(b.InstagramUrl);
+                    string? safeFacebookUrl = UrlSecurityHelper.SafeHttpUrlOrNull(b.FacebookUrl);
+                    string? safePhoneHref = UrlSecurityHelper.SafeTelHrefOrNull(b.PhoneNumber);
 
-                    <div class="contact-details">
-                        <div class="contact-header">
-                            <span class="contact-name">@b.Name</span>
-
-                            @if (!string.IsNullOrWhiteSpace(b.PhoneNumber))
-                            {
-                                // href="tel:" provides a clickable link that will open the phone dialer on mobile devices
-                                <a class="contact-phone"
-                                   href="tel:@b.PhoneNumber"
-                                   aria-label="Обадете се на @b.Name на телефон @b.PhoneNumber">
-                                    @b.PhoneNumber
-                                </a>
-                            }
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(b.Bio))
+                    <div class="contact-item">
+                        @if (!string.IsNullOrWhiteSpace(safePhotoUrl))
                         {
-                            <p class="contact-bio">@b.Bio</p>
+                            <img class="contact-photo" src="@safePhotoUrl" alt="@b.Name" loading="lazy" />
                         }
 
-                        <div class="contact-links">
-                            @if (!string.IsNullOrWhiteSpace(b.InstagramUrl))
+                        <div class="contact-details">
+                            <div class="contact-header">
+                                <span class="contact-name">@b.Name</span>
+
+                                @if (!string.IsNullOrWhiteSpace(safePhoneHref))
+                                {
+                                    <a class="contact-phone"
+                                           href="@safePhoneHref"
+                                           aria-label="Обадете се на @b.Name на телефон @b.PhoneNumber">
+                                        @b.PhoneNumber
+                                    </a>
+                                }
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(b.Bio))
                             {
-                                <a href="@b.InstagramUrl"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="social-link"
-                                   aria-label="Instagram профил на @b.Name">
-                                    <i class="bi bi-instagram"></i>
-                                </a>
+                                <p class="contact-bio">@b.Bio</p>
                             }
 
-                            @if (!string.IsNullOrWhiteSpace(b.FacebookUrl))
-                            {
-                                <a href="@b.FacebookUrl"
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   class="social-link"
-                                   aria-label="Facebook профил на @b.Name">
-                                    <i class="bi bi-facebook"></i>
-                                </a>
-                            }
+                            <div class="contact-links">
+                                @if (!string.IsNullOrWhiteSpace(safeInstagramUrl))
+                                {
+                                    <a href="@safeInstagramUrl"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           class="social-link"
+                                           aria-label="Instagram профил на @b.Name">
+                                        <i class="bi bi-instagram"></i>
+                                    </a>
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(safeFacebookUrl))
+                                {
+                                    <a href="@safeFacebookUrl"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           class="social-link"
+                                           aria-label="Facebook профил на @b.Name">
+                                        <i class="bi bi-facebook"></i>
+                                    </a>
+                                }
+                            </div>
                         </div>
-
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
         }
+
         <partial name="_GoogleLocation" />
     </div>
 </section>
