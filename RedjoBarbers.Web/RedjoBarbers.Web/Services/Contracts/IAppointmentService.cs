@@ -1,4 +1,5 @@
 ﻿using RedjoBarbers.Web.Data.Models;
+using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
 
 namespace RedjoBarbers.Web.Services.Contracts
@@ -17,11 +18,13 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task PopulateDropdownsAsync(AppointmentFormViewModel model);
 
-        Task<bool> CreateAsync(AppointmentFormViewModel model, string userId);
+        Task<AppointmentCreateResult> CreateAsync(AppointmentFormViewModel model, string userId);
+
         Task<bool> IsOwnerAsync(int appointmentId, string userId);
+
         Task<bool> IsOwnerOrAdminAsync(int appointmentId, string userId, bool isAdmin);
 
-        Task<bool> UpdateAsync(int id, AppointmentFormViewModel model);
+        Task<AppointmentUpdateResult> UpdateAsync(int id, AppointmentFormViewModel model);
 
         Task<bool> DeleteAsync(int id);
 

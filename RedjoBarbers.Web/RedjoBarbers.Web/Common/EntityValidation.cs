@@ -30,6 +30,7 @@
             public const int BarberBioMaxLength = 2000;
             public const int UrlMaxLength = 2048;
             public const int BarberPhoneNumberMaxLength = 20;
+            public const string PhoneRegexPattern = @"^(?:0\d{9}|\+359\d{9}|\+\d{10,})$";
         }
     }
 }

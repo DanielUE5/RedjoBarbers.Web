@@ -4,6 +4,7 @@ using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Data.Models.Enums;
 using RedjoBarbers.Web.Services.Contracts;
+using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
 
 namespace RedjoBarbers.Web.Services
@@ -11,6 +12,7 @@ namespace RedjoBarbers.Web.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly RedjoBarbersDbContext dbContext;
+
         public AppointmentService(RedjoBarbersDbContext dbContext)
         {
             this.dbContext = dbContext;
@@ -50,7 +52,9 @@ namespace RedjoBarbers.Web.Services
 
         public async Task<AppointmentFormViewModel?> GetFormModelByIdAsync(int id)
         {
-            Appointment? appointment = await dbContext.Appointments.FindAsync(id);
+            Appointment? appointment = await dbContext.Appointments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null)
             {
@@ -65,13 +69,11 @@ namespace RedjoBarbers.Web.Services
                 CustomerEmail = appointment.CustomerEmail,
                 CustomerPhone = appointment.CustomerPhone,
                 Notes = appointment.Notes,
-                Status = appointment.Status,
                 BarberId = appointment.BarberId,
                 BarberServiceId = appointment.BarberServiceId
             };
 
             await PopulateDropdownsAsync(model);
-
             return model;
         }
 
@@ -90,7 +92,7 @@ namespace RedjoBarbers.Web.Services
                 .AsNoTracking()
                 .Include(r => r.BarberService)
                 .AsSplitQuery()
-                .Where (r => r.UserId == userId)
+                .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.ReviewDate)
                 .ToListAsync();
 
@@ -105,7 +107,7 @@ namespace RedjoBarbers.Web.Services
         {
             model.Barbers = await dbContext.Barbers
                 .AsNoTracking()
-                .OrderBy(b => b.Id)
+                .OrderBy(b => b.Name)
                 .Select(b => new SelectListItem
                 {
                     Value = b.Id.ToString(),
@@ -124,8 +126,15 @@ namespace RedjoBarbers.Web.Services
                 .ToListAsync();
         }
 
-        public async Task<bool> CreateAsync(AppointmentFormViewModel model, string userId)
+        public async Task<AppointmentCreateResult> CreateAsync(AppointmentFormViewModel model, string userId)
         {
+            bool isValidBarberAndService = await IsValidBarberAndServiceAsync(model.BarberId, model.BarberServiceId);
+
+            if (!isValidBarberAndService)
+            {
+                return AppointmentCreateResult.InvalidBarberOrService;
+            }
+
             bool hasBusySlot = await HasBusyTimeSlotAsync(
                 model.AppointmentDate,
                 null,
@@ -133,7 +142,7 @@ namespace RedjoBarbers.Web.Services
 
             if (hasBusySlot)
             {
-                return false;
+                return AppointmentCreateResult.BusySlot;
             }
 
             Appointment appointment = new Appointment
@@ -149,10 +158,10 @@ namespace RedjoBarbers.Web.Services
                 UserId = userId
             };
 
-            dbContext.Appointments.Add(appointment);
+            await dbContext.Appointments.AddAsync(appointment);
             await dbContext.SaveChangesAsync();
 
-            return true;
+            return AppointmentCreateResult.Success;
         }
 
         public async Task<bool> IsOwnerAsync(int appointmentId, string userId)
@@ -176,13 +185,21 @@ namespace RedjoBarbers.Web.Services
                 .AnyAsync(a => a.Id == appointmentId && a.UserId == userId);
         }
 
-        public async Task<bool> UpdateAsync(int id, AppointmentFormViewModel model)
+        public async Task<AppointmentUpdateResult> UpdateAsync(int id, AppointmentFormViewModel model)
         {
-            Appointment? appointment = await dbContext.Appointments.FindAsync(id);
+            Appointment? appointment = await dbContext.Appointments
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null)
             {
-                return false;
+                return AppointmentUpdateResult.NotFound;
+            }
+
+            bool isValidBarberAndService = await IsValidBarberAndServiceAsync(model.BarberId, model.BarberServiceId);
+
+            if (!isValidBarberAndService)
+            {
+                return AppointmentUpdateResult.InvalidBarberOrService;
             }
 
             bool hasBusySlot = await HasBusyTimeSlotAsync(
@@ -192,7 +209,7 @@ namespace RedjoBarbers.Web.Services
 
             if (hasBusySlot)
             {
-                return false;
+                return AppointmentUpdateResult.BusySlot;
             }
 
             appointment.AppointmentDate = model.AppointmentDate;
@@ -200,13 +217,12 @@ namespace RedjoBarbers.Web.Services
             appointment.CustomerEmail = model.CustomerEmail;
             appointment.CustomerPhone = model.CustomerPhone;
             appointment.Notes = model.Notes;
-            appointment.Status = model.Status;
             appointment.BarberId = model.BarberId;
             appointment.BarberServiceId = model.BarberServiceId;
 
             await dbContext.SaveChangesAsync();
 
-            return true;
+            return AppointmentUpdateResult.Success;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -252,6 +268,29 @@ namespace RedjoBarbers.Web.Services
             }
 
             return await query.AnyAsync();
+        }
+
+        private async Task<bool> IsValidBarberAndServiceAsync(int barberId, int barberServiceId)
+        {
+            bool barberExists = await dbContext.Barbers
+                .AsNoTracking()
+                .AnyAsync(b => b.Id == barberId);
+
+            if (!barberExists)
+            {
+                return false;
+            }
+
+            bool serviceExists = await dbContext.BarberServices
+                .AsNoTracking()
+                .AnyAsync(s => s.Id == barberServiceId);
+
+            if (!serviceExists)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

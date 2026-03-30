@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using RedjoBarbers.Web.Data.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using static RedjoBarbers.Web.Common.EntityValidation.Appointment;
 
@@ -36,9 +35,6 @@ namespace RedjoBarbers.Web.ViewModels
         [MaxLength(NotesMaxLength)]
         [Display(Name = "Допълнителна информация (по избор)")]
         public string? Notes { get; set; }
-
-        [Display(Name = "Статус")]
-        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
         [Required(ErrorMessage = "Моля изберете услуга.")]
         [Display(Name = "Изберете услуга")]

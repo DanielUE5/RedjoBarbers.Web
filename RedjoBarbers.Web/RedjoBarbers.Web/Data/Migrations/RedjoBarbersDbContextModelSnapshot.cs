@@ -34,7 +34,7 @@ namespace RedjoBarbers.Web.Migrations
 
                     b.HasIndex("BarbersId");
 
-                    b.ToTable("BarberBarberService");
+                    b.ToTable("BarberBarberService", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -285,7 +285,7 @@ namespace RedjoBarbers.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.Barber", b =>
@@ -326,7 +326,7 @@ namespace RedjoBarbers.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Barbers");
+                    b.ToTable("Barbers", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.BarberService", b =>
@@ -360,7 +360,7 @@ namespace RedjoBarbers.Web.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("BarberServices");
+                    b.ToTable("BarberServices", (string)null);
                 });
 
             modelBuilder.Entity("RedjoBarbers.Web.Data.Models.Review", b =>
@@ -399,7 +399,7 @@ namespace RedjoBarbers.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("BarberBarberService", b =>
