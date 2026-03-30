@@ -41,7 +41,7 @@ namespace RedjoBarbers.Web.Data.Configuration
         {
             Name = "Реджеп",
             Bio = "Специалист в класическите подстрижки и оформяне на брада.",
-            PhotoUrl = "/images/barbers/example1.jpg",
+            PhotoUrl = "https://i.pinimg.com/736x/29/d5/4e/29d54e872bc77db85a7fd4d4048b22d0.jpg",
             PhoneNumber = "+359888123456",
             InstagramUrl = "https://www.instagram.com/_buona_note_/",
             FacebookUrl = null
@@ -50,7 +50,7 @@ namespace RedjoBarbers.Web.Data.Configuration
         {
             Name = "Илиян",
             Bio = "Фейдове, модерни стилове и детайлна работа по контур.",
-            PhotoUrl = "/images/barbers/example2.jpg",
+            PhotoUrl = "https://i.pinimg.com/736x/08/6a/f0/086af0f42c6c23649681c7dd75b69137.jpg",
             PhoneNumber = "+359888654321",
             InstagramUrl = null,
             FacebookUrl = null
