@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Services.Contracts;
+using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
 using System.Security.Claims;
 
@@ -86,18 +87,29 @@ namespace RedjoBarbers.Web.Controllers
                 return View(appointmentForm);
             }
 
-            bool created = await appointmentService.CreateAsync(appointmentForm, userId);
+            AppointmentCreateResult result = await appointmentService.CreateAsync(appointmentForm, userId);
 
-            if (!created)
+            switch (result)
             {
-                ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                    "Вече има запазен час в този диапазон. Диапазона за записване на час е 45мин. спрямо предишния.");
+                case AppointmentCreateResult.InvalidBarberOrService:
+                    ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
 
-                await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                return View(appointmentForm);
+                case AppointmentCreateResult.BusySlot:
+                    ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
+                        "Вече има запазен час в този диапазон. Диапазонът за записване на час е 45 мин. спрямо предишния.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
+
+                case AppointmentCreateResult.Success:
+                    return RedirectToAction(User.IsInRole("Admin") ? nameof(Index) : nameof(MyAppointments));
+
+                default:
+                    ModelState.AddModelError(string.Empty, "Възникна неочаквана грешка.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
             }
-
-            return RedirectToAction(User.IsInRole("Admin") ? "Index" : nameof(MyAppointments));
         }
 
         [HttpGet]
@@ -169,18 +181,32 @@ namespace RedjoBarbers.Web.Controllers
                 return View(appointmentForm);
             }
 
-            bool updated = await appointmentService.UpdateAsync(id, appointmentForm);
+            AppointmentUpdateResult result = await appointmentService.UpdateAsync(id, appointmentForm);
 
-            if (!updated)
+            switch (result)
             {
-                ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                    "Вече има запазен час в този диапазон. Диапазона за записване на час е 45мин. спрямо предишния.");
+                case AppointmentUpdateResult.NotFound:
+                    return NotFound();
 
-                await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                return View(appointmentForm);
+                case AppointmentUpdateResult.InvalidBarberOrService:
+                    ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
+
+                case AppointmentUpdateResult.BusySlot:
+                    ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
+                        "Вече има запазен час в този диапазон. Диапазонът за записване на час е 45 мин. спрямо предишния.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
+
+                case AppointmentUpdateResult.Success:
+                    return RedirectToAction(nameof(MyAppointments));
+
+                default:
+                    ModelState.AddModelError(string.Empty, "Възникна неочаквана грешка.");
+                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
+                    return View(appointmentForm);
             }
-
-            return RedirectToAction(nameof(MyAppointments));
         }
 
         [HttpGet]
@@ -241,7 +267,13 @@ namespace RedjoBarbers.Web.Controllers
                 return Forbid();
             }
 
-            await appointmentService.DeleteAsync(id);
+            bool deleted = await appointmentService.DeleteAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
             return RedirectToAction(nameof(MyAppointments));
         }
 

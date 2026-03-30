@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Configuration;
@@ -63,7 +64,11 @@ namespace RedjoBarbers.Web
             builder.Services.AddScoped<IBarberServiceService, BarberServiceService>();
             builder.Services.AddScoped<IHomeService, HomeService>();
 
-            builder.Services.AddControllersWithViews();
+            // Adding AutoValidateAntiforgeryToken filter globally to all controllers and actions that use the [HttpPost] attribute, to protect against CSRF attacks.
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
             builder.Services.AddRazorPages();
 
             WebApplication app = builder.Build();

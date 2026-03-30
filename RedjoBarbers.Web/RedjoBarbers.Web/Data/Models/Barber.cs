@@ -18,11 +18,12 @@ namespace RedjoBarbers.Web.Data.Models
 
         [Required]
         [MaxLength(UrlMaxLength)]
+        [Url]
         public string PhotoUrl { get; set; } = null!;
 
         [Required]
         [MaxLength(BarberPhoneNumberMaxLength)]
-        [Url]
+        [RegularExpression(PhoneRegexPattern, ErrorMessage = "Невалиден телефонен номер.")]
         public string PhoneNumber { get; set; } = null!;
 
         [Url]
