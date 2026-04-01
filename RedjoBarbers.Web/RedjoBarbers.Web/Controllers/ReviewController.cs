@@ -18,7 +18,7 @@ namespace RedjoBarbers.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int? barberServiceId, string? sortReviews)
         {
-            ReviewIndexViewModel model = await reviewService.GetAllAsync(barberServiceId, sortReviews);
+            ReviewIndexPageViewModel model = await reviewService.GetAllAsync(barberServiceId, sortReviews);
             return View(model);
         }
 

@@ -2,7 +2,7 @@
 
 namespace RedjoBarbers.Web.ViewModels
 {
-    public class ReviewIndexViewModel
+    public class ReviewIndexPageViewModel
     {
         public int? BarberServiceId { get; set; }
 
