@@ -16,7 +16,7 @@ namespace RedjoBarbers.Web.Services
             this.dbContext = dbContext;
         }
 
-        public async Task<ReviewIndexViewModel> GetAllAsync(int? barberServiceId, string? sortReviews)
+        public async Task<ReviewIndexPageViewModel> GetAllAsync(int? barberServiceId, string? sortReviews)
         {
             IQueryable<Review> sortQuery = dbContext.Reviews
                 .AsNoTracking();
@@ -59,7 +59,7 @@ namespace RedjoBarbers.Web.Services
                 })
                 .ToListAsync();
 
-            return new ReviewIndexViewModel
+            return new ReviewIndexPageViewModel
             {
                 BarberServiceId = barberServiceId,
                 SortReviews = sortReviews,
