@@ -1,5 +1,4 @@
-﻿@using System.Globalization
-@model IEnumerable<ReviewIndexItemViewModel>
+﻿@model RedjoBarbers.Web.ViewModels.ReviewIndexViewModel
 
 @{
     ViewData["Title"] = "Отзиви";
@@ -12,25 +11,60 @@
 
             @if (User.Identity?.IsAuthenticated ?? false)
             {
-            <a asp-area=""
-            asp-controller="Review"
-            asp-action="Create"
-            class="btn btn-primary cta-btn">
-                Напишете отзив
-            </a>
+                <a asp-area=""
+                       asp-controller="Review"
+                       asp-action="Create"
+                       class="btn btn-primary cta-btn">
+                    Напишете отзив
+                </a>
             }
             else
             {
-            <a asp-area="Identity"
-            asp-page="/Account/Login"
-            asp-route-returnUrl="@Url.Action("Create", "Review")"
-            class="btn btn-primary cta-btn">
-                Напишете отзив
-            </a>
-}
+                <a asp-area="Identity"
+                       asp-page="/Account/Login"
+                       asp-route-returnUrl="@Url.Action("Create", "Review")"
+                       class="btn btn-primary cta-btn">
+                    Напишете отзив
+                </a>
+            }
         </div>
 
-        @if (!Model.Any())
+        <form method="get" class="appointments-filter-card mb-4">
+            <div class="filter-header">
+                <h2>Филтриране на отзиви</h2>
+                <p>Можете да разгледате всички отзиви или да ги филтрирате по услуга и начин на подреждане.</p>
+            </div>
+
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="BarberServiceId">Услуга</label>
+                    <select id="BarberServiceId" name="barberServiceId" class="filter-input">
+                        <option value="">Всички услуги</option>
+                        @foreach (SelectListItem service in Model.Services)
+                        {
+                            <option value="@service.Value" selected="@(Model.BarberServiceId?.ToString() == service.Value)">
+                                @service.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="SortReviews">Подреди по</label>
+                    <select id="SortReviews" name="sortReviews" class="filter-input">
+                        <option value="" selected="@(string.IsNullOrWhiteSpace(Model.SortReviews))">Най-нови</option>
+                        <option value="rating" selected="@(Model.SortReviews == "rating")">Най-висок рейтинг</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="filter-btn primary-btn">Приложи</button>
+                <a asp-action="Index" class="filter-btn secondary-btn">Изчисти</a>
+            </div>
+        </form>
+
+        @if (!Model.Reviews.Any())
         {
             <p class="text-muted">Все още няма публикувани отзиви.</p>
         }
@@ -48,7 +82,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (ReviewIndexItemViewModel r in Model)
+                        @foreach (ReviewIndexItemViewModel r in Model.Reviews)
                         {
                             <tr>
                                 <td class="fw-semibold">@r.ServiceName</td>
@@ -72,7 +106,7 @@
                                     <span class="text-muted small">(@r.Rating/5)</span>
                                 </td>
 
-                                <td>@r.ReviewDate.ToString("d")</td>
+                                <td>@r.ReviewDate.ToString("dd.MM.yyyy")</td>
 
                                 <td style="min-width: 260px">
                                     @r.Comments
