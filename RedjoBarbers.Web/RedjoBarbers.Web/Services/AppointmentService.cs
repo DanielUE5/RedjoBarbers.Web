@@ -270,6 +270,48 @@ namespace RedjoBarbers.Web.Services
             return await query.AnyAsync();
         }
 
+        public async Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model)
+        {
+            IQueryable<Appointment> query = dbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.Barber)
+                .Include(a => a.BarberService);
+
+            if (model.FromDate.HasValue)
+            {
+                query = query.Where(a => a.AppointmentDate >= model.FromDate.Value);
+            }
+
+            if (model.ToDate.HasValue)
+            {
+                query = query.Where(a => a.AppointmentDate <= model.ToDate.Value);
+            }
+
+            if (model.Status.HasValue)
+            {
+                query = query.Where(a => a.Status == model.Status.Value);
+            }
+
+            if (model.BarberId.HasValue)
+            {
+                query = query.Where(a => a.BarberId == model.BarberId.Value);
+            }
+
+            model.Appointments = await query
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+
+            model.Barbers = await dbContext.Barbers
+                .Select(b => new SelectListItem
+                {
+                    Value = b.Id.ToString(),
+                    Text = b.Name
+                })
+                .ToListAsync();
+
+            return model;
+        }
+
         private async Task<bool> IsValidBarberAndServiceAsync(int barberId, int barberServiceId)
         {
             bool barberExists = await dbContext.Barbers

@@ -19,10 +19,10 @@ namespace RedjoBarbers.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] AppointmentFilterViewModel filter)
         {
-            IEnumerable<Appointment> allAppointments = await appointmentService.GetAllAsync();
-            return View(allAppointments);
+            AppointmentFilterViewModel model = await appointmentService.GetFilteredAsync(filter);
+            return View(model);
         }
 
         [HttpGet]

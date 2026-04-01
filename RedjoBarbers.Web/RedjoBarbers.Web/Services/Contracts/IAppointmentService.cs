@@ -31,5 +31,7 @@ namespace RedjoBarbers.Web.Services.Contracts
         Task<bool> ExistsAsync(int id);
 
         Task<bool> HasBusyTimeSlotAsync(DateTime targetDate, int? excludedAppointmentId, int? barberId);
+
+        Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model);
     }
 }

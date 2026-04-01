@@ -19,7 +19,8 @@ namespace RedjoBarbers.Web.Services
         {
             IQueryable<ReviewIndexItemViewModel> query = dbContext.Reviews
                 .AsNoTracking()
-                .OrderByDescending(r => r.ReviewDate)
+                .OrderByDescending(r => r.Rating)
+                .ThenByDescending(r => r.ReviewDate)
                 .Select(r => new ReviewIndexItemViewModel
                 {
                     Id = r.Id,
