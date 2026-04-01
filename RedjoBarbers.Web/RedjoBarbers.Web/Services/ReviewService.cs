@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Services.Contracts;
@@ -15,12 +16,27 @@ namespace RedjoBarbers.Web.Services
             this.dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<ReviewIndexItemViewModel>> GetAllAsync(int? barberServiceId)
+        public async Task<ReviewIndexViewModel> GetAllAsync(int? barberServiceId, string? sortReviews)
         {
-            IQueryable<ReviewIndexItemViewModel> query = dbContext.Reviews
-                .AsNoTracking()
-                .OrderByDescending(r => r.Rating)
-                .ThenByDescending(r => r.ReviewDate)
+            IQueryable<Review> sortQuery = dbContext.Reviews
+                .AsNoTracking();
+
+            if (barberServiceId.HasValue && barberServiceId.Value > 0)
+            {
+                sortQuery = sortQuery.Where(r => r.BarberServiceId == barberServiceId.Value);
+            }
+
+            sortQuery = sortReviews switch
+            {
+                "rating" => sortQuery
+                    .OrderByDescending(r => r.Rating)
+                    .ThenByDescending(r => r.ReviewDate),
+
+                _ => sortQuery
+                    .OrderByDescending(r => r.ReviewDate)
+            };
+
+            List<ReviewIndexItemViewModel> reviews = await sortQuery
                 .Select(r => new ReviewIndexItemViewModel
                 {
                     Id = r.Id,
@@ -30,14 +46,26 @@ namespace RedjoBarbers.Web.Services
                     ReviewDate = r.ReviewDate,
                     Comments = r.Comments,
                     ServiceName = r.BarberService.Name
-                });
+                })
+                .ToListAsync();
 
-            if (barberServiceId.HasValue && barberServiceId.Value > 0)
+            List<SelectListItem> services = await dbContext.BarberServices
+                .AsNoTracking()
+                .OrderBy(s => s.Name)
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    Text = s.Name
+                })
+                .ToListAsync();
+
+            return new ReviewIndexViewModel
             {
-                query = query.Where(r => r.BarberServiceId == barberServiceId.Value);
-            }
-
-            return await query.ToListAsync();
+                BarberServiceId = barberServiceId,
+                SortReviews = sortReviews,
+                Services = services,
+                Reviews = reviews
+            };
         }
 
         public async Task<IEnumerable<BarberService>> GetAllServicesAsync()

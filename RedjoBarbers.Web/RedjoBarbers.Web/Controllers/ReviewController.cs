@@ -16,10 +16,10 @@ namespace RedjoBarbers.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int? barberServiceId)
+        public async Task<IActionResult> Index(int? barberServiceId, string? sortReviews)
         {
-            IEnumerable<ReviewIndexItemViewModel> reviews = await reviewService.GetAllAsync(barberServiceId);
-            return View(reviews);
+            ReviewIndexViewModel model = await reviewService.GetAllAsync(barberServiceId, sortReviews);
+            return View(model);
         }
 
 

@@ -5,7 +5,7 @@ namespace RedjoBarbers.Web.Services.Contracts
 {
     public interface IReviewService
     {
-        Task<IEnumerable<ReviewIndexItemViewModel>> GetAllAsync(int? barberServiceId);
+        Task<ReviewIndexViewModel> GetAllAsync(int? barberServiceId, string? sortReviews);
 
         Task<IEnumerable<BarberService>> GetAllServicesAsync();
 
@@ -20,7 +20,9 @@ namespace RedjoBarbers.Web.Services.Contracts
         Task<bool> DeleteAsync(int id);
 
         Task<bool> IsOwnerAsync(int reviewId, string userId);
+
         Task<bool> IsOwnerOrAdminAsync(int reviewId, string userId, bool isAdmin);
+
         Task<IEnumerable<Review>> GetUserReviewsAsync(string userId);
     }
 }
