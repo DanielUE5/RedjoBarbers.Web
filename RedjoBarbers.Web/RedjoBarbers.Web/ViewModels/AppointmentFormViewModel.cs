@@ -12,7 +12,6 @@ namespace RedjoBarbers.Web.ViewModels
         [Required(ErrorMessage = "Моля изберете дата и час.")]
         [Display(Name = "Дата и час")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
         public DateTime AppointmentDate { get; set; }
 
         [Required(ErrorMessage = "Моля въведете име.")]

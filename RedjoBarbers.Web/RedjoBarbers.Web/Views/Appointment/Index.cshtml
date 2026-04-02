@@ -6,6 +6,7 @@
     ViewData["Title"] = "График";
 }
 <form method="get" class="appointments-filter-card">
+    <input type="hidden" name="Page" value="1" />
     <div class="filter-header">
         <h2>Филтриране на часове</h2>
         <p>Избери период и допълнителни критерии, за да видиш по-точно записаните часове.</p>
@@ -14,28 +15,20 @@
     <div class="filter-grid">
         <div class="filter-group">
             <label for="FromDate">От дата</label>
-            <input id="FromDate"
-                   type="date"
-                   name="FromDate"
-                   value="@Model.FromDate?.ToString("dd.MM.yyyy")"
-                   class="filter-input" />
+            <input asp-for="FromDate" type="date" class="filter-input" />
 
         </div>
 
         <div class="filter-group">
             <label for="ToDate">До дата</label>
-            <input id="ToDate"
-                   type="date"
-                   name="ToDate"
-                   value="@Model.ToDate?.ToString("dd.MM.yyyy")"
-                   class="filter-input" />
+            <input asp-for="ToDate" type="date" class="filter-input" />
         </div>
 
         <div class="filter-group">
             <label for="Status">Статус</label>
             <select id="Status" name="Status" class="filter-input">
                 <option value="">Всички статуси</option>
-                @foreach (var status in Enum.GetValues(typeof(RedjoBarbers.Web.Data.Models.Enums.AppointmentStatus)))
+                @foreach (Object status in Enum.GetValues(typeof(AppointmentStatus)))
                 {
                     <option value="@status" selected="@(Model.Status?.ToString() == status.ToString())">
                         @status
@@ -109,10 +102,57 @@ else
             @foreach (Appointment a in Model.Appointments)
             {
                 <tr>
-                    <td>@a.AppointmentDate</td>
+                    <td>@a.AppointmentDate.ToString("dd MMMM - HH:mm")</td>
                     <td>@a.Status</td>
                 </tr>
             }
         </tbody>
     </table>
+}
+@if (Model?.TotalPages > 1)
+{
+    <nav aria-label="Навигация по страници" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-FromDate="@Model.FromDate"
+                       asp-route-ToDate="@Model.ToDate"
+                       asp-route-Status="@Model.Status"
+                       asp-route-BarberId="@Model.BarberId"
+                       asp-route-Page="@(Model.Page - 1)">
+                    Предишна
+                </a>
+            </li>
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link"
+                           asp-action="Index"
+                           asp-route-FromDate="@Model.FromDate"
+                           asp-route-ToDate="@Model.ToDate"
+                           asp-route-Status="@Model.Status"
+                           asp-route-BarberId="@Model.BarberId"
+                           asp-route-Page="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-FromDate="@Model.FromDate"
+                       asp-route-ToDate="@Model.ToDate"
+                       asp-route-Status="@Model.Status"
+                       asp-route-BarberId="@Model.BarberId"
+                       asp-route-Page="@(Model.Page + 1)">
+                    Следваща
+                </a>
+            </li>
+
+        </ul>
+    </nav>
 }
