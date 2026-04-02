@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Страницата не е намерена";
+}
+
+<section class="error-page-section">
+    <div class="container">
+        <div class="error-page-card">
+            <h1>404</h1>
+            <h2>Страницата не беше намерена</h2>
+            <p>
+                Страницата, която търсите, не съществува или адресът е въведен неправилно.
+            </p>
+
+            <div class="error-actions">
+                <a asp-controller="Home" asp-action="Index" class="filter-btn primary-btn">
+                    Към началната страница
+                </a>
+                <a asp-controller="Appointment" asp-action="Index" class="filter-btn secondary-btn">
+                    Виж записаните часове
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

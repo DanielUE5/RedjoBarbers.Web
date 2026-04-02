@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Възникна грешка";
+}
+
+<section class="error-page-section">
+    <div class="container">
+        <div class="error-page-card">
+            <h1>500</h1>
+            <h2>Възникна неочаквана грешка</h2>
+            <p>
+                Нещо се обърка при обработката на заявката. Моля, опитайте отново след малко.
+            </p>
+
+            <div class="error-actions">
+                <a asp-controller="Home" asp-action="Index" class="filter-btn primary-btn">
+                    Към началната страница
+                </a>
+                <a asp-controller="Home" asp-action="Contacts" class="filter-btn secondary-btn">
+                    Контакти
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
