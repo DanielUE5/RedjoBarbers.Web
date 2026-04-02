@@ -41,7 +41,7 @@
             <label for="BarberId">Бръснар</label>
             <select id="BarberId" name="BarberId" class="filter-input">
                 <option value="">Всички бръснари</option>
-                @foreach (var b in Model.Barbers)
+                @foreach (SelectListItem b in Model.Barbers)
                 {
                     <option value="@b.Value" selected="@(Model.BarberId?.ToString() == b.Value)">
                         @b.Text
