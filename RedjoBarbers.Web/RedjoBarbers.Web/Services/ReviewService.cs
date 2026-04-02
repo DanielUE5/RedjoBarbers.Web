@@ -16,27 +16,38 @@ namespace RedjoBarbers.Web.Services
             this.dbContext = dbContext;
         }
 
-        public async Task<ReviewIndexPageViewModel> GetAllAsync(int? barberServiceId, string? sortReviews)
+        public async Task<ReviewIndexPageViewModel> GetAllAsync(int? barberServiceId, string? sortReviews, int currentPage)
         {
-            IQueryable<Review> sortQuery = dbContext.Reviews
+            IQueryable<Review> query = dbContext.Reviews
                 .AsNoTracking();
 
             if (barberServiceId.HasValue && barberServiceId.Value > 0)
             {
-                sortQuery = sortQuery.Where(r => r.BarberServiceId == barberServiceId.Value);
+                query = query.Where(r => r.BarberServiceId == barberServiceId.Value);
             }
 
-            sortQuery = sortReviews switch
+            query = sortReviews switch
             {
-                "rating" => sortQuery
-                    .OrderByDescending(r => r.Rating)
-                    .ThenByDescending(r => r.ReviewDate),
+                "newest" => query
+                    .OrderByDescending(r => r.ReviewDate),
 
-                _ => sortQuery
-                    .OrderByDescending(r => r.ReviewDate)
+                _ => query
+                    .OrderByDescending(r => r.Rating)
+                    .ThenByDescending(r => r.ReviewDate)
             };
 
-            List<ReviewIndexItemViewModel> reviews = await sortQuery
+            const int pageSize = 6;
+
+            int totalCount = await query.CountAsync();
+
+            if (currentPage < 1)
+            {
+                currentPage = 1;
+            }
+
+            List<ReviewIndexItemViewModel> reviews = await query
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize)
                 .Select(r => new ReviewIndexItemViewModel
                 {
                     Id = r.Id,
@@ -63,6 +74,9 @@ namespace RedjoBarbers.Web.Services
             {
                 BarberServiceId = barberServiceId,
                 SortReviews = sortReviews,
+                Page = currentPage,
+                PageSize = pageSize,
+                TotalCount = totalCount,
                 Services = services,
                 Reviews = reviews
             };

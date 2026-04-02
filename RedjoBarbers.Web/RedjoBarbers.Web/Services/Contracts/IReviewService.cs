@@ -5,7 +5,7 @@ namespace RedjoBarbers.Web.Services.Contracts
 {
     public interface IReviewService
     {
-        Task<ReviewIndexPageViewModel> GetAllAsync(int? barberServiceId, string? sortReviews);
+        Task<ReviewIndexPageViewModel> GetAllAsync(int? barberServiceId, string? sortReviews, int currentPage);
 
         Task<IEnumerable<BarberService>> GetAllServicesAsync();
 
