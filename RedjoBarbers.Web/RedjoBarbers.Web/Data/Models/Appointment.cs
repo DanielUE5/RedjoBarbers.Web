@@ -23,7 +23,7 @@ namespace RedjoBarbers.Web.Data.Models
 
         [Required]
         [MaxLength(CustomerPhoneMaxLength)]
-        [RegularExpression(PhoneRegexPattern, ErrorMessage = "Invalid phone number.")]
+        [RegularExpression(PhoneRegexPattern, ErrorMessage = "Невалиден телефонен номер.")]
         public string CustomerPhone { get; set; } = null!;
 
         [MaxLength(NotesMaxLength)]

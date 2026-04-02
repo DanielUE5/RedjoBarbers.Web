@@ -250,7 +250,7 @@ namespace RedjoBarbers.Web.Services
             DateTime windowStart = targetDate.AddMinutes(-45);
             DateTime windowEnd = targetDate.AddMinutes(45);
 
-            IQueryable<Appointment> query = dbContext.Appointments
+            IQueryable<Appointment> busyAppointmentsQuery = dbContext.Appointments
                 .AsNoTracking()
                 .Where(a =>
                     a.AppointmentDate >= windowStart &&
@@ -259,49 +259,83 @@ namespace RedjoBarbers.Web.Services
 
             if (excludedAppointmentId.HasValue)
             {
-                query = query.Where(a => a.Id != excludedAppointmentId.Value);
+                busyAppointmentsQuery = busyAppointmentsQuery.Where(a => a.Id != excludedAppointmentId.Value);
             }
 
             if (barberId.HasValue)
             {
-                query = query.Where(a => a.BarberId == barberId.Value);
+                busyAppointmentsQuery = busyAppointmentsQuery.Where(a => a.BarberId == barberId.Value);
             }
 
-            return await query.AnyAsync();
+            return await busyAppointmentsQuery.AnyAsync();
         }
 
+        /// <summary>
+        /// Filters, paginates, and populates appointment data based on the specified filter criteria.
+        /// </summary>
+        /// <remarks>The method updates the provided model with the filtered list of appointments, total
+        /// count, and a list of available barbers for selection. If pagination parameters are not set or are out of
+        /// range, default values are applied. The maximum page size is limited to 30 to prevent excessive data
+        /// retrieval.</remarks>
+        /// <param name="model">An AppointmentFilterViewModel containing the filter criteria, pagination settings, and properties to be
+        /// populated with the filtered results. Must not be null.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an AppointmentFilterViewModel
+        /// with the filtered appointments, total count, and related barber selection data.</returns>
         public async Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model)
         {
-            IQueryable<Appointment> query = dbContext.Appointments
+            IQueryable<Appointment> filteredAppointmentsQuery = dbContext.Appointments
                 .AsNoTracking()
                 .Include(a => a.Barber)
                 .Include(a => a.BarberService);
 
             if (model.FromDate.HasValue)
             {
-                query = query.Where(a => a.AppointmentDate >= model.FromDate.Value);
+                DateTime fromDate = model.FromDate.Value.Date;
+                filteredAppointmentsQuery = filteredAppointmentsQuery.Where(a => a.AppointmentDate >= fromDate);
             }
 
             if (model.ToDate.HasValue)
             {
-                query = query.Where(a => a.AppointmentDate <= model.ToDate.Value);
+                DateTime toDate = model.ToDate.Value.Date.AddDays(1).AddTicks(-1);
+                filteredAppointmentsQuery = filteredAppointmentsQuery.Where(a => a.AppointmentDate <= toDate);
             }
 
             if (model.Status.HasValue)
             {
-                query = query.Where(a => a.Status == model.Status.Value);
+                filteredAppointmentsQuery = filteredAppointmentsQuery.Where(a => a.Status == model.Status.Value);
             }
 
             if (model.BarberId.HasValue)
             {
-                query = query.Where(a => a.BarberId == model.BarberId.Value);
+                filteredAppointmentsQuery = filteredAppointmentsQuery.Where(a => a.BarberId == model.BarberId.Value);
             }
 
-            model.Appointments = await query
+            model.TotalCount = await filteredAppointmentsQuery.CountAsync();
+
+            if (model.Page < 1)
+            {
+                model.Page = 1;
+            }
+
+            if (model.PageSize <= 0)
+            {
+                model.PageSize = 8;
+            }
+            else if (model.PageSize > 30)
+            {
+                model.PageSize = 30;
+            }
+
+            model.Appointments = await filteredAppointmentsQuery
                 .OrderBy(a => a.AppointmentDate)
+                .ThenBy(a => a.Id)
+                .Skip((model.Page - 1) * model.PageSize)
+                .Take(model.PageSize)
                 .ToListAsync();
 
             model.Barbers = await dbContext.Barbers
+                .AsNoTracking()
+                .OrderBy(b => b.Name)
                 .Select(b => new SelectListItem
                 {
                     Value = b.Id.ToString(),
