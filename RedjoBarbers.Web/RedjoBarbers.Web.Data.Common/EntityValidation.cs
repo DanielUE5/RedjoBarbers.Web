@@ -1,4 +1,4 @@
-﻿namespace RedjoBarbers.Web.Common
+﻿namespace RedjoBarbers.Web.Data.Common
 {
     public static class EntityValidation
     {

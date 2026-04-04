@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using static RedjoBarbers.Web.Common.EntityValidation.Barber;
+using static RedjoBarbers.Web.Data.Common.EntityValidation.Barber;
 
 namespace RedjoBarbers.Web.Data.Models
 {

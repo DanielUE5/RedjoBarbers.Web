@@ -2,7 +2,7 @@
 using RedjoBarbers.Web.Data.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static RedjoBarbers.Web.Common.EntityValidation.Appointment;
+using static RedjoBarbers.Web.Data.Common.EntityValidation.Appointment;
 
 namespace RedjoBarbers.Web.Data.Models
 {

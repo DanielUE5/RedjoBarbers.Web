@@ -1,3 +1,21 @@
 <Solution>
-  <Project Path="RedjoBarbers.Web/RedjoBarbers.Web.csproj" />
+  <Folder Name="/Data/">
+    <Project Path="RedjoBarbers.Web.Data.Common/RedjoBarbers.Web.Data.Common.csproj" Id="fc993a76-8993-417d-944e-60c6bd9a3e56" />
+    <Project Path="RedjoBarbers.Web.Data.Models/RedjoBarbers.Web.Data.Models.csproj" Id="e217bd64-bc0f-4aa0-a158-bd8007fbbfe1" />
+    <Project Path="RedjoBarbers.Web.Data/RedjoBarbers.Web.Data.csproj" Id="865346cc-d140-4f46-89a1-81230ae9c933" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="RedjoBarbers.Web.Services.AutoMapping/RedjoBarbers.Web.Services.AutoMapping.csproj" Id="0b3a93ba-8a64-4188-8e2f-8deeed3d270c" />
+    <Project Path="RedjoBarbers.Web.Services.Common/RedjoBarbers.Web.Services.Common.csproj" Id="4b68d7b6-faae-4fe6-a934-0ce7fb5d7359" />
+    <Project Path="RedjoBarbers.Web.Services.Core/RedjoBarbers.Web.Services.Core.csproj" Id="c3ef6688-4569-436c-bbfd-c23b77471e82" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="RedjoBarbers.Web.Services.Tests/RedjoBarbers.Web.Services.Tests.csproj" Id="58c68200-3334-401a-bbf1-989d62864e9a" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="RedjoBarbers.Web.Infrastructure/RedjoBarbers.Web.Infrastructure.csproj" Id="5624faad-1638-49c5-8a27-56c414d51766" />
+    <Project Path="RedjoBarbers.Web.ViewModels/RedjoBarbers.Web.ViewModels.csproj" Id="5388ccf8-87d4-41d8-af3e-7c55d61ed48e" />
+    <Project Path="RedjoBarbers.Web/RedjoBarbers.Web.csproj" />
+  </Folder>
+  <Project Path="RedjoBarbers.Web.GCommon/RedjoBarbers.Web.GCommon.csproj" Id="2630f4d0-786f-48d3-83fb-25a40c7b1481" />
 </Solution>

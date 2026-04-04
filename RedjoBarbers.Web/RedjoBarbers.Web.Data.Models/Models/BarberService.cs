@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static RedjoBarbers.Web.Common.EntityValidation.BarberService;
+using static RedjoBarbers.Web.Data.Common.EntityValidation.BarberService;
 
 namespace RedjoBarbers.Web.Data.Models
 {

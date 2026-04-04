@@ -1,4 +1,4 @@
-﻿namespace RedjoBarbers.Web.Helpers
+﻿namespace RedjoBarbers.Web.Infrastructure.Helpers
 {
     public static class UrlSecurityHelper
     {
