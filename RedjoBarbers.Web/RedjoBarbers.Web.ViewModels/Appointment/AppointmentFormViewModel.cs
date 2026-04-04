@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
-using static RedjoBarbers.Web.Common.EntityValidation.Appointment;
+using static RedjoBarbers.Web.Data.Common.EntityValidation.Appointment;
 
 namespace RedjoBarbers.Web.ViewModels
 {

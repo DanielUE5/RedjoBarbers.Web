@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static RedjoBarbers.Web.Common.EntityValidation.Review;
+using static RedjoBarbers.Web.Data.Common.EntityValidation.Review;
 
 namespace RedjoBarbers.Web.Data.Models
 {

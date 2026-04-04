@@ -28,4 +28,12 @@
     <Folder Include="wwwroot\images\logo\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RedjoBarbers.Web.Data\RedjoBarbers.Web.Data.csproj" />
+    <ProjectReference Include="..\RedjoBarbers.Web.GCommon\RedjoBarbers.Web.GCommon.csproj" />
+    <ProjectReference Include="..\RedjoBarbers.Web.Infrastructure\RedjoBarbers.Web.Infrastructure.csproj" />
+    <ProjectReference Include="..\RedjoBarbers.Web.Services.Core\RedjoBarbers.Web.Services.Core.csproj" />
+    <ProjectReference Include="..\RedjoBarbers.Web.ViewModels\RedjoBarbers.Web.ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>
