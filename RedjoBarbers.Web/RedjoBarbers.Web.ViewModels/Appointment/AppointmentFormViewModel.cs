@@ -10,7 +10,7 @@ namespace RedjoBarbers.Web.ViewModels
         public int? Id { get; set; }
 
         [Required(ErrorMessage = "Моля изберете дата и час.")]
-        [Display(Name = "Дата и час")]
+        [Display(Name = "Дата")]
         [DataType(DataType.DateTime)]
         public DateTime AppointmentDate { get; set; }
 

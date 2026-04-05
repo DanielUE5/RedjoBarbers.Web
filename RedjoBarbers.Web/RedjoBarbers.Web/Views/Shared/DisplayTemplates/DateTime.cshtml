@@ -1,0 +1,7 @@
+﻿@using RedjoBarbers.Web.GCommon
+@model DateTime?
+
+@if (Model.HasValue)
+{
+    @($"{Model.Value.ToString(ApplicationConstants.DefaultDateFormat)} {Model.Value:HH:mm}")
+}

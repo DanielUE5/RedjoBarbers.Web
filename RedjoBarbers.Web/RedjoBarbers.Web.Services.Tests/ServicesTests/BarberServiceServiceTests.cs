@@ -27,7 +27,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Name = "Haircut",
                     Description = "Basic haircut service",
                     Price = 20,
-                    IsActive = true
+                    IsActive = true,
+                    DurationMinutes = 30
                 },
                 new BarberService
                 {
@@ -35,7 +36,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Name = "Shave",
                     Description = "Traditional shave service",
                     Price = 15,
-                    IsActive = true
+                    IsActive = true,
+                    DurationMinutes = 20
                 });
 
             await context.SaveChangesAsync();

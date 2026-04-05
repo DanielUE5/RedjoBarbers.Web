@@ -48,7 +48,7 @@
                             <td class="fw-semibold">@a.BarberService?.Name</td>
                             <td>@a.Barber?.Name</td>
                             <td>@a.CustomerPhone</td>
-                            <td>@a.AppointmentDate.ToString("g")</td>
+                            <td>@Html.DisplayFor(_ => a.AppointmentDate)</td>
 
                             <td>
                                 <span class="badge @statusClass">@a.Status</span>
@@ -120,7 +120,7 @@
                                 @r.Comments
                             </td>
 
-                            <td>@r.ReviewDate.ToString("g")</td>
+                            <td>@Html.DisplayFor(_ => r.ReviewDate)</td>
 
                             <td class="text-end">
                                 <form asp-area="Admin" asp-controller="Admin"

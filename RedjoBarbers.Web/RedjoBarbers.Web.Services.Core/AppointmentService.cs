@@ -41,10 +41,7 @@ namespace RedjoBarbers.Web.Services
 
         public async Task<AppointmentFormViewModel> GetCreateFormModelAsync()
         {
-            AppointmentFormViewModel model = new AppointmentFormViewModel
-            {
-                AppointmentDate = DateTime.Now
-            };
+            AppointmentFormViewModel model = new AppointmentFormViewModel();
 
             await PopulateDropdownsAsync(model);
             return model;
@@ -135,8 +132,18 @@ namespace RedjoBarbers.Web.Services
                 return AppointmentCreateResult.InvalidBarberOrService;
             }
 
+            BarberService? barberService = await dbContext.BarberServices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(bs => bs.Id == model.BarberServiceId);
+
+            if (barberService == null)
+            {
+                return AppointmentCreateResult.InvalidBarberOrService;
+            }
+
             bool hasBusySlot = await HasBusyTimeSlotAsync(
                 model.AppointmentDate,
+                barberService.DurationMinutes,
                 null,
                 model.BarberId);
 
@@ -155,7 +162,8 @@ namespace RedjoBarbers.Web.Services
                 Status = AppointmentStatus.Pending,
                 BarberId = model.BarberId,
                 BarberServiceId = model.BarberServiceId,
-                UserId = userId
+                UserId = userId,
+                DurationMinutes = barberService.DurationMinutes
             };
 
             await dbContext.Appointments.AddAsync(appointment);
@@ -202,8 +210,18 @@ namespace RedjoBarbers.Web.Services
                 return AppointmentUpdateResult.InvalidBarberOrService;
             }
 
+            BarberService? barberService = await dbContext.BarberServices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(bs => bs.Id == model.BarberServiceId);
+
+            if (barberService == null)
+            {
+                return AppointmentUpdateResult.InvalidBarberOrService;
+            }
+
             bool hasBusySlot = await HasBusyTimeSlotAsync(
                 model.AppointmentDate,
+                barberService.DurationMinutes,
                 id,
                 model.BarberId);
 
@@ -219,6 +237,7 @@ namespace RedjoBarbers.Web.Services
             appointment.Notes = model.Notes;
             appointment.BarberId = model.BarberId;
             appointment.BarberServiceId = model.BarberServiceId;
+            appointment.DurationMinutes = barberService.DurationMinutes;
 
             await dbContext.SaveChangesAsync();
 
@@ -245,42 +264,114 @@ namespace RedjoBarbers.Web.Services
             return await dbContext.Appointments.AnyAsync(a => a.Id == id);
         }
 
-        public async Task<bool> HasBusyTimeSlotAsync(DateTime targetDate, int? excludedAppointmentId, int? barberId)
+        public async Task<bool> HasBusyTimeSlotAsync(
+            DateTime newStart,
+            int newDurationMinutes,
+            int? excludedAppointmentId,
+            int? barberId)
         {
-            DateTime windowStart = targetDate.AddMinutes(-45);
-            DateTime windowEnd = targetDate.AddMinutes(45);
+            DateTime dayStart = newStart.Date;
+            DateTime dayEnd = dayStart.AddDays(1);
+            DateTime newEnd = newStart.AddMinutes(newDurationMinutes);
 
-            IQueryable<Appointment> busyAppointmentsQuery = dbContext.Appointments
+            IQueryable<Appointment> appointmentsQuery = dbContext.Appointments
                 .AsNoTracking()
                 .Where(a =>
-                    a.AppointmentDate >= windowStart &&
-                    a.AppointmentDate <= windowEnd &&
+                    a.AppointmentDate >= dayStart &&
+                    a.AppointmentDate < dayEnd &&
                     a.Status != AppointmentStatus.Cancelled);
 
             if (excludedAppointmentId.HasValue)
             {
-                busyAppointmentsQuery = busyAppointmentsQuery.Where(a => a.Id != excludedAppointmentId.Value);
+                appointmentsQuery = appointmentsQuery.Where(a => a.Id != excludedAppointmentId.Value);
             }
 
             if (barberId.HasValue)
             {
-                busyAppointmentsQuery = busyAppointmentsQuery.Where(a => a.BarberId == barberId.Value);
+                appointmentsQuery = appointmentsQuery.Where(a => a.BarberId == barberId.Value);
             }
 
-            return await busyAppointmentsQuery.AnyAsync();
+            List<Appointment> appointments = await appointmentsQuery.ToListAsync();
+
+            return appointments.Any(a =>
+            {
+                DateTime existingStart = a.AppointmentDate;
+                DateTime existingEnd = a.AppointmentDate.AddMinutes(a.DurationMinutes);
+
+                return newStart < existingEnd && newEnd > existingStart;
+            });
         }
 
-        /// <summary>
-        /// Filters, paginates, and populates appointment data based on the specified filter criteria.
-        /// </summary>
-        /// <remarks>The method updates the provided model with the filtered list of appointments, total
-        /// count, and a list of available barbers for selection. If pagination parameters are not set or are out of
-        /// range, default values are applied. The maximum page size is limited to 30 to prevent excessive data
-        /// retrieval.</remarks>
-        /// <param name="model">An AppointmentFilterViewModel containing the filter criteria, pagination settings, and properties to be
-        /// populated with the filtered results. Must not be null.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an AppointmentFilterViewModel
-        /// with the filtered appointments, total count, and related barber selection data.</returns>
+        public async Task<IEnumerable<string>> GetAvailableSlotsAsync(DateTime date, int barberId, int barberServiceId)
+        {
+            if (date.DayOfWeek == DayOfWeek.Monday)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            BarberService? barberService = await dbContext.BarberServices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(bs => bs.Id == barberServiceId);
+
+            if (barberService == null)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            DateTime dayStart = date.Date;
+            DateTime dayEnd = dayStart.AddDays(1);
+
+            List<Appointment> appointments = await dbContext.Appointments
+                .AsNoTracking()
+                .Where(a =>
+                    a.BarberId == barberId &&
+                    a.AppointmentDate >= dayStart &&
+                    a.AppointmentDate < dayEnd &&
+                    a.Status != AppointmentStatus.Cancelled)
+                .OrderBy(a => a.AppointmentDate)
+                .ToListAsync();
+
+            List<string> availableSlots = new List<string>();
+
+            TimeSpan workStart = new TimeSpan(10, 0, 0);
+            TimeSpan workEnd = new TimeSpan(19, 0, 0);
+            TimeSpan slotStep = TimeSpan.FromMinutes(15);
+            TimeSpan serviceDuration = TimeSpan.FromMinutes(barberService.DurationMinutes);
+
+            DateTime now = DateTime.Now;
+
+            for (TimeSpan current = workStart; current < workEnd; current = current.Add(slotStep))
+            {
+                DateTime newStart = date.Date.Add(current);
+                DateTime newEnd = newStart.Add(serviceDuration);
+
+                if (newEnd.TimeOfDay > workEnd)
+                {
+                    continue;
+                }
+
+                if (date.Date == now.Date && newStart <= now)
+                {
+                    continue;
+                }
+
+                bool hasConflict = appointments.Any(a =>
+                {
+                    DateTime existingStart = a.AppointmentDate;
+                    DateTime existingEnd = existingStart.AddMinutes(a.DurationMinutes);
+
+                    return newStart < existingEnd && newEnd > existingStart;
+                });
+
+                if (!hasConflict)
+                {
+                    availableSlots.Add(newStart.ToString("HH:mm"));
+                }
+            }
+
+            return availableSlots;
+        }
+
         public async Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model)
         {
             IQueryable<Appointment> filteredAppointmentsQuery = dbContext.Appointments

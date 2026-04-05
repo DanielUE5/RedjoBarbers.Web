@@ -22,6 +22,8 @@ namespace RedjoBarbers.Web.Data.Models
 
         public bool IsActive { get; set; }
 
+        public int DurationMinutes { get; set; }
+
         // Navigation properties
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();

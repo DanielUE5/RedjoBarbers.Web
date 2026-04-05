@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RedjoBarbers.Web.Data;
 
@@ -11,9 +12,11 @@ using RedjoBarbers.Web.Data;
 namespace RedjoBarbers.Web.Migrations
 {
     [DbContext(typeof(RedjoBarbersDbContext))]
-    partial class RedjoBarbersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405183418_AddDurationMinutesToAppointments")]
+    partial class AddDurationMinutesToAppointments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -344,9 +347,6 @@ namespace RedjoBarbers.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()

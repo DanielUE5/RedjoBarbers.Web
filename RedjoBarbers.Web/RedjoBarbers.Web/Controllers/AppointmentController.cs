@@ -98,7 +98,7 @@ namespace RedjoBarbers.Web.Controllers
 
                 case AppointmentCreateResult.BusySlot:
                     ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                        "Вече има запазен час в този диапазон. Диапазонът за записване на час е 45 мин. спрямо предишния.");
+                        "Избраният час се застъпва с вече записан час, моля изберете друг.");
                     await appointmentService.PopulateDropdownsAsync(appointmentForm);
                     return View(appointmentForm);
 
@@ -195,7 +195,7 @@ namespace RedjoBarbers.Web.Controllers
 
                 case AppointmentUpdateResult.BusySlot:
                     ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                        "Вече има запазен час в този диапазон. Диапазонът за записване на час е 45 мин. спрямо предишния.");
+                        "Избраният час се застъпва с вече записан час, моля изберете друг.");
                     await appointmentService.PopulateDropdownsAsync(appointmentForm);
                     return View(appointmentForm);
 
@@ -290,6 +290,16 @@ namespace RedjoBarbers.Web.Controllers
 
             MyAppointmentsPageViewModel vm = await appointmentService.GetMyAppointmentsPageAsync(userId);
             return View(vm);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAvailableSlots(DateTime date, int barberId, int barberServiceId)
+        {
+            IEnumerable<string> slots = await appointmentService
+                .GetAvailableSlotsAsync(date, barberId, barberServiceId);
+
+            return Json(slots);
         }
     }
 }
