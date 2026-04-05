@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+	<DataCollectionRunSettings>
+		<DataCollectors>
+			<DataCollector friendlyName="XPlat code coverage">
+				<Configuration>
+					<Format>cobertura</Format>
+
+					<Include>
+						[RedjoBarbers.Web.IntegrationTests]*,
+						[RedjoBarbers.Web.Services.Tests]*
+					</Include>
+
+					<Exclude>
+						[RedjoBarbers.Web]Program,
+						[RedjoBarbers.Web.Data]*,
+						[RedjoBarbers.Web.Infrastructure]*
+					</Exclude>
+
+					<ExcludeByFile>
+						**/Migrations/*.cs,
+						**/obj/**,
+						**/bin/**,
+						**/Views/**/*.cshtml,
+						**/Areas/**/*.cshtml,
+						**/Program.cs,
+						**/*Designer.cs,
+						**/*AssemblyInfo.cs,
+					</ExcludeByFile>
+
+					<ExcludeByAttribute>
+						Obsolete,
+						GeneratedCodeAttribute,
+						CompilerGeneratedAttribute
+					</ExcludeByAttribute>
+
+					<IncludeTestAssembly>true</IncludeTestAssembly>
+					<SkipAutoProps>true</SkipAutoProps>
+					<SingleHit>false</SingleHit>
+				</Configuration>
+			</DataCollector>
+		</DataCollectors>
+	</DataCollectionRunSettings>
+</RunSettings>

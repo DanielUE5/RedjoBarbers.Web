@@ -9,7 +9,11 @@
     <Project Path="RedjoBarbers.Web.Services.Common/RedjoBarbers.Web.Services.Common.csproj" Id="4b68d7b6-faae-4fe6-a934-0ce7fb5d7359" />
     <Project Path="RedjoBarbers.Web.Services.Core/RedjoBarbers.Web.Services.Core.csproj" Id="c3ef6688-4569-436c-bbfd-c23b77471e82" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="coverage.runsettings" />
+  </Folder>
   <Folder Name="/Tests/">
+    <Project Path="RedjoBarbers.Web.IntegrationTests/RedjoBarbers.Web.IntegrationTests.csproj" Id="46dafc0a-9fbe-4646-af59-aeff116b3512" />
     <Project Path="RedjoBarbers.Web.Services.Tests/RedjoBarbers.Web.Services.Tests.csproj" Id="58c68200-3334-401a-bbf1-989d62864e9a" />
   </Folder>
   <Folder Name="/Web/">
