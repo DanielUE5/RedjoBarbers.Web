@@ -10,11 +10,11 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task<Appointment?> GetByIdAsync(int id);
 
+        Task<AppointmentFormViewModel> GetCreateFormModelAsync();
+
         Task<AppointmentFormViewModel?> GetFormModelByIdAsync(int id);
 
         Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string userId);
-
-        Task<AppointmentFormViewModel> GetCreateFormModelAsync();
 
         Task PopulateDropdownsAsync(AppointmentFormViewModel model);
 
@@ -30,7 +30,9 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task<bool> ExistsAsync(int id);
 
-        Task<bool> HasBusyTimeSlotAsync(DateTime targetDate, int? excludedAppointmentId, int? barberId);
+        Task<bool> HasBusyTimeSlotAsync(DateTime newStart, int newDurationMinutes, int? excludedAppointmentId, int? barberId);
+
+        Task<IEnumerable<string>> GetAvailableSlotsAsync(DateTime date, int barberId, int barberServiceId);
 
         Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model);
     }

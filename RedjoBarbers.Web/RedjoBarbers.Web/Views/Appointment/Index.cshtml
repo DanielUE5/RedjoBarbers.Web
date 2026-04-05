@@ -15,13 +15,13 @@
     <div class="filter-grid">
         <div class="filter-group">
             <label for="FromDate">От дата</label>
-            <input asp-for="FromDate" type="date" class="filter-input" />
+            <input asp-for="FromDate" class="filter-input datepicker" />
 
         </div>
 
         <div class="filter-group">
             <label for="ToDate">До дата</label>
-            <input asp-for="ToDate" type="date" class="filter-input" />
+            <input asp-for="ToDate" class="filter-input datepicker" />
         </div>
 
         <div class="filter-group">
@@ -102,7 +102,7 @@ else
             @foreach (Appointment a in Model.Appointments)
             {
                 <tr>
-                    <td>@a.AppointmentDate.ToString("dd MMMM - HH:mm")</td>
+                    <td>@Html.DisplayFor(_ => a.AppointmentDate)</td>
                     <td>@a.Status</td>
                 </tr>
             }

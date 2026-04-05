@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\logo\" />
+    <Folder Include="wwwroot\images\default image\" />
   </ItemGroup>
 
   <ItemGroup>

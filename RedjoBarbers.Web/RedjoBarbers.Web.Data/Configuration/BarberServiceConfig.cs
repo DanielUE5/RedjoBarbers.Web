@@ -39,6 +39,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     Name = "Мъжко подстригване",
                     Description = "Подстригване на косата и стайлинг",
                     Price = 15.34m,
+                    DurationMinutes = 45,
                     IsActive = true
                 },
                 new BarberService
@@ -46,6 +47,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     Name = "Мъжко подстригване + оформяне на брада",
                     Description = "Подстигване и стайлинг на косата, както и отделно оформяне на брадата",
                     Price = 20.45m,
+                    DurationMinutes = 60,
                     IsActive = true
                 },
                 new BarberService
@@ -53,6 +55,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     Name = "Детско подстригване за момчета",
                     Description = "Подстригване и стайлинг на косата за момчета до 10 години",
                     Price = 12.78m,
+                    DurationMinutes = 45,
                     IsActive = true
                 },
                 new BarberService
@@ -60,6 +63,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     Name = "Оформяне на брада",
                     Description = "Оформяне цялостната визия на брадата",
                     Price = 10.23m,
+                    DurationMinutes = 15,
                     IsActive = true
                 },
                 new BarberService
@@ -67,6 +71,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     Name = "Оформяне на вежди",
                     Description = "Оформяне на вежди с бръснач за мъже",
                     Price = 2.56m,
+                    DurationMinutes = 5,
                     IsActive = true
                 },
             ];
@@ -91,6 +96,7 @@ namespace RedjoBarbers.Web.Data.Configuration
                     current.Description = s.Description;
                     current.Price = s.Price;
                     current.IsActive = s.IsActive;
+                    current.DurationMinutes = s.DurationMinutes;
                 }
             }
 

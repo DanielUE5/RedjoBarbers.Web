@@ -48,7 +48,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Name = "Haircut",
                     Description = "Basic haircut",
                     Price = 20,
-                    IsActive = true
+                    IsActive = true,
+                    DurationMinutes = 30
                 },
                 new BarberService
                 {
@@ -56,7 +57,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Name = "Beard Trim",
                     Description = "Beard trimming",
                     Price = 15,
-                    IsActive = true
+                    IsActive = true,
+                    DurationMinutes = 45
                 });
 
             context.Appointments.AddRange(
@@ -71,7 +73,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Pending,
                     BarberId = 1,
                     BarberServiceId = 1,
-                    UserId = "user1"
+                    UserId = "user1",
+                    DurationMinutes = 30
                 },
                 new Appointment
                 {
@@ -84,7 +87,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Confirmed,
                     BarberId = 2,
                     BarberServiceId = 2,
-                    UserId = "user2"
+                    UserId = "user2",
+                    DurationMinutes = 45
                 },
                 new Appointment
                 {
@@ -97,7 +101,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Cancelled,
                     BarberId = 1,
                     BarberServiceId = 2,
-                    UserId = "user1"
+                    UserId = "user1",
+                    DurationMinutes = 45
                 });
 
             context.Reviews.AddRange(
@@ -240,7 +245,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         {
             AppointmentFormViewModel model = new AppointmentFormViewModel
             {
-                AppointmentDate = new DateTime(2026, 4, 10, 10, 30, 0),
+                AppointmentDate = new DateTime(2026, 4, 10, 10, 15, 0),
                 CustomerName = "Busy User",
                 CustomerEmail = "busy@test.com",
                 CustomerPhone = "+359888777777",
@@ -279,6 +284,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
 
             Assert.That(createdAppointment, Is.Not.Null);
             Assert.That(createdAppointment!.Status, Is.EqualTo(AppointmentStatus.Pending));
+            Assert.That(createdAppointment.DurationMinutes, Is.EqualTo(30));
         }
 
         [Test]
@@ -337,7 +343,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         {
             AppointmentFormViewModel model = new AppointmentFormViewModel
             {
-                AppointmentDate = new DateTime(2026, 4, 10, 10, 30, 0),
+                AppointmentDate = new DateTime(2026, 4, 10, 10, 15, 0),
                 CustomerName = "Peter Updated",
                 CustomerEmail = "peter@test.com",
                 CustomerPhone = "+359888444444",
@@ -375,6 +381,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
             Assert.That(updatedAppointment!.CustomerName, Is.EqualTo("Daniel Updated"));
             Assert.That(updatedAppointment.BarberId, Is.EqualTo(2));
             Assert.That(updatedAppointment.BarberServiceId, Is.EqualTo(2));
+            Assert.That(updatedAppointment.DurationMinutes, Is.EqualTo(45));
         }
 
         [Test]
@@ -416,6 +423,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         {
             bool result = await appointmentService.HasBusyTimeSlotAsync(
                 new DateTime(2026, 4, 12, 15, 15, 0),
+                30,
                 null,
                 1);
 
@@ -427,6 +435,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         {
             bool result = await appointmentService.HasBusyTimeSlotAsync(
                 new DateTime(2026, 4, 10, 10, 20, 0),
+                30,
                 null,
                 1);
 

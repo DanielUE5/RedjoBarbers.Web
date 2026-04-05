@@ -27,7 +27,7 @@ else
             @foreach (Appointment a in Model.Appointments)
             {
                 <tr>
-                    <td>@a.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@Html.DisplayFor(_ => a.AppointmentDate)</td>
                     <td>@a.BarberService?.Name</td>
                     <td>@a.Barber?.Name</td>
                     <td>@a.Status</td>
@@ -66,7 +66,7 @@ else
             @foreach (Review r in Model.Reviews)
             {
                 <tr>
-                    <td>@r.ReviewDate.ToString("dd.MM.yyyy")</td>
+                    <td>@Html.DisplayFor(_ => r.ReviewDate)</td>
                     <td>@r.BarberService?.Name</td>
                     <td>@r.Rating</td>
                     <td>@r.Comments</td>

@@ -31,6 +31,8 @@ namespace RedjoBarbers.Web.Data.Models
 
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
+        public int DurationMinutes { get; set; }
+
         // Foreign Key to BarberService
         public int BarberServiceId { get; set; }
         public BarberService BarberService { get; set; } = null!;
