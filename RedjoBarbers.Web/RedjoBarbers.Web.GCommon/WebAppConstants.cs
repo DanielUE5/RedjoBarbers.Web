@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RedjoBarbers.Web.GCommon
+﻿namespace RedjoBarbers.Web.GCommon
 {
+    // TODO: Apply constants globally (date formatting & default image fallback)
     public class ApplicationConstants
     {
         public const string DefaultDateFormat = "dd/MM/yyyy";
