@@ -48,6 +48,9 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task CreateGet_ShouldReturnViewWithModelAndServices()
         {
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             IEnumerable<BarberService> services = new List<BarberService>
             {
                 new BarberService(),
@@ -86,7 +89,9 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task CreatePost_ShouldReturnView_WhenModelStateIsInvalid()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewCreateViewModel model = new();
 
             IEnumerable<BarberService> services = new List<BarberService>
@@ -112,12 +117,14 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task CreatePost_ShouldRedirectToMyAppointments_WhenModelStateIsValid()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewCreateViewModel model = new();
 
             IActionResult result = await controller.Create(model);
 
-            reviewServiceMock.Verify(x => x.CreateAsync(model, "user-1"), Times.Once);
+            reviewServiceMock.Verify(x => x.CreateAsync(model, userId), Times.Once);
 
             Assert.That(result, Is.TypeOf<RedirectToActionResult>());
             RedirectToActionResult redirectResult = (RedirectToActionResult)result;
@@ -138,10 +145,11 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task Delete_ShouldReturnForbid_WhenUserCannotAccess()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(false);
 
             IActionResult result = await controller.Delete(1);
@@ -152,10 +160,11 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task Delete_ShouldReturnNotFound_WhenDeleteFails()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -170,10 +179,11 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task Delete_ShouldRedirectToMyAppointments_WhenDeleteSucceeds()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -201,10 +211,11 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdateGet_ShouldReturnForbid_WhenUserCannotAccess()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(false);
 
             IActionResult result = await controller.Update(1);
@@ -215,10 +226,11 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdateGet_ShouldReturnNotFound_WhenModelDoesNotExist()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -233,11 +245,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdateGet_ShouldReturnView_WhenModelExists()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewUpdateViewModel model = new() { Id = 1 };
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -265,11 +279,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdatePost_ShouldReturnForbid_WhenUserCannotAccess()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewUpdateViewModel model = new() { Id = 1 };
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(false);
 
             IActionResult result = await controller.Update(model);
@@ -280,11 +296,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdatePost_ShouldReturnView_WhenModelStateIsInvalid()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewUpdateViewModel model = new() { Id = 1 };
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             controller.ModelState.AddModelError("Test", "Invalid");
@@ -299,11 +317,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdatePost_ShouldReturnNotFound_WhenUpdateFails()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewUpdateViewModel model = new() { Id = 1 };
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -318,11 +338,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         [Test]
         public async Task UpdatePost_ShouldRedirectToMyAppointments_WhenUpdateSucceeds()
         {
-            SetUser("user-1");
+            Guid userId = Guid.NewGuid();
+            SetUser(userId);
+
             ReviewUpdateViewModel model = new() { Id = 1 };
 
             reviewServiceMock
-                .Setup(x => x.IsOwnerOrAdminAsync(1, "user-1", false))
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, false))
                 .ReturnsAsync(true);
 
             reviewServiceMock
@@ -337,13 +359,36 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
             Assert.That(redirectResult.ControllerName, Is.EqualTo("Appointment"));
         }
 
-        private void SetUser(string? userId, bool isAdmin = false)
+        [Test]
+        public async Task Delete_ShouldAllowAdminAccess_WhenUserIsAdmin()
+        {
+            Guid userId = Guid.NewGuid();
+            SetUser(userId, true);
+
+            reviewServiceMock
+                .Setup(x => x.IsOwnerOrAdminAsync(1, userId, true))
+                .ReturnsAsync(true);
+
+            reviewServiceMock
+                .Setup(x => x.DeleteAsync(1))
+                .ReturnsAsync(true);
+
+            IActionResult result = await controller.Delete(1);
+
+            Assert.That(result, Is.TypeOf<RedirectToActionResult>());
+
+            RedirectToActionResult redirectResult = (RedirectToActionResult)result;
+            Assert.That(redirectResult.ActionName, Is.EqualTo("MyAppointments"));
+            Assert.That(redirectResult.ControllerName, Is.EqualTo("Appointment"));
+        }
+
+        private void SetUser(Guid? userId, bool isAdmin = false)
         {
             List<Claim> claims = new();
 
-            if (!string.IsNullOrEmpty(userId))
+            if (userId.HasValue)
             {
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()));
             }
 
             if (isAdmin)

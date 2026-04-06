@@ -118,7 +118,7 @@ namespace RedjoBarbers.Web.Services
             return model;
         }
 
-        public async Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(string userId)
+        public async Task<MyAppointmentsPageViewModel> GetMyAppointmentsPageAsync(Guid userId)
         {
             IEnumerable<Appointment> customerAppointments = await dbContext.Appointments
                 .AsNoTracking()
@@ -168,7 +168,7 @@ namespace RedjoBarbers.Web.Services
                 .ToListAsync();
         }
 
-        public async Task<AppointmentCreateResult> CreateAsync(AppointmentFormViewModel model, string userId)
+        public async Task<AppointmentCreateResult> CreateAsync(AppointmentFormViewModel model, Guid userId)
         {
             bool isValidBarberAndService = await IsValidBarberAndServiceAsync(model.BarberId, model.BarberServiceId);
 
@@ -217,25 +217,20 @@ namespace RedjoBarbers.Web.Services
             return AppointmentCreateResult.Success;
         }
 
-        public async Task<bool> IsOwnerAsync(int appointmentId, string userId)
+        public async Task<bool> IsOwnerAsync(int appointmentId, Guid userId)
         {
             return await dbContext.Appointments
                 .AsNoTracking()
                 .AnyAsync(a => a.Id == appointmentId && a.UserId == userId);
         }
 
-        public async Task<bool> IsOwnerOrAdminAsync(int appointmentId, string userId, bool isAdmin)
+        public async Task<bool> IsOwnerOrAdminAsync(int appointmentId, Guid userId, bool isAdmin)
         {
-            if (isAdmin)
-            {
-                return await dbContext.Appointments
-                    .AsNoTracking()
-                    .AnyAsync(a => a.Id == appointmentId);
-            }
-
             return await dbContext.Appointments
                 .AsNoTracking()
-                .AnyAsync(a => a.Id == appointmentId && a.UserId == userId);
+                .AnyAsync(a =>
+                    a.Id == appointmentId &&
+                    (isAdmin || a.UserId == userId));
         }
 
         public async Task<AppointmentUpdateResult> UpdateAsync(int id, AppointmentFormViewModel model)

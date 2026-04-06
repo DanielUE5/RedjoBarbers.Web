@@ -2,6 +2,7 @@
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Data.Models.Enums;
+using RedjoBarbers.Web.Services;
 using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
 
@@ -10,8 +11,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
     [TestFixture]
     public class AppointmentServiceTests
     {
-        private RedjoBarbersDbContext context;
-        private AppointmentService appointmentService;
+        private RedjoBarbersDbContext context = null!;
+        private AppointmentService appointmentService = null!;
 
         [SetUp]
         public async Task SetUp()
@@ -22,6 +23,9 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                 .Options;
 
             context = new RedjoBarbersDbContext(options);
+
+            Guid user1Id = Guid.Parse("11111111-1111-1111-1111-111111111111");
+            Guid user2Id = Guid.Parse("22222222-2222-2222-2222-222222222222");
 
             context.Barbers.AddRange(
                 new Barber
@@ -73,7 +77,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Pending,
                     BarberId = 1,
                     BarberServiceId = 1,
-                    UserId = "user1",
+                    UserId = user1Id,
                     DurationMinutes = 30
                 },
                 new Appointment
@@ -87,7 +91,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Confirmed,
                     BarberId = 2,
                     BarberServiceId = 2,
-                    UserId = "user2",
+                    UserId = user2Id,
                     DurationMinutes = 45
                 },
                 new Appointment
@@ -101,7 +105,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Status = AppointmentStatus.Cancelled,
                     BarberId = 1,
                     BarberServiceId = 2,
-                    UserId = "user1",
+                    UserId = user1Id,
                     DurationMinutes = 45
                 });
 
@@ -114,7 +118,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Rating = 5,
                     Comments = "Excellent",
                     ReviewDate = new DateTime(2026, 4, 1, 10, 0, 0),
-                    UserId = "user1"
+                    UserId = user1Id
                 },
                 new Review
                 {
@@ -124,7 +128,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Rating = 4,
                     Comments = "Very good",
                     ReviewDate = new DateTime(2026, 4, 2, 10, 0, 0),
-                    UserId = "user2"
+                    UserId = user2Id
                 });
 
             await context.SaveChangesAsync();
@@ -201,13 +205,15 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task GetMyAppointmentsPageAsync_ShouldReturnOnlyCurrentUsersAppointmentsAndReviews()
         {
-            MyAppointmentsPageViewModel result = await appointmentService.GetMyAppointmentsPageAsync("user1");
+            Guid user1Id = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+            MyAppointmentsPageViewModel result = await appointmentService.GetMyAppointmentsPageAsync(user1Id);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Appointments.Count(), Is.EqualTo(2));
             Assert.That(result.Reviews.Count(), Is.EqualTo(1));
-            Assert.That(result.Appointments.All(a => a.UserId == "user1"), Is.True);
-            Assert.That(result.Reviews.All(r => r.UserId == "user1"), Is.True);
+            Assert.That(result.Appointments.All(a => a.UserId == user1Id), Is.True);
+            Assert.That(result.Reviews.All(r => r.UserId == user1Id), Is.True);
         }
 
         [Test]
@@ -224,6 +230,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task CreateAsync_ShouldReturnInvalidBarberOrService_WhenBarberDoesNotExist()
         {
+            Guid user3Id = Guid.NewGuid();
+
             AppointmentFormViewModel model = new AppointmentFormViewModel
             {
                 AppointmentDate = new DateTime(2026, 4, 20, 10, 0, 0),
@@ -235,7 +243,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                 BarberServiceId = 1
             };
 
-            AppointmentCreateResult result = await appointmentService.CreateAsync(model, "user3");
+            AppointmentCreateResult result = await appointmentService.CreateAsync(model, user3Id);
 
             Assert.That(result, Is.EqualTo(AppointmentCreateResult.InvalidBarberOrService));
         }
@@ -243,6 +251,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task CreateAsync_ShouldReturnBusySlot_WhenAppointmentTimeIsAlreadyTaken()
         {
+            Guid user3Id = Guid.NewGuid();
+
             AppointmentFormViewModel model = new AppointmentFormViewModel
             {
                 AppointmentDate = new DateTime(2026, 4, 10, 10, 15, 0),
@@ -254,7 +264,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                 BarberServiceId = 1
             };
 
-            AppointmentCreateResult result = await appointmentService.CreateAsync(model, "user3");
+            AppointmentCreateResult result = await appointmentService.CreateAsync(model, user3Id);
 
             Assert.That(result, Is.EqualTo(AppointmentCreateResult.BusySlot));
             Assert.That(context.Appointments.Count(), Is.EqualTo(3));
@@ -263,6 +273,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task CreateAsync_ShouldCreateAppointment_WhenDataIsValid()
         {
+            Guid user3Id = Guid.NewGuid();
+
             AppointmentFormViewModel model = new AppointmentFormViewModel
             {
                 AppointmentDate = new DateTime(2026, 4, 15, 14, 0, 0),
@@ -274,13 +286,13 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                 BarberServiceId = 1
             };
 
-            AppointmentCreateResult result = await appointmentService.CreateAsync(model, "user3");
+            AppointmentCreateResult result = await appointmentService.CreateAsync(model, user3Id);
 
             Assert.That(result, Is.EqualTo(AppointmentCreateResult.Success));
             Assert.That(context.Appointments.Count(), Is.EqualTo(4));
 
             Appointment? createdAppointment = context.Appointments
-                .FirstOrDefault(a => a.UserId == "user3");
+                .FirstOrDefault(a => a.UserId == user3Id);
 
             Assert.That(createdAppointment, Is.Not.Null);
             Assert.That(createdAppointment!.Status, Is.EqualTo(AppointmentStatus.Pending));
@@ -290,7 +302,9 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task IsOwnerAsync_ShouldReturnTrue_WhenUserOwnsAppointment()
         {
-            bool result = await appointmentService.IsOwnerAsync(1, "user1");
+            Guid user1Id = Guid.Parse("11111111-1111-1111-1111-111111111111");
+
+            bool result = await appointmentService.IsOwnerAsync(1, user1Id);
 
             Assert.That(result, Is.True);
         }
@@ -298,7 +312,9 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task IsOwnerAsync_ShouldReturnFalse_WhenUserDoesNotOwnAppointment()
         {
-            bool result = await appointmentService.IsOwnerAsync(1, "different-user");
+            Guid differentUserId = Guid.NewGuid();
+
+            bool result = await appointmentService.IsOwnerAsync(1, differentUserId);
 
             Assert.That(result, Is.False);
         }
@@ -306,7 +322,9 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task IsOwnerOrAdminAsync_ShouldReturnTrue_WhenUserIsAdmin()
         {
-            bool result = await appointmentService.IsOwnerOrAdminAsync(1, "different-user", true);
+            Guid differentUserId = Guid.NewGuid();
+
+            bool result = await appointmentService.IsOwnerOrAdminAsync(1, differentUserId, true);
 
             Assert.That(result, Is.True);
         }
@@ -314,7 +332,9 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
         [Test]
         public async Task IsOwnerOrAdminAsync_ShouldReturnFalse_WhenUserIsNotOwnerAndNotAdmin()
         {
-            bool result = await appointmentService.IsOwnerOrAdminAsync(1, "different-user", false);
+            Guid differentUserId = Guid.NewGuid();
+
+            bool result = await appointmentService.IsOwnerOrAdminAsync(1, differentUserId, false);
 
             Assert.That(result, Is.False);
         }

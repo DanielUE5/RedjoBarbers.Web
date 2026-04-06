@@ -29,7 +29,11 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> MyAppointments()
     {
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
 
         MyAppointmentsPageViewModel model =
             await appointmentService.GetMyAppointmentsPageAsync(userId);
@@ -63,7 +67,11 @@ public class AppointmentController : Controller
             return View(model);
         }
 
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
 
         AppointmentCreateResult result =
             await appointmentService.CreateAsync(model, userId);
@@ -91,7 +99,11 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> Update(int id)
     {
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
         bool isAdmin = User.IsInRole("Admin");
 
         bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
@@ -116,7 +128,11 @@ public class AppointmentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(int id, AppointmentFormViewModel model)
     {
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
         bool isAdmin = User.IsInRole("Admin");
 
         bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
@@ -160,7 +176,11 @@ public class AppointmentController : Controller
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
         bool isAdmin = User.IsInRole("Admin");
 
         bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
@@ -185,7 +205,11 @@ public class AppointmentController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(AppointmentDetailsViewModel model)
     {
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdValue, out Guid userId))
+        {
+            return Unauthorized();
+        }
         bool isAdmin = User.IsInRole("Admin");
 
         bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(model.Id, userId, isAdmin);

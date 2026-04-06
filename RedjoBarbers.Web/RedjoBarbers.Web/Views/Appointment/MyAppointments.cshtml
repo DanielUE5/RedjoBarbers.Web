@@ -70,12 +70,12 @@
 
                         <div class="appointment-meta-list">
                             <div class="appointment-meta-item">
-                                <span>Barber</span>
+                                <span>Бръснар</span>
                                 <strong>@(appointment.Barber?.Name ?? "N/A")</strong>
                             </div>
 
                             <div class="appointment-meta-item">
-                                <span>Date & Time</span>
+                                <span>Дата и час</span>
                                 <strong>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</strong>
                             </div>
 
@@ -83,28 +83,8 @@
                                 <span>Name</span>
                                 <strong>@appointment.CustomerName</strong>
                             </div>
-
-                            <div class="appointment-meta-item">
-                                <span>Email</span>
-                                <strong>@appointment.CustomerEmail</strong>
-                            </div>
-
-                            @if (!string.IsNullOrWhiteSpace(appointment.CustomerPhone))
-                            {
-                                <div class="appointment-meta-item">
-                                    <span>Phone</span>
-                                    <strong>@appointment.CustomerPhone</strong>
-                                </div>
-                            }
                         </div>
 
-                        @if (!string.IsNullOrWhiteSpace(appointment.Notes))
-                        {
-                            <div class="appointment-note-box">
-                                <span>Notes</span>
-                                <p>@appointment.Notes</p>
-                            </div>
-                        }
 
                         <div class="appointment-actions">
                             <a asp-controller="Appointment"

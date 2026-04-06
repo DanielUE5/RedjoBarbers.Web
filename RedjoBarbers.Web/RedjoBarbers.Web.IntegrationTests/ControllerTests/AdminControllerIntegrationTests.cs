@@ -36,6 +36,8 @@ public class AdminControllerTests
     [Test]
     public async Task Index_ShouldReturnViewWithAdminPanelViewModel()
     {
+        Guid userId = Guid.NewGuid();
+
         Barber barber = new Barber
         {
             Id = 1,
@@ -67,7 +69,7 @@ public class AdminControllerTests
             Barber = barber,
             BarberServiceId = barberService.Id,
             BarberService = barberService,
-            UserId = "user-1"
+            UserId = userId
         };
 
         Review review = new Review
@@ -79,7 +81,7 @@ public class AdminControllerTests
             ReviewDate = DateTime.UtcNow,
             BarberServiceId = barberService.Id,
             BarberService = barberService,
-            UserId = "user-1"
+            UserId = userId
         };
 
         await dbContext.Barbers.AddAsync(barber);
@@ -114,6 +116,8 @@ public class AdminControllerTests
     [Test]
     public async Task UpdateStatus_ShouldUpdateStatusAndRedirect_WhenAppointmentExists()
     {
+        Guid userId = Guid.NewGuid();
+
         Barber barber = new Barber
         {
             Id = 1,
@@ -144,7 +148,7 @@ public class AdminControllerTests
             Barber = barber,
             BarberServiceId = barberService.Id,
             BarberService = barberService,
-            UserId = "user-1"
+            UserId = userId
         };
 
         await dbContext.Barbers.AddAsync(barber);
@@ -167,6 +171,8 @@ public class AdminControllerTests
     [Test]
     public async Task DeleteReview_ShouldRemoveReviewAndRedirect_WhenReviewExists()
     {
+        Guid userId = Guid.NewGuid();
+
         BarberService barberService = new BarberService
         {
             Id = 1,
@@ -185,7 +191,7 @@ public class AdminControllerTests
             ReviewDate = DateTime.UtcNow,
             BarberServiceId = barberService.Id,
             BarberService = barberService,
-            UserId = "user-1"
+            UserId = userId
         };
 
         await dbContext.BarberServices.AddAsync(barberService);

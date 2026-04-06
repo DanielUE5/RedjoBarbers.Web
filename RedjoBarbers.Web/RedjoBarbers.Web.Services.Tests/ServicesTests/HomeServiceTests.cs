@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Models;
+using RedjoBarbers.Web.Services;
 using RedjoBarbers.Web.ViewModels;
 
 namespace RedjoBarbers.Web.Services.Tests.ServiceTests
@@ -8,8 +9,8 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
     [TestFixture]
     public class HomeServiceTests
     {
-        private RedjoBarbersDbContext context;
-        private HomeService homeService;
+        private RedjoBarbersDbContext context = null!;
+        private HomeService homeService = null!;
 
         [SetUp]
         public async Task SetUp()
@@ -20,6 +21,13 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                 .Options;
 
             context = new RedjoBarbersDbContext(options);
+
+            Guid user1Id = Guid.Parse("11111111-1111-1111-1111-111111111111");
+            Guid user2Id = Guid.Parse("22222222-2222-2222-2222-222222222222");
+            Guid user3Id = Guid.Parse("33333333-3333-3333-3333-333333333333");
+            Guid user4Id = Guid.Parse("44444444-4444-4444-4444-444444444444");
+            Guid user5Id = Guid.Parse("55555555-5555-5555-5555-555555555555");
+            Guid user6Id = Guid.Parse("66666666-6666-6666-6666-666666666666");
 
             context.BarberServices.AddRange(
                 new BarberService
@@ -66,7 +74,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "Excellent",
                     Rating = 5,
                     ReviewDate = new DateTime(2026, 4, 1, 10, 0, 0),
-                    UserId = "user1"
+                    UserId = user1Id
                 },
                 new Review
                 {
@@ -76,7 +84,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "Perfect",
                     Rating = 5,
                     ReviewDate = new DateTime(2026, 4, 2, 10, 0, 0),
-                    UserId = "user2"
+                    UserId = user2Id
                 },
                 new Review
                 {
@@ -86,7 +94,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "Amazing",
                     Rating = 5,
                     ReviewDate = new DateTime(2026, 4, 3, 10, 0, 0),
-                    UserId = "user3"
+                    UserId = user3Id
                 },
                 new Review
                 {
@@ -96,7 +104,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "Great service",
                     Rating = 5,
                     ReviewDate = new DateTime(2026, 4, 4, 10, 0, 0),
-                    UserId = "user4"
+                    UserId = user4Id
                 },
                 new Review
                 {
@@ -106,7 +114,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "Should not appear",
                     Rating = 4,
                     ReviewDate = new DateTime(2026, 4, 5, 10, 0, 0),
-                    UserId = "user5"
+                    UserId = user5Id
                 },
                 new Review
                 {
@@ -116,7 +124,7 @@ namespace RedjoBarbers.Web.Services.Tests.ServiceTests
                     Comments = "",
                     Rating = 5,
                     ReviewDate = new DateTime(2026, 4, 6, 10, 0, 0),
-                    UserId = "user6"
+                    UserId = user6Id
                 });
 
             await context.SaveChangesAsync();

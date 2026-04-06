@@ -1,4 +1,9 @@
 ﻿document.addEventListener("DOMContentLoaded", function () {
+    initBookingDateRange();
+    initDateOfBirthPicker();
+});
+
+function initBookingDateRange() {
     const fromInput = document.querySelector('input[name="FromDate"]');
     const toInput = document.querySelector('input[name="ToDate"]');
 
@@ -54,4 +59,21 @@
     if (toPicker.selectedDates.length > 0) {
         fromPicker.set("maxDate", toPicker.selectedDates[0]);
     }
-});
+}
+
+function initDateOfBirthPicker() {
+    const dobInput = document.querySelector('input[name="Input.DateOfBirth"]');
+
+    if (!dobInput) {
+        return;
+    }
+
+    flatpickr(dobInput, {
+        altInput: true,
+        altFormat: "d.m.Y",
+        dateFormat: "Y-m-d",
+        allowInput: false,
+        maxDate: "today",
+        minDate: "1900-01-01"
+    });
+}

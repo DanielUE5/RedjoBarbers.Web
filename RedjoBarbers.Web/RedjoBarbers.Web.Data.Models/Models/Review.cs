@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using RedjoBarbers.Web.Data.Models.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static RedjoBarbers.Web.Data.Common.EntityValidation.Review;
@@ -15,7 +15,7 @@ namespace RedjoBarbers.Web.Data.Models
         public string CustomerName { get; set; } = null!;
 
         [Required]
-        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5 stars.")]
+        [Range(1, 5, ErrorMessage = "Оценката трябва да е между 1 и 5 звезди.")]
         public int Rating { get; set; }
 
         [MaxLength(CommentsMaxLength)]
@@ -28,7 +28,7 @@ namespace RedjoBarbers.Web.Data.Models
         public BarberService BarberService { get; set; } = null!;
 
         [ForeignKey(nameof(User))]
-        public string UserId { get; set; } = null!;
-        public IdentityUser User { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public ApplicationUser User { get; set; } = null!;
     }
 }

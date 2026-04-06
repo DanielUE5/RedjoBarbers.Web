@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using RedjoBarbers.Web.Data.Models.Models;
 
 namespace RedjoBarbers.Web.Data.Configuration
 {
@@ -7,7 +7,7 @@ namespace RedjoBarbers.Web.Data.Configuration
     {
         public static async Task SeedAsync(RedjoBarbersDbContext context, CancellationToken ct)
         {
-            DbSet<IdentityRole> roles = context.Set<IdentityRole>();
+            DbSet<ApplicationRole> roles = context.Set<ApplicationRole>();
 
             string[] roleNames = ["Admin", "User"];
 
@@ -18,10 +18,11 @@ namespace RedjoBarbers.Web.Data.Configuration
                 bool exists = await roles.AnyAsync(r => r.NormalizedName == normalized, ct);
                 if (!exists)
                 {
-                    IdentityRole role = new IdentityRole
+                    ApplicationRole role = new ApplicationRole
                     {
                         Name = roleName,
-                        NormalizedName = normalized
+                        NormalizedName = normalized,
+                        Label = roleName
                     };
 
                     await roles.AddAsync(role, ct);
@@ -30,6 +31,7 @@ namespace RedjoBarbers.Web.Data.Configuration
 
             await context.SaveChangesAsync(ct);
         }
+
         public static void Seed(RedjoBarbersDbContext db)
         {
             SeedAsync(db, CancellationToken.None)

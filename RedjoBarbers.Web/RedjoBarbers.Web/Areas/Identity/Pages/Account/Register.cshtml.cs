@@ -1,33 +1,31 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿#nullable disable
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using RedjoBarbers.Web.Data.Models.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _emailStore;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserStore<ApplicationUser> _userStore;
+        private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            IUserStore<ApplicationUser> userStore,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration
-            )
+            RoleManager<ApplicationRole> roleManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -38,60 +36,46 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             _configuration = configuration;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Моля, въведете име.")]
+            [StringLength(100, ErrorMessage = "Името не може да бъде по-дълго от 100 символа.")]
+            [Display(Name = "Име")]
+            public string FirstName { get; set; } = string.Empty;
+
+            [Required(ErrorMessage = "Моля, въведете фамилия.")]
+            [StringLength(100, ErrorMessage = "Фамилията не може да бъде по-дълга от 100 символа.")]
+            [Display(Name = "Фамилия")]
+            public string LastName { get; set; } = string.Empty;
+
+            [DataType(DataType.Date)]
+            [Display(Name = "Дата на раждане (по избор)")]
+            public DateTime? DateOfBirth { get; set; }
+
+            [Required(ErrorMessage = "Моля, въведете имейл адрес.")]
+            [EmailAddress(ErrorMessage = "Моля, въведете валиден имейл адрес.")]
             [Display(Name = "Имейл адрес")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Моля, въведете парола.")]
             [StringLength(100, ErrorMessage = "{0} трябва да е с дължина поне {2} и максимум {1} знака.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Парола")]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
+            [Required(ErrorMessage = "Моля, потвърдете паролата.")]
             [DataType(DataType.Password)]
             [Display(Name = "Потвърдете паролата")]
             [Compare("Password", ErrorMessage = "Паролата и паролата за потвърждение не съвпадат.")]
             public string ConfirmPassword { get; set; }
         }
-
 
         public async Task OnGetAsync(string returnUrl = null)
         {
@@ -102,10 +86,16 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
+            ReturnUrl = returnUrl;
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
-                IdentityUser user = CreateUser();
+                ApplicationUser user = CreateUser();
+
+                user.FirstName = Input.FirstName.Trim();
+                user.LastName = Input.LastName.Trim();
+                user.DateOfBirth = Input.DateOfBirth;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -114,6 +104,8 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation("Потребител създаде нов акаунт.");
+
                     string adminEmail = _configuration["AdminSettings:Email"];
 
                     string roleName = string.Equals(Input.Email, adminEmail, StringComparison.OrdinalIgnoreCase)
@@ -122,7 +114,12 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
 
                     if (!await _roleManager.RoleExistsAsync(roleName))
                     {
-                        IdentityResult createRoleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+                        IdentityResult createRoleResult = await _roleManager.CreateAsync(new ApplicationRole
+                        {
+                            Name = roleName,
+                            NormalizedName = roleName.ToUpperInvariant(),
+                            Label = roleName
+                        });
 
                         if (!createRoleResult.Succeeded)
                         {
@@ -147,15 +144,8 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
                         return Page();
                     }
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnUrl);
                 }
 
                 foreach (IdentityError error in result.Errors)
@@ -167,28 +157,26 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
             return Page();
         }
 
-
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {
-                throw new InvalidOperationException($"Не може да се създаде екземпляр на '{nameof(IdentityUser)}'." +
-                    $"Уверете се, че '{nameof(IdentityUser)}' не е абстрактен клас и има конструктор без параметри, или алтернативно " +
-                    $"замени страницата за регистрация в /Areas/Identity/Pages/Account/Register.cshtml");
+                throw new InvalidOperationException($"Не може да се създаде екземпляр на '{nameof(ApplicationUser)}'.");
             }
         }
 
-        private IUserEmailStore<IdentityUser> GetEmailStore()
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
             {
-                throw new NotSupportedException("Подразбиращият се потребителски интерфейс изисква потребителски магазин с поддръжка по имейл.");
+                throw new NotSupportedException("User store трябва да поддържа email.");
             }
-            return (IUserEmailStore<IdentityUser>)_userStore;
+
+            return (IUserEmailStore<ApplicationUser>)_userStore;
         }
     }
 }
