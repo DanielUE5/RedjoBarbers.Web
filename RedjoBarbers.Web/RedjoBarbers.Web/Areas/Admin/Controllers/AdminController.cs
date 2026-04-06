@@ -26,6 +26,7 @@ namespace RedjoBarbers.Web.Areas.Admin.Controllers
                 .AsNoTracking()
                 .Include(a => a.Barber)
                 .Include(a => a.BarberService)
+                .AsSplitQuery()
                 .OrderByDescending(a => a.Id)
                 .ToListAsync();
 
@@ -51,12 +52,14 @@ namespace RedjoBarbers.Web.Areas.Admin.Controllers
 
             if (appointment == null)
             {
+                TempData["ErrorMessage"] = "Записаният час не беше намерен.";
                 return RedirectToAction(nameof(Index));
             }
 
             appointment.Status = status;
             await dbContext.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Статусът на часа беше обновен успешно.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -66,12 +69,16 @@ namespace RedjoBarbers.Web.Areas.Admin.Controllers
         {
             Review? review = await dbContext.Reviews.FindAsync(id);
 
-            if (review != null)
+            if (review == null)
             {
-                dbContext.Reviews.Remove(review);
-                await dbContext.SaveChangesAsync();
+                TempData["ErrorMessage"] = "Отзивът не беше намерен.";
+                return RedirectToAction(nameof(Index));
             }
 
+            dbContext.Reviews.Remove(review);
+            await dbContext.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Отзивът беше изтрит успешно.";
             return RedirectToAction(nameof(Index));
         }
     }

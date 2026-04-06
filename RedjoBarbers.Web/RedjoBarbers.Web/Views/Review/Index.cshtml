@@ -4,17 +4,35 @@
     ViewData["Title"] = "Отзиви";
 }
 
-<section class="py-4">
+<section class="inner-hero-section">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-            <h2 class="mb-0">Отзиви</h2>
+        <div class="inner-hero-content">
+            <span class="section-kicker">Клиентски мнения</span>
+            <h1 class="inner-page-title">Отзиви, които изграждат доверие</h1>
+            <p class="inner-page-text">
+                Вижте какво казват нашите клиентите след всяко посещение.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="reviews-page-section">
+    <div class="container">
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Отзиви</span>
+                <h2 class="section-title mb-2">Какво казват клиентите</h2>
+                <p class="section-subtitle mb-0">
+                    Доволни клиенти, които се връщат отново.
+                </p>
+            </div>
 
             @if (User.Identity?.IsAuthenticated ?? false)
             {
                 <a asp-area=""
                        asp-controller="Review"
                        asp-action="Create"
-                       class="btn btn-primary cta-btn">
+                       class="btn btn-gold">
                     Напишете отзив
                 </a>
             }
@@ -23,24 +41,24 @@
                 <a asp-area="Identity"
                        asp-page="/Account/Login"
                        asp-route-returnUrl="@Url.Action("Create", "Review")"
-                       class="btn btn-primary cta-btn">
+                       class="btn btn-gold">
                     Напишете отзив
                 </a>
             }
         </div>
 
-        <form method="get" class="appointments-filter-card mb-4">
+        <form method="get" class="reviews-filter-panel">
             <input type="hidden" name="currentPage" value="1" />
 
-            <div class="filter-header">
-                <h2>Филтриране на отзиви</h2>
-                <p>Може да разгледаш всички отзиви или да ги филтрираш по услуга и начин на подреждане.</p>
+            <div class="reviews-filter-head">
+                <h3>Филтриране на отзиви</h3>
+                <p>Разгледай всички отзиви или ги филтрирай по услуга и начин на сортиране.</p>
             </div>
 
-            <div class="filter-grid">
-                <div class="filter-group">
-                    <label for="BarberServiceId">Услуга</label>
-                    <select id="BarberServiceId" name="barberServiceId" class="filter-input">
+            <div class="reviews-filter-grid">
+                <div class="lux-form-group">
+                    <label for="BarberServiceId" class="lux-label">Услуга</label>
+                    <select id="BarberServiceId" name="barberServiceId" class="lux-input">
                         <option value="">Всички услуги</option>
                         @foreach (SelectListItem service in Model.Services)
                         {
@@ -51,114 +69,103 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label for="SortReviews">Подреди по</label>
-                    <select id="SortReviews" name="sortReviews" class="filter-input">
+                <div class="lux-form-group">
+                    <label for="SortReviews" class="lux-label">Сортиране</label>
+                    <select id="SortReviews" name="sortReviews" class="lux-input">
                         <option value="newest" selected="@(Model.SortReviews == "newest")">Най-нови</option>
-                        <option value="rating" selected="@(string.IsNullOrWhiteSpace(Model.SortReviews) || Model.SortReviews == "rating")">Най-висок рейтинг</option>
+                        <option value="rating" selected="@(string.IsNullOrWhiteSpace(Model.SortReviews) || Model.SortReviews == "rating")">Най-висока оценка</option>
                     </select>
                 </div>
             </div>
 
-            <div class="filter-actions">
-                <button type="submit" class="filter-btn primary-btn">Приложи</button>
-                <a asp-action="Index" class="filter-btn secondary-btn">Изчисти</a>
+            <div class="lux-form-actions">
+                <button type="submit" class="btn btn-gold">Приложи</button>
+                <a asp-action="Index" class="btn btn-outline-lux">Изчисти</a>
             </div>
         </form>
 
         @if (!Model.Reviews.Any())
         {
-            <p class="text-muted">Все още няма публикувани отзиви.</p>
+            <div class="empty-box">
+                <p class="mb-0">Все още няма публикувани отзиви.</p>
+            </div>
         }
         else
         {
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Услуга</th>
-                            <th>Клиент</th>
-                            <th>Рейтинг</th>
-                            <th>Дата</th>
-                            <th>Коментар</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (ReviewIndexItemViewModel r in Model.Reviews)
-                        {
-                            <tr>
-                                <td class="fw-semibold">@r.ServiceName</td>
+            <div class="reviews-page-grid">
+                @foreach (ReviewIndexItemViewModel r in Model.Reviews)
+                {
+                    <article class="review-showcase-card">
+                        <div class="review-showcase-top">
+                            <div>
+                                <span class="review-service-tag">@r.ServiceName</span>
+                                <h3>@r.CustomerName</h3>
+                            </div>
 
-                                <td>@r.CustomerName</td>
+                            <small>@r.ReviewDate.ToString("dd.MM.yyyy")</small>
+                        </div>
 
-                                <td>
-                                    <span class="text-warning me-2">
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            if (i <= r.Rating)
-                                            {
-                                                <i class="bi bi-star-fill"></i>
-                                            }
-                                            else
-                                            {
-                                                <i class="bi bi-star"></i>
-                                            }
-                                        }
-                                    </span>
-                                    <span class="text-muted small">(@r.Rating/5)</span>
-                                </td>
+                        <div class="review-stars large">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= r.Rating)
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                            <span class="review-score-text">@r.Rating/5</span>
+                        </div>
 
-                                <td>@r.ReviewDate.ToString("dd.MM.yyyy")</td>
-
-                                <td style="min-width: 260px">
-                                    @r.Comments
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                        <p class="review-showcase-text">@r.Comments</p>
+                    </article>
+                }
             </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Странициране на отзиви" class="mt-5">
+                <ul class="pagination pagination-lux justify-content-center">
+
+                    <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                        <a class="page-link"
+                               asp-action="Index"
+                               asp-route-barberServiceId="@Model.BarberServiceId"
+                               asp-route-sortReviews="@Model.SortReviews"
+                               asp-route-currentPage="@(Model.Page - 1)">
+                            Предишна
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : "")">
+                            <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-barberServiceId="@Model.BarberServiceId"
+                                   asp-route-sortReviews="@Model.SortReviews"
+                                   asp-route-currentPage="@i">
+                                @i
+                            </a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                        <a class="page-link"
+                               asp-action="Index"
+                               asp-route-barberServiceId="@Model.BarberServiceId"
+                               asp-route-sortReviews="@Model.SortReviews"
+                               asp-route-currentPage="@(Model.Page + 1)">
+                            Следваща
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
         }
     </div>
 </section>
-@if (Model.TotalPages > 1)
-{
-    <nav aria-label="Навигация по страници" class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-barberServiceId="@Model.BarberServiceId"
-                       asp-route-sortReviews="@Model.SortReviews"
-                       asp-route-currentPage="@(Model.Page - 1)">
-                    Предишна
-                </a>
-            </li>
-
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.Page ? "active" : "")">
-                    <a class="page-link"
-                           asp-action="Index"
-                           asp-route-barberServiceId="@Model.BarberServiceId"
-                           asp-route-sortReviews="@Model.SortReviews"
-                           asp-route-currentPage="@i">
-                        @i
-                    </a>
-                </li>
-            }
-
-            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-barberServiceId="@Model.BarberServiceId"
-                       asp-route-sortReviews="@Model.SortReviews"
-                       asp-route-currentPage="@(Model.Page + 1)">
-                    Следваща
-                </a>
-            </li>
-
-        </ul>
-    </nav>
-}

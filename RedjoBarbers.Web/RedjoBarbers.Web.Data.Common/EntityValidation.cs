@@ -14,7 +14,7 @@
             public const int CustomerNameMaxLength = 100;
             public const int CustomerEmailMaxLength = 254;
             public const int CustomerPhoneMaxLength = 20;
-            public const string PhoneRegexPattern = @"^(?:0\d{9}|\+359\d{9}|\+\d{10,})$";
+            public const string PhoneRegexPattern = @"^(\+359|0)8[7-9]\d\s?\d{3}\s?\d{3}$";
             public const int NotesMaxLength = 500;
         }
 
@@ -30,7 +30,7 @@
             public const int BarberBioMaxLength = 2000;
             public const int UrlMaxLength = 2048;
             public const int BarberPhoneNumberMaxLength = 20;
-            public const string PhoneRegexPattern = @"^(?:0\d{9}|\+359\d{9}|\+\d{10,})$";
+            public const string PhoneRegexPattern = @"^(\+359|0)8[7-9]\d\s?\d{3}\s?\d{3}$";
         }
     }
 }

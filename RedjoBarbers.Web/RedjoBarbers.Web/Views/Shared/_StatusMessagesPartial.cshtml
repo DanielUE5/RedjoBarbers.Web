@@ -1,0 +1,58 @@
+﻿@{
+    string? successMessage = TempData["SuccessMessage"]?.ToString();
+    string? errorMessage = TempData["ErrorMessage"]?.ToString();
+    string? warningMessage = TempData["WarningMessage"]?.ToString();
+    string? infoMessage = TempData["InfoMessage"]?.ToString();
+}
+
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="lux-alert lux-alert-success" role="alert">
+        <div class="lux-alert-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <div class="lux-alert-content">
+            <strong>Успех</strong>
+            <p>@successMessage</p>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="lux-alert lux-alert-danger" role="alert">
+        <div class="lux-alert-icon">
+            <i class="bi bi-x-octagon-fill"></i>
+        </div>
+        <div class="lux-alert-content">
+            <strong>Грешка</strong>
+            <p>@errorMessage</p>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(warningMessage))
+{
+    <div class="lux-alert lux-alert-warning" role="alert">
+        <div class="lux-alert-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="lux-alert-content">
+            <strong>Предупреждение</strong>
+            <p>@warningMessage</p>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(infoMessage))
+{
+    <div class="lux-alert lux-alert-info" role="alert">
+        <div class="lux-alert-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </div>
+        <div class="lux-alert-content">
+            <strong>Информация</strong>
+            <p>@infoMessage</p>
+        </div>
+    </div>
+}

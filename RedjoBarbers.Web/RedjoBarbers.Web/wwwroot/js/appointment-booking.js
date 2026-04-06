@@ -97,13 +97,13 @@
 
         if (!barberServiceId) {
             appointmentTimeSelect.disabled = true;
-            appointmentTimeSelect.innerHTML = '<option value="">Първо изберете услуга</option>';
+            appointmentTimeSelect.innerHTML = '<option value="">После изберете услуга</option>';
             return false;
         }
 
         if (!selectedDateValue) {
             appointmentTimeSelect.disabled = true;
-            appointmentTimeSelect.innerHTML = '<option value="">Първо изберете дата</option>';
+            appointmentTimeSelect.innerHTML = '<option value="">Накрая изберете дата</option>';
             return false;
         }
 

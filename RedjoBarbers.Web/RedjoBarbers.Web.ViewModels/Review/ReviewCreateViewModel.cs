@@ -4,7 +4,7 @@ namespace RedjoBarbers.Web.ViewModels
 {
     public class ReviewCreateViewModel
     {
-        [Range(1, int.MaxValue, ErrorMessage = "Избери услуга.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Изберете услуга.")]
         public int BarberServiceId { get; set; }
 
         [Required(ErrorMessage = "Името е задължително.")]

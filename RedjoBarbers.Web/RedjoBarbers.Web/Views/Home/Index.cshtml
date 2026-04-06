@@ -1,170 +1,245 @@
 ﻿@using RedjoBarbers.Web.Data.Models
+@using System.Globalization
 @model HomeIndexViewModel
 
 @{
-    ViewData["Title"] = "Начална страница";
+    ViewData["Title"] = "Начало";
     string returnUrl = Url.Action("Index", "Home") ?? "/";
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    string bookingUrl = isAuthenticated
+        ? Url.Action("Create", "Appointment", "Appointment") ?? "/Appointment/Create"
+        : Url.Page("/Account/Login", new
+        {
+            area = "Identity",
+            returnUrl = returnUrl
+        }) ?? "/Identity/Account/Login";
+
+    List<BarberService> topServices = Model.Services.Take(3).ToList();
 }
 
-<section class="home-hero">
-    <div class="container text-center">
-        <h1 class="display-4">Redjo Barbers</h1>
-        <p class="lead">
-            Място, където класическото бръснарство среща модерния стил.
-        </p>
-    </div>
-</section>
-
-<section class="home-about">
-    <div class="container text-center">
-        <h2>Защо да избереш нас</h2>
-        <p>
-            В Redjo Barbers вярваме, че добрата визия започва с внимание към детайла.
-            Независимо дали търсиш класическо подстригване, модерна прическа или
-            прецизно оформяне на брада, при нас ще получиш професионално отношение
-            и индивидуален подход.
-        </p>
-        <p>
-            Работим с качествени инструменти и продукти, защото за нас
-            бръснарството не е просто услуга, а занаят.
-        </p>
-    </div>
-</section>
-
-<section class="home-services">
+<section class="hero-section">
     <div class="container">
-        <h2 class="text-center mb-4">Най-популярните ни услуги</h2>
+        <div class="hero-grid">
+            <div class="hero-copy">
+                <span class="section-kicker">Luxury barber studio</span>
+                <h1 class="hero-title">Прецизни подстригвания, изискан стил и премиум грижа</h1>
+                <p class="hero-text">
+                    Модерно място за подстригване, където традицията, изчистеният стил и индивидуалният подход се срещат.
+                    Запазете своя следващ час за подстригване, оформяне на брада или цялостна грижа с увереност.
+                </p>
 
-        <div class="row g-4 justify-content-center">
+                <div class="hero-actions">
+                    <a href="@bookingUrl" class="btn btn-gold btn-lg">Запазете час</a>
+                    <a asp-area="" asp-controller="BarberServices" asp-action="Index" class="btn btn-outline-lux btn-lg">
+                        Разгледайте услугите
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-box">
+                        <strong>3+</strong>
+                        <span>Години опит</span>
+                    </div>
+                    <div class="stat-box">
+                        <strong>500+</strong>
+                        <span>Доволни клиенти</span>
+                    </div>
+                    <div class="stat-box">
+                        <strong>4.9/5</strong>
+                        <span>Средна оценка</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-image-card">
+                    <div class="hero-image-overlay"></div>
+                    <img src="~/images/hero_images/karikatura.jpg" alt="Карикатура на бръснара Реджеп" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="feature-strip">
+    <div class="container">
+        <div class="feature-strip-grid">
+            <div class="feature-chip"><i class="bi bi-scissors"></i><span>Прецизни подстригвания</span></div>
+            <div class="feature-chip"><i class="bi bi-stars"></i><span>Луксозно оформяне на брада</span></div>
+            <div class="feature-chip"><i class="bi bi-clock-history"></i><span>Бързо онлайн записване</span></div>
+            <div class="feature-chip"><i class="bi bi-patch-check"></i><span>Премиум качество</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <div class="section-heading text-center">
+            <span class="section-kicker">За нас</span>
+            <h2 class="section-title">Където класическото бръснарство среща модерното изживяване</h2>
+            <p>
+                Вдъхновени от премиум брандове, Redjo Barbers залага на изчистено представяне,
+                запомняща се атмосфера и уверен личен стил.
+            </p>
+        </div>
+
+        <div class="about-grid">
+            <div class="about-card">
+                <h3>Майсторство</h3>
+                <p>
+                    Всяко подстригване и оформяне се изпълнява с прецизност, постоянство и внимание към детайла.
+                </p>
+            </div>
+            <div class="about-card">
+                <h3>Консултация</h3>
+                <p>
+                    Помагаме на клиентите да изберат стил според формата на лицето, начина на живот и поддръжката.
+                </p>
+            </div>
+            <div class="about-card">
+                <h3>Атмосфера</h3>
+                <p>
+                    Тъмен луксозен стил, премиум продукти и спокойна среда оформят цялото изживяване.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="services-section">
+    <div class="container">
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Нашите услуги</span>
+                <h2 class="section-title mb-2">Популярни услуги</h2>
+                <p class="section-subtitle mb-0">
+                    Реалните данни от базата могат да се запазят, докато визията следва премиум стила.
+                </p>
+            </div>
+
+            <a asp-area="" asp-controller="BarberServices" asp-action="Index" class="btn btn-outline-lux">
+                Виж всички услуги
+            </a>
+        </div>
+
+        <div class="row g-4">
             @if (Model.Services.Any())
             {
-                @foreach (BarberService s in Model.Services.Take(3))
+                @foreach (BarberService service in Model.Services.Take(3))
                 {
-                    <div class="col-md-6 col-lg-3">
-                        <div class="service-card">
-                            <h4>@s.Name</h4>
-                            <p>@s.Description</p>
-                        </div>
+                    <div class="col-md-6 col-xl-4">
+                        <article class="service-lux-card h-100">
+                            <div class="service-icon">
+                                <i class="bi bi-scissors"></i>
+                            </div>
+                            <h3>@service.Name</h3>
+                            <p>@service.Description</p>
+                        </article>
                     </div>
                 }
             }
             else
             {
-                <p class="text-muted">В момента няма налични услуги.</p>
+                <div class="col-12">
+                    <div class="empty-box">
+                        <p class="mb-0">В момента няма налични услуги.</p>
+                    </div>
+                </div>
             }
-        </div>
-
-        <div class="text-center mt-4">
-            <a asp-area=""
-               asp-controller="BarberServices"
-               asp-action="Index"
-               class="btn btn-primary btn-lg cta-btn">
-                Разгледай пълния ни каталог
-            </a>
         </div>
     </div>
 </section>
 
-<section class="home-reviews">
+<section class="pricing-look-section">
     <div class="container">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h2 class="mb-0">Препоръчани от клиенти</h2>
-
-            <div class="d-flex gap-2">
-                <a asp-area=""
-                   asp-controller="Review"
-                   asp-action="Index"
-                   class="btn btn-sm dark-cta-btn">
-                    Виж всички
-                </a>
-
-                @if (User.Identity?.IsAuthenticated ?? false)
-                {
-                    <a asp-area=""
-                       asp-controller="Review"
-                       asp-action="Create"
-                       class="btn btn-primary btn-sm cta-btn">
-                        Напишете отзив
-                    </a>
-                }
-                else
-                {
-                    <a asp-area="Identity"
-                       asp-page="/Account/Login"
-                       asp-route-returnUrl="@returnUrl"
-                       class="btn btn-primary btn-sm cta-btn">
-                        Напишете отзив
-                    </a>
-                }
-            </div>
+        <div class="section-heading text-center">
+            <span class="section-kicker">Цени</span>
+            <h2 class="section-title">Цени на популярните ни услуги</h2>
+            <p class="text-center mt-3">Тук може да видите нашите най-популярни и достъпни услуги.</p>
         </div>
 
-        @if (Model.Reviews.Any())
+        @if (topServices.Any())
         {
-            <div class="row g-4">
-                @foreach (Review r in Model.Reviews)
+            <div class="pricing-grid">
+                @for (int i = 0; i < topServices.Count; i++)
                 {
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card h-100 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <strong>@r.CustomerName</strong>
-                                    <small class="text-muted">@Html.DisplayFor(_ => r.ReviewDate)</small>
-                                </div>
+                    BarberService service = topServices[i];
 
-                                <div class="mb-2 text-warning">
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        if (i <= r.Rating)
-                                        {
-                                            <i class="bi bi-star-fill"></i>
-                                        }
-                                        else
-                                        {
-                                            <i class="bi bi-star"></i>
-                                        }
-                                    }
-                                </div>
+                    string label = i switch
+                    {
+                        0 => "Класически стил",
+                        1 => "Най-популярно",
+                        2 => "Малък джентълмен",
+                        _ => "Услуга"
+                    };
 
-                                <p class="mb-0">@r.Comments</p>
-                            </div>
-                        </div>
+                    <div class="pricing-card @(i == 1 ? "featured" : "")">
+                        <span class="pricing-label">@label</span>
+                        <h3>@service.Name</h3>
+                        <p>@service.Description</p>
+                        <strong>@service.Price.ToString("C", new CultureInfo("fr-FR"))</strong>
                     </div>
                 }
             </div>
         }
         else
         {
-            <p class="text-muted mt-2">Все още няма препоръчани отзиви.</p>
+            <div class="empty-box">
+                <p class="mb-0">В момента няма налични услуги.</p>
+            </div>
         }
     </div>
 </section>
 
-<section class="home-cta">
-    <div class="container text-center">
-        <h2>Готови ли сте за новата Ви визия?</h2>
-        <p>
-            Обади се и запази своя час още днес.
-        </p>
+<section class="reviews-section">
+    <div class="container">
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Отзиви</span>
+                <h2 class="section-title mb-2">Какво казват нашите клиентите</h2>
+            </div>
 
-        @if (User.Identity?.IsAuthenticated ?? false)
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-area="" asp-controller="Review" asp-action="Index" class="btn btn-outline-lux">Всички отзиви</a>
+
+                @if (isAuthenticated)
+                {
+                    <a asp-area="" asp-controller="Review" asp-action="Create" class="btn btn-gold">Напишете отзив</a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl" class="btn btn-gold">
+                        Напишете отзив
+                    </a>
+                }
+            </div>
+        </div>
+
+        @if (!Model.Reviews.Any())
         {
-            <a asp-area=""
-               asp-controller="Appointment"
-               asp-action="Create"
-               class="btn btn-primary btn-lg cta-btn">
-                Запазете час
-            </a>
+            <div class="empty-box">
+                <p class="mb-0">Все още няма публикувани отзиви.</p>
+            </div>
         }
-        else
-        {
-            <a asp-area="Identity"
-               asp-page="/Account/Login"
-               asp-route-returnUrl="@returnUrl"
-               class="btn btn-primary btn-lg cta-btn">
-                Запазете час
-            </a>
-        }
+    </div>
+</section>
+
+<section class="cta-banner-section">
+    <div class="container">
+        <div class="cta-banner">
+            <div>
+                <span class="section-kicker">Запазете час</span>
+                <h2>Готови ли сте за по-изчистен и стилен външен вид?</h2>
+                <p>
+                    Свържете своето премиум изживяване директно с Вашата резервация.
+                </p>
+            </div>
+
+            <div class="cta-banner-actions">
+                <a href="@bookingUrl" class="btn btn-gold btn-lg">Запазете час</a>
+                <a asp-area="" asp-controller="Home" asp-action="Contacts" class="btn btn-outline-lux btn-lg">Свържете се с нас</a>
+            </div>
+        </div>
     </div>
 </section>
 

@@ -1,67 +1,19 @@
-﻿@{
-    string? consentCookie = Context.Request.Cookies["cookie_consent"];
-}
-
-@if (string.IsNullOrWhiteSpace(consentCookie))
-{
-    <div id="cookie-banner" class="cookie-popup">
-        <div class="cookie-popup__box">
-            <p class="cookie-popup__text">
-                Използваме „бисквитки“, за да може нашият сайт да функционира правилно,
-                да персонализираме съдържанието и рекламите, да предоставим функции за
-                социални мрежи и за да анализираме нашия трафик.
+﻿<div id="cookieConsentBanner" class="cookie-consent-shell" hidden>
+    <div class="cookie-consent-card">
+        <div class="cookie-consent-copy">
+            <span class="section-kicker">Бисквитки</span>
+            <h3>Използваме бисквитки за по-добро изживяване</h3>
+            <p>
+                Този сайт използва бисквитки за основна функционалност, по-лесна навигация и по-добро потребителско изживяване.
             </p>
+        </div>
 
-            <div class="cookie-popup__actions">
-                <button type="button" id="reject-cookies" class="cookie-btn cookie-btn--secondary">
-                    Отхвърляне на всички
-                </button>
-
-                <button type="button" id="accept-cookies" class="cookie-btn cookie-btn--primary">
-                    Приемане на всички
-                </button>
-            </div>
-
-            <button type="button" id="manage-cookies" class="cookie-popup__settings">
-                Настройки на бисквитките
+        <div class="cookie-consent-actions">
+            <button id="cookieAcceptBtn" type="button" class="btn btn-gold btn-sm">
+                Приеми всички
             </button>
-        </div>
-    </div>
-}
-
-<div id="cookie-modal" class="cookie-modal d-none">
-    <div class="cookie-modal__backdrop"></div>
-
-    <div class="cookie-modal__content">
-        <h4 class="mb-3">Настройки на бисквитките</h4>
-
-        <div class="mb-3">
-            <label class="cookie-option">
-                <input type="checkbox" checked disabled />
-                <span>
-                    <strong>Необходими бисквитки</strong><br />
-                    Тези бисквитки са нужни за основната функционалност на сайта и не могат да бъдат изключени.
-                </span>
-            </label>
-        </div>
-
-        <div class="mb-4">
-            <label class="cookie-option">
-                <input type="checkbox" id="analytics-consent" />
-                <span>
-                    <strong>Аналитични бисквитки</strong><br />
-                    Помагат ни да разберем как се използва сайтът и да подобрим услугите си.
-                </span>
-            </label>
-        </div>
-
-        <div class="d-flex flex-wrap gap-2">
-            <button type="button" id="save-cookie-settings" class="cookie-btn cookie-btn--primary">
-                Запази избора
-            </button>
-
-            <button type="button" id="close-cookie-settings" class="cookie-btn cookie-btn--secondary">
-                Затвори
+            <button id="cookieDeclineBtn" type="button" class="btn btn-outline-lux btn-sm">
+                Откажи
             </button>
         </div>
     </div>

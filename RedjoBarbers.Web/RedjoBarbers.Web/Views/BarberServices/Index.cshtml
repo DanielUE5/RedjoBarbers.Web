@@ -3,46 +3,106 @@
 @model IEnumerable<BarberService>
 
 @{
-    ViewData["Title"] = "Нашите услуги";
-}
-
-<h2>Избери своята нова визия</h2>
-
-@if (!Model.Any())
-{
-    <p>В момента няма валидни бръснарски услуги.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Услуга</th>
-                <th>Описание</th>
-                <th>Цена</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (BarberService service in Model)
+    ViewData["Title"] = "Услуги";
+    string returnUrl = Url.Action("Index", "BarberServices") ?? "/";
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    string bookingUrl = isAuthenticated
+        ? Url.Action("Create", "Appointment", new { area = "" }) ?? "/Appointment/Create"
+        : Url.Page("/Account/Login", new
         {
-            <tr>
-                <td>
-                     <h3>@service.Name</h3>
-                     <p>@service.Description</p>
-
-                     <a asp-area=""
-                        asp-controller="Review"
-                        asp-action="Index"
-                        asp-route-barberServiceId="@service.Id"
-                        class="btn btn-sm dark-cta-btn">
-                         Вижте отзивите за тази услуга
-                        </a>
-                </td>
-                <td>@service.Description</td>
-                <td>@service.Price.ToString("C", new CultureInfo("fr-FR"))</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+            area = "Identity",
+            returnUrl = returnUrl
+        }) ?? "/Identity/Account/Login";
 }
+
+<section class="inner-hero-section">
+    <div class="container">
+        <div class="inner-hero-content">
+            <span class="section-kicker">Премиум услуги</span>
+            <h1 class="inner-page-title">Изберете услуга, която отговаря на Вашия стил</h1>
+            <p class="inner-page-text">
+                Премиум грижа за Вашия външен вид.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="services-page-section">
+    <div class="container">
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Меню с услуги</span>
+                <h2 class="section-title mb-2">Налични бръснарски услуги</h2>
+                <p class="section-subtitle mb-0">
+                    Ясно представяне, видими цени и директен достъп до отзиви за всяка услуга.
+                </p>
+            </div>
+
+            <a href="@bookingUrl" class="btn btn-gold">Запазете час</a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-box">
+                <p class="mb-0">В момента няма налични услуги.</p>
+            </div>
+        }
+        else
+        {
+            <div class="services-page-grid">
+                @foreach (BarberService service in Model)
+                {
+                    <article class="service-price-card">
+                        <div class="service-price-top">
+                            <div class="service-price-icon">
+                                <i class="bi bi-scissors"></i>
+                            </div>
+
+                            <div class="service-price-value">
+                                @service.Price.ToString("C", new CultureInfo("fr-FR"))
+                            </div>
+                        </div>
+
+                        <h3>@service.Name</h3>
+                        <p>@service.Description</p>
+
+                        <div class="service-price-actions">
+                            <a href="@bookingUrl" class="btn btn-gold btn-sm">Запазете час за услугата</a>
+
+                            <a asp-area=""
+                                   asp-controller="Review"
+                                   asp-action="Index"
+                                   asp-route-barberServiceId="@service.Id"
+                                   class="btn btn-outline-lux btn-sm">
+                                Виж отзиви
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<section class="services-benefits-section">
+    <div class="container">
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <strong>Прецизно изпълнение</strong>
+                <p>Подстригване и оформяне на брада с контрол, структура и баланс.</p>
+            </div>
+
+            <div class="benefit-card">
+                <strong>Ясни цени</strong>
+                <p>Лесно разбираеми ценови блокове в премиум стил.</p>
+            </div>
+
+            <div class="benefit-card">
+                <strong>Директна резервация</strong>
+                <p>Преминаване директно от разглеждане към записване на час.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <partial name="_GoogleLocation" />

@@ -6,6 +6,7 @@ using RedjoBarbers.Web.Data.Models.Enums;
 using RedjoBarbers.Web.Services.Contracts;
 using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
+using RedjoBarbers.Web.ViewModels.Appointments;
 
 namespace RedjoBarbers.Web.Services
 {
@@ -29,6 +30,27 @@ namespace RedjoBarbers.Web.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<AppointmentListItemViewModel>> GetAllForListAsync()
+        {
+            return await dbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.Barber)
+                .Include(a => a.BarberService)
+                .AsSplitQuery()
+                .OrderBy(a => a.AppointmentDate)
+                .Select(a => new AppointmentListItemViewModel
+                {
+                    Id = a.Id,
+                    CustomerName = a.CustomerName,
+                    BarberName = a.Barber.Name,
+                    BarberServiceName = a.BarberService.Name,
+                    AppointmentDate = a.AppointmentDate,
+                    Notes = a.Notes,
+                    Status = a.Status
+                })
+                .ToListAsync();
+        }
+
         public async Task<Appointment?> GetByIdAsync(int id)
         {
             return await dbContext.Appointments
@@ -37,6 +59,28 @@ namespace RedjoBarbers.Web.Services
                 .Include(a => a.BarberService)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync(a => a.Id == id);
+        }
+
+        public async Task<AppointmentDetailsViewModel?> GetDetailsForDeleteAsync(int id)
+        {
+            return await dbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.Barber)
+                .Include(a => a.BarberService)
+                .AsSplitQuery()
+                .Where(a => a.Id == id)
+                .Select(a => new AppointmentDetailsViewModel
+                {
+                    Id = a.Id,
+                    CustomerName = a.CustomerName,
+                    CustomerEmail = a.CustomerEmail,
+                    CustomerPhone = a.CustomerPhone,
+                    BarberName = a.Barber.Name,
+                    BarberServiceName = a.BarberService.Name,
+                    AppointmentDate = a.AppointmentDate,
+                    Notes = a.Notes
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<AppointmentFormViewModel> GetCreateFormModelAsync()
@@ -104,7 +148,8 @@ namespace RedjoBarbers.Web.Services
         {
             model.Barbers = await dbContext.Barbers
                 .AsNoTracking()
-                .OrderBy(b => b.Name)
+                .OrderByDescending(s => s.Name == "Реджеп")
+                .ThenBy(s => s.Name)
                 .Select(b => new SelectListItem
                 {
                     Value = b.Id.ToString(),

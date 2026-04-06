@@ -22,8 +22,10 @@ namespace RedjoBarbers.Web.Services
                 .OrderBy(s => s.Id)
                 .Select(s => new BarberService
                 {
+                    Id = s.Id,
                     Name = s.Name,
-                    Description = s.Description
+                    Description = s.Description,
+                    Price = s.Price
                 })
                 .ToListAsync();
 

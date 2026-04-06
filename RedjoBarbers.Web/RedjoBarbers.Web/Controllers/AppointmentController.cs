@@ -1,305 +1,223 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Services.Contracts;
 using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
+using RedjoBarbers.Web.ViewModels.Appointments;
 using System.Security.Claims;
 
-namespace RedjoBarbers.Web.Controllers
+public class AppointmentController : Controller
 {
-    public class AppointmentController : Controller
+    private readonly IAppointmentService appointmentService;
+
+    public AppointmentController(IAppointmentService appointmentService)
     {
-        private readonly IAppointmentService appointmentService;
+        this.appointmentService = appointmentService;
+    }
 
-        public AppointmentController(IAppointmentService appointmentService)
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        IEnumerable<AppointmentListItemViewModel> model =
+            await appointmentService.GetAllForListAsync();
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> MyAppointments()
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        MyAppointmentsPageViewModel model =
+            await appointmentService.GetMyAppointmentsPageAsync(userId);
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Create(int? serviceId)
+    {
+        AppointmentFormViewModel model =
+            await appointmentService.GetCreateFormModelAsync();
+
+        if (serviceId.HasValue)
         {
-            this.appointmentService = appointmentService;
+            model.BarberServiceId = serviceId.Value;
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Index([FromQuery] AppointmentFilterViewModel filter)
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(AppointmentFormViewModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            AppointmentFilterViewModel model = await appointmentService.GetFilteredAsync(filter);
+            await appointmentService.PopulateDropdownsAsync(model);
             return View(model);
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Details(int? id)
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        AppointmentCreateResult result =
+            await appointmentService.CreateAsync(model, userId);
+
+        switch (result)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            case AppointmentCreateResult.InvalidBarberOrService:
+                ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
+                break;
 
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            case AppointmentCreateResult.BusySlot:
+                ModelState.AddModelError(string.Empty, "Избраният час е зает.");
+                break;
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
-                id.Value,
-                userId,
-                User.IsInRole("Admin"));
-
-            if (!canAccess)
-            {
-                return Forbid();
-            }
-
-            Appointment? appointment = await appointmentService.GetByIdAsync(id.Value);
-
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
-            return View(appointment);
+            case AppointmentCreateResult.Success:
+                TempData["SuccessMessage"] = "Часът беше записан успешно.";
+                return RedirectToAction(nameof(MyAppointments));
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Create()
+        await appointmentService.PopulateDropdownsAsync(model);
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Update(int id)
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        bool isAdmin = User.IsInRole("Admin");
+
+        bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
+        if (!isOwnerOrAdmin)
         {
-            AppointmentFormViewModel model = await appointmentService.GetCreateFormModelAsync();
+            return Forbid();
+        }
+
+        AppointmentFormViewModel? model =
+            await appointmentService.GetFormModelByIdAsync(id);
+
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(int id, AppointmentFormViewModel model)
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        bool isAdmin = User.IsInRole("Admin");
+
+        bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
+        if (!isOwnerOrAdmin)
+        {
+            return Forbid();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await appointmentService.PopulateDropdownsAsync(model);
             return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Create(AppointmentFormViewModel appointmentForm)
+        AppointmentUpdateResult result =
+            await appointmentService.UpdateAsync(id, model);
+
+        switch (result)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                return View(appointmentForm);
-            }
-
-            AppointmentCreateResult result = await appointmentService.CreateAsync(appointmentForm, userId);
-
-            switch (result)
-            {
-                case AppointmentCreateResult.InvalidBarberOrService:
-                    ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-
-                case AppointmentCreateResult.BusySlot:
-                    ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                        "Избраният час се застъпва с вече записан час, моля изберете друг.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-
-                case AppointmentCreateResult.Success:
-                    return RedirectToAction(User.IsInRole("Admin") ? nameof(Index) : nameof(MyAppointments));
-
-                default:
-                    ModelState.AddModelError(string.Empty, "Възникна неочаквана грешка.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-            }
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Update(int? id)
-        {
-            if (id == null)
-            {
+            case AppointmentUpdateResult.NotFound:
                 return NotFound();
-            }
 
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            case AppointmentUpdateResult.InvalidBarberOrService:
+                ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
+                break;
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
+            case AppointmentUpdateResult.BusySlot:
+                ModelState.AddModelError(string.Empty, "Избраният час е зает.");
+                break;
 
-            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
-                id.Value,
-                userId,
-                User.IsInRole("Admin"));
-
-            if (!canAccess)
-            {
-                return Forbid();
-            }
-
-            AppointmentFormViewModel? model = await appointmentService.GetFormModelByIdAsync(id.Value);
-
-            if (model == null)
-            {
-                return NotFound();
-            }
-
-            return View(model);
+            case AppointmentUpdateResult.Success:
+                TempData["SuccessMessage"] = "Часът беше обновен успешно.";
+                return RedirectToAction(nameof(MyAppointments));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Update(int id, AppointmentFormViewModel appointmentForm)
+        await appointmentService.PopulateDropdownsAsync(model);
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        bool isAdmin = User.IsInRole("Admin");
+
+        bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(id, userId, isAdmin);
+        if (!isOwnerOrAdmin)
         {
-            if (appointmentForm.Id == null || id != appointmentForm.Id.Value)
-            {
-                return NotFound();
-            }
-
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
-                id,
-                userId,
-                User.IsInRole("Admin"));
-
-            if (!canAccess)
-            {
-                return Forbid();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                return View(appointmentForm);
-            }
-
-            AppointmentUpdateResult result = await appointmentService.UpdateAsync(id, appointmentForm);
-
-            switch (result)
-            {
-                case AppointmentUpdateResult.NotFound:
-                    return NotFound();
-
-                case AppointmentUpdateResult.InvalidBarberOrService:
-                    ModelState.AddModelError(string.Empty, "Невалиден избор на бръснар или услуга.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-
-                case AppointmentUpdateResult.BusySlot:
-                    ModelState.AddModelError(nameof(appointmentForm.AppointmentDate),
-                        "Избраният час се застъпва с вече записан час, моля изберете друг.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-
-                case AppointmentUpdateResult.Success:
-                    return RedirectToAction(nameof(MyAppointments));
-
-                default:
-                    ModelState.AddModelError(string.Empty, "Възникна неочаквана грешка.");
-                    await appointmentService.PopulateDropdownsAsync(appointmentForm);
-                    return View(appointmentForm);
-            }
+            return Forbid();
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Delete(int? id)
+        AppointmentDetailsViewModel? model =
+            await appointmentService.GetDetailsForDeleteAsync(id);
+
+        if (model == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
-                id.Value,
-                userId,
-                User.IsInRole("Admin"));
-
-            if (!canAccess)
-            {
-                return Forbid();
-            }
-
-            Appointment? appointmentForDelete = await appointmentService.GetByIdAsync(id.Value);
-
-            if (appointmentForDelete == null)
-            {
-                return NotFound();
-            }
-
-            return View(appointmentForDelete);
+            return NotFound();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(AppointmentDetailsViewModel model)
+    {
+        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        bool isAdmin = User.IsInRole("Admin");
+
+        bool isOwnerOrAdmin = await appointmentService.IsOwnerOrAdminAsync(model.Id, userId, isAdmin);
+        if (!isOwnerOrAdmin)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            bool canAccess = await appointmentService.IsOwnerOrAdminAsync(
-                id,
-                userId,
-                User.IsInRole("Admin"));
-
-            if (!canAccess)
-            {
-                return Forbid();
-            }
-
-            bool deleted = await appointmentService.DeleteAsync(id);
-
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return RedirectToAction(nameof(MyAppointments));
+            return Forbid();
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> MyAppointments()
+        bool deleted = await appointmentService.DeleteAsync(model.Id);
+
+        if (!deleted)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
-
-            MyAppointmentsPageViewModel vm = await appointmentService.GetMyAppointmentsPageAsync(userId);
-            return View(vm);
+            return NotFound();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAvailableSlots(DateTime date, int barberId, int barberServiceId)
+        TempData["SuccessMessage"] = "Часът беше изтрит успешно.";
+
+        if (isAdmin)
         {
-            IEnumerable<string> slots = await appointmentService
-                .GetAvailableSlotsAsync(date, barberId, barberServiceId);
-
-            return Json(slots);
+            return RedirectToAction(nameof(Index));
         }
+
+        return RedirectToAction(nameof(MyAppointments));
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAvailableSlots(DateTime date, int barberId, int barberServiceId)
+    {
+        IEnumerable<string> slots =
+            await appointmentService.GetAvailableSlotsAsync(date, barberId, barberServiceId);
+
+        return Json(slots);
     }
 }

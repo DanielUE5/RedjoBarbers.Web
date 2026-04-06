@@ -1,20 +1,46 @@
-﻿@{
+﻿@model ErrorViewModel
+@{
     ViewData["Title"] = "Грешка";
 }
 
-<section class="error-page-section">
+<section class="inner-hero-section">
     <div class="container">
-        <div class="error-page-card">
-            <h1>Грешка</h1>
-            <h2>Възникна проблем при зареждането на страницата</h2>
-            <p>
-                Моля, опитайте отново или се върнете към началната страница.
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">Възникна проблем</span>
+            <h1 class="inner-page-title">Не успяхме да изпълним заявката</h1>
+            <p class="inner-page-text">
+                Възникна неочаквана грешка при обработката на страницата. Моля, опитайте отново или се върнете към безопасна част от сайта.
             </p>
+        </div>
+    </div>
+</section>
 
-            <div class="error-actions">
-                <a asp-controller="Home" asp-action="Index" class="filter-btn primary-btn">
-                    Към началната страница
-                </a>
+<section class="policy-page-section">
+    <div class="container">
+        <div class="policy-shell">
+            <div class="policy-card error-card-lux">
+                <div class="error-code-badge">
+                    <i class="bi bi-exclamation-octagon-fill"></i>
+                    <span>Грешка</span>
+                </div>
+
+                <h2>Заявката не бе изпълнена</h2>
+                <p>
+                    Това може да се случи поради временен проблем, невалидна заявка или липсващ ресурс.
+                </p>
+
+                @if (Model?.ShowRequestId ?? false)
+                {
+                    <div class="policy-note-box">
+                        <span>ID на заявката</span>
+                        <p><code>@Model.RequestId</code></p>
+                    </div>
+                }
+
+                <div class="lux-form-actions mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-gold">Към началото</a>
+                    <a asp-controller="Home" asp-action="Contacts" class="btn btn-outline-lux">Свържете се с нас</a>
+                </div>
             </div>
         </div>
     </div>

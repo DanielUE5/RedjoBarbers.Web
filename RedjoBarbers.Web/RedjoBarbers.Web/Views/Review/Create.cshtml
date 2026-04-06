@@ -2,74 +2,101 @@
 @model RedjoBarbers.Web.ViewModels.ReviewCreateViewModel
 
 @{
-    ViewData["Title"] = "Създайте отзив";
+    ViewData["Title"] = "Напишете отзив";
 }
 
-<section class="py-5">
-    <div class="container" style="max-width: 720px;">
-
-        <div class="text-center mb-4">
-            <h2>Сподели своето мнение</h2>
-            <p class="text-muted">
-                Вашата обратна връзка ни помага да ставаме по-добри.
+<section class="inner-hero-section">
+    <div class="container">
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">Споделете мнение</span>
+            <h1 class="inner-page-title">Разкажете ни за своето изживяване</h1>
+            <p class="inner-page-text">
+                Твоят отзив помага за изграждане на доверие, подобряване на услугите и поддържане на премиум имиджа на бранда.
             </p>
         </div>
-
-        <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
-
-            <div class="mb-3">
-                <label asp-for="BarberServiceId" class="form-label">Услуга</label>
-                <select asp-for="BarberServiceId" class="form-select">
-                    <option value="0">-- Избери услуга --</option>
-                    @foreach (BarberService service in ViewBag.Services)
-                    {
-                        <option value="@service.Id">@service.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="BarberServiceId" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="CustomerName" class="form-label">Твоето име</label>
-                <input asp-for="CustomerName" class="form-control" placeholder="Напишете името си..." />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Rating" class="form-label">Оценка</label>
-                <select asp-for="Rating" class="form-select">
-                    <option value="0">-- Избери оценка --</option>
-                    <option value="1">⭐ 1</option>
-                    <option value="2">⭐⭐ 2</option>
-                    <option value="3">⭐⭐⭐ 3</option>
-                    <option value="4">⭐⭐⭐⭐ 4</option>
-                    <option value="5">⭐⭐⭐⭐⭐ 5</option>
-                </select>
-                <span asp-validation-for="Rating" class="text-danger"></span>
-            </div>
-
-            <div class="mb-4">
-                <label asp-for="Comments" class="form-label">Коментар</label>
-                <textarea asp-for="Comments"
-                          class="form-control"
-                          rows="4"
-                          placeholder="Разкажи ни за своето преживяване..."></textarea>
-                <span asp-validation-for="Comments" class="text-danger"></span>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <a asp-action="Index"
-                   asp-route-barberServiceId="@Model.BarberServiceId"
-                   class="btn btn-outline-secondary">
-                    Назад
-                </a>
-
-                <button type="submit" class="btn btn-primary">
-                    Публикувай отзив
-                </button>
-            </div>
-        </form>
-
     </div>
 </section>
+
+<section class="review-create-section">
+    <div class="container">
+        <div class="review-create-shell">
+            <div class="review-create-card">
+                <div class="booking-form-head">
+                    <span class="section-kicker">Клиентски отзив</span>
+                    <h3>Публикувате мнение</h3>
+                    <p>Изберете услуга, оцени изживяването и оставете коментар.</p>
+                </div>
+
+                <form asp-action="Create" method="post" class="lux-form">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+                    <div class="lux-form-grid">
+                        <div class="lux-form-group">
+                            <label asp-for="BarberServiceId" class="lux-label">Услуга</label>
+                            <select asp-for="BarberServiceId" class="lux-input">
+                                <option value="0">-- Изберете услуга --</option>
+                                @foreach (BarberService service in ViewBag.Services)
+                                {
+                                    <option value="@service.Id">@service.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="BarberServiceId" class="field-validation"></span>
+                        </div>
+                    </div>
+
+                    <div class="lux-form-grid two-cols">
+                        <div class="lux-form-group">
+                            <label asp-for="CustomerName" class="lux-label">Твоето име</label>
+                            <input asp-for="CustomerName"
+                                   class="lux-input"
+                                   placeholder="Въведете името си..." />
+                            <span asp-validation-for="CustomerName" class="field-validation"></span>
+                        </div>
+
+                        <div class="lux-form-group">
+                            <label asp-for="Rating" class="lux-label">Оценка</label>
+                            <select asp-for="Rating" class="lux-input">
+                                <option value="0">-- Изберете оценка --</option>
+                                <option value="1">⭐ 1</option>
+                                <option value="2">⭐⭐ 2</option>
+                                <option value="3">⭐⭐⭐ 3</option>
+                                <option value="4">⭐⭐⭐⭐ 4</option>
+                                <option value="5">⭐⭐⭐⭐⭐ 5</option>
+                            </select>
+                            <span asp-validation-for="Rating" class="field-validation"></span>
+                        </div>
+                    </div>
+
+                    <div class="lux-form-grid">
+                        <div class="lux-form-group">
+                            <label asp-for="Comments" class="lux-label">Коментар</label>
+                            <textarea asp-for="Comments"
+                                      class="lux-input lux-textarea"
+                                      rows="6"
+                                      placeholder="Сподели впечатленията си..."></textarea>
+                            <span asp-validation-for="Comments" class="field-validation"></span>
+                        </div>
+                    </div>
+
+                    <div class="lux-form-actions">
+                        <a asp-action="Index"
+                               asp-route-barberServiceId="@Model.BarberServiceId"
+                               class="btn btn-outline-lux">
+                            Назад
+                        </a>
+
+                        <button type="submit" class="btn btn-gold">
+                            Публикувай отзив
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
