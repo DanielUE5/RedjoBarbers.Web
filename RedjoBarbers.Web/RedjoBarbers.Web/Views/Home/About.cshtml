@@ -1,48 +1,155 @@
 ﻿@{
     ViewData["Title"] = "За нас";
+    string returnUrl = Url.Action("About", "Home") ?? "/";
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    string bookingUrl = isAuthenticated
+        ? Url.Action("Create", "Appointment", new { area = "" }) ?? "/Appointment/Create"
+        : Url.Page("/Account/Login", new
+        {
+            area = "Identity",
+            returnUrl = returnUrl
+        }) ?? "/Identity/Account/Login";
 }
 
-<section class="about-hero">
+<section class="inner-hero-section">
     <div class="container">
-        <h2>За нас</h2>
-        <p>
-            Добре дошли в <strong>Redjo Barbers</strong> – място, създадено с уважение към
-            класическото бръснарско изкуство и модерния мъжки стил.
-        </p>
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">За Redjo</span>
+            <h1 class="inner-page-title">Барбър студио, изградено върху прецизност, атмосфера и увереност</h1>
+            <p class="inner-page-text">
+                <span class="text-gold">Redjo Barbers</span> съчетава класическата култура на подстригване с модерен и изчистен стил.
+                Всеки детайл от изживяването е създаден да бъде премислен, премиум и персонален.
+            </p>
+        </div>
     </div>
 </section>
 
-<section class="about-story">
+<section class="about-story-lux-section">
     <div class="container">
-        <h2>Нашата история</h2>
-        <p>
-            Ние сме малък екип, но с огромна страст. Това е не просто бизнес, а начин на живот.
-            С времето изградихме място, където традицията среща модерния стил,
-            а всеки детайл е подбран с грижа.
-        </p>
+        <div class="story-grid">
+            <div class="story-copy">
+                <span class="section-kicker">Нашата история</span>
+                <h2 class="section-title">Традиционна дисциплина с модерен стандарт на обслужване</h2>
+                <div class="mt-3">
+                <p>
+                    Създадохме <span class="text-gold">Redjo Barbers</span> като нещо повече от място за подстригване. Целта беше да изградим
+                    изчистена среда, в която стилът, постоянството и доверието са толкова важни, колкото и крайният резултат.
+                </p>
+                <p>
+                    От класически подстригвания до модерно оформяне, нашият подход е фокусиран върху детайла,
+                    прецизното изпълнение и това всеки клиент да си тръгне с повече увереност.
+                </p>
+                </div>
+            </div>
+
+            <div class="story-panel">
+                <div class="story-stat">
+                    <strong>3+</strong>
+                    <span>Години комбиниран опит</span>
+                </div>
+                <div class="story-stat">
+                    <strong>500+</strong>
+                    <span>Доволни клиенти и повторни посещения</span>
+                </div>
+                <div class="story-stat">
+                    <strong>Премиум</strong>
+                    <span>Фокус върху високо ниво на обслужване и атмосфера</span>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="about-care">
+<section class="about-values-section">
     <div class="container">
-        <h2>Отношение към клиентите</h2>
-        <p>
-            При нас всеки клиент е специален. Слушаме, съветваме и се стремим да надминем всички очаквания.
-            За нас е важно не само да предоставим качествена услуга, но и да създадем приятелска атмосфера, 
-            където всеки мъж може да се почувства добре дошъл.
-        </p>
+        <div class="section-heading text-center">
+            <span class="section-kicker">Защо да изберете нас</span>
+            <h2 class="section-title">Какво определя Redjo изживяването</h2>
+            <p class="section-subtitle mx-auto">
+                Премиум визия, подкрепена от реални ценности зад бранда.
+            </p>
+        </div>
+
+        <div class="about-values-grid">
+            <article class="about-value-card">
+                <div class="about-value-icon">
+                    <i class="bi bi-scissors"></i>
+                </div>
+                <h3>Прецизност на първо място</h3>
+                <p>
+                    Всяка услуга се изпълнява с дисциплина, симетрия и внимание към финалния детайл.
+                </p>
+            </article>
+
+            <article class="about-value-card">
+                <div class="about-value-icon">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <h3>Персонална консултация</h3>
+                <p>
+                    Насочваме всеки клиент към стил и визия, които отговарят на неговите черти и ежедневие.
+                </p>
+            </article>
+
+            <article class="about-value-card">
+                <div class="about-value-icon">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <h3>Премиум атмосфера</h3>
+                <p>
+                    Изчистен дизайн, луксозен тъмен стил и спокойна студийна среда оформят цялостното изживяване.
+                </p>
+            </article>
+        </div>
     </div>
 </section>
 
-<section class="about-team">
+<section class="about-process-section">
     <div class="container">
-        <h2>Нашите бръснари</h2>
-        <p>
-            Екипът ни е съставен от бръснари с опит и постоянен стремеж към развитие.
-            Следим тенденциите, но ценим и класиката.
-            <a asp-area="" asp-controller="Home" asp-action="Contacts">Запознайте се с нашия екип</a>.
-        </p>
+        <div class="section-heading text-center">
+            <span class="section-kicker">Нашият процес</span>
+            <h2 class="section-title">Как протича всяка резервация</h2>
+        </div>
+
+        <div class="process-grid">
+            <div class="process-step">
+                <span class="process-number">01</span>
+                <h3>Консултация</h3>
+                <p>Започваме с кратък разговор за вашия стил, предпочитания и желания резултат.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="process-number">02</span>
+                <h3>Изпълнение</h3>
+                <p>Подстригването и оформянето се извършват с фокус върху структура, детайл и последователност.</p>
+            </div>
+
+            <div class="process-step">
+                <span class="process-number">03</span>
+                <h3>Финализиране</h3>
+                <p>Завършваме със стилизиране и финални корекции за перфектен резултат.</p>
+            </div>
+        </div>
     </div>
 </section>
-<partial name="_GoogleLocation"/>
-<br />
+
+<section class="cta-banner-section">
+    <div class="container">
+        <div class="cta-banner">
+            <div>
+                <span class="section-kicker">Запази своя час</span>
+                <h2>Изживей по-висок стандарт на подстригване</h2>
+                <p>
+                    Свържи премиум изживяването директно с твоята резервация.
+                </p>
+            </div>
+
+            <div class="cta-banner-actions">
+                <a href="@bookingUrl" class="btn btn-gold btn-lg">Запазете час</a>
+                <a asp-area="" asp-controller="Home" asp-action="Contacts" class="btn btn-outline-lux btn-lg">Свържете се с нас</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_GoogleLocation" />

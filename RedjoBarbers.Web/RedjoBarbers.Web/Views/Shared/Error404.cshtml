@@ -2,23 +2,30 @@
     ViewData["Title"] = "Страницата не е намерена";
 }
 
-<section class="error-page-section">
+<section class="error-page-section d-flex align-items-center">
     <div class="container">
-        <div class="error-page-card">
-            <h1>404</h1>
-            <h2>Страницата не беше намерена</h2>
-            <p>
-                Страницата, която търсите, не съществува или адресът е въведен неправилно.
+        <div class="error-page-card text-center mx-auto">
+
+            <div class="error-code">404</div>
+
+            <h1 class="error-title">Страницата не беше намерена</h1>
+
+            <p class="error-text">
+                Изглежда, че страницата, която търсите, не съществува или адресът е въведен неправилно.
             </p>
 
-            <div class="error-actions">
-                <a asp-controller="Home" asp-action="Index" class="filter-btn primary-btn">
+            <div class="error-divider"></div>
+
+            <div class="error-actions d-flex flex-column flex-md-row justify-content-center gap-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-gold">
                     Към началната страница
                 </a>
-                <a asp-controller="Appointment" asp-action="Index" class="filter-btn secondary-btn">
+
+                <a asp-controller="Appointment" asp-action="Index" class="btn btn-outline-lux">
                     Виж записаните часове
                 </a>
             </div>
+
         </div>
     </div>
 </section>

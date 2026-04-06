@@ -5,58 +5,90 @@
     ViewData["Title"] = "Вход";
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="account" method="post">
-                <h2>Вход</h2>
-                <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+<section class="auth-page-section">
+    <div class="container">
+        <div class="auth-layout">
+            <div class="auth-brand-panel">
+                <span class="section-kicker">Добре дошли отново</span>
+                <h1 class="inner-page-title">Достъп до вашия премиум акаунт за подстригване</h1>
+                <p class="inner-page-text">
+                    Влезте, за да управлявате резервации, да оставяте отзиви и да сте свързани с цялостното изживяване на Redjo Barbers.
+                </p>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email"
-                           class="form-control"
-                           autocomplete="username"
-                           aria-required="true"
-                           placeholder="name@example.com" />
-                    <label asp-for="Input.Email" class="form-label">Имейл</label>
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <div class="booking-steps auth-highlights">
+                    <div class="booking-step-item">
+                        <span>01</span>
+                        <div>
+                            <strong>Управление на резервации</strong>
+                            <p>Преглеждайте или редактирайте предстоящите си посещения при бръснар.</p>
+                        </div>
+                    </div>
+
+                    <div class="booking-step-item">
+                        <span>02</span>
+                        <div>
+                            <strong>Оставяйте отзиви</strong>
+                            <p>Споделяйте мнение и подпомагайте репутацията на бранда.</p>
+                        </div>
+                    </div>
+
+                    <div class="booking-step-item">
+                        <span>03</span>
+                        <div>
+                            <strong>Бъдете свързани</strong>
+                            <p>Запазете данните си за по-бързи бъдещи резервации.</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password"
-                           class="form-control"
-                           autocomplete="current-password"
-                           aria-required="true"
-                           placeholder="Парола" />
-                    <label asp-for="Input.Password" class="form-label">Парола</label>
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+            <div class="auth-form-panel">
+                <div class="auth-card">
+                    <div class="booking-form-head">
+                        <span class="section-kicker">Вход в акаунт</span>
+                        <h3>Влизане</h3>
+                        <p>Въведете данните си по-долу.</p>
+                    </div>
+
+                    <form id="account" method="post" class="lux-form">
+                        <div asp-validation-summary="ModelOnly" class="form-error-summary" role="alert"></div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Input.Email" class="lux-label"></label>
+                                <input asp-for="Input.Email" class="lux-input" autocomplete="username" aria-required="true" />
+                                <span asp-validation-for="Input.Email" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Input.Password" class="lux-label"></label>
+                                <input asp-for="Input.Password" class="lux-input" autocomplete="current-password" aria-required="true" />
+                                <span asp-validation-for="Input.Password" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="auth-row">
+                            <label asp-for="Input.RememberMe" class="auth-checkbox">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <span>@Html.DisplayNameFor(m => m.Input.RememberMe)</span>
+                            </label>
+                        </div>
+
+                        <div class="lux-form-actions">
+                            <button id="login-submit" type="submit" class="btn btn-gold">Вход</button>
+                        </div>
+
+                        <div class="auth-links">
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Все още нямате акаунт? Регистрирайте се тук.</a>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="checkbox mb-3">
-                    <label asp-for="Input.RememberMe" class="form-label">
-                        <input class="form-check-input" asp-for="Input.RememberMe" />
-                        Запомни ме!
-                    </label>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button id="login-submit"
-                            type="submit"
-                            class="btn btn-lg btn-primary flex-fill">
-                        Вход
-                    </button>
-
-                    <a class="btn btn-lg btn-outline-secondary flex-fill"
-                       asp-page="/Account/Register"
-                       asp-route-returnUrl="@Model.ReturnUrl">
-                        Регистрация
-                    </a>
-                </div>
-            </form>
-        </section>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

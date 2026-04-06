@@ -5,27 +5,78 @@
 
 @{
     ViewData["Title"] = "Контакти";
+    string returnUrl = Url.Action("Contacts", "Home") ?? "/";
+    bool isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    string bookingUrl = isAuthenticated
+        ? Url.Action("Create", "Appointment", new { area = "" }) ?? "/Appointment/Create"
+        : Url.Page("/Account/Login", new
+        {
+            area = "Identity",
+            returnUrl = returnUrl
+        }) ?? "/Identity/Account/Login";
 }
 
-<section class="contacts-hero">
+<section class="inner-hero-section">
     <div class="container">
-        <h1>Контакти</h1>
-        <p>
-            Обадете ни се директно или ни пишете в социалните мрежи. По-долу ще намерите бърз контакт с всеки наш бръснар.
-        </p>
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">Контакти и екип</span>
+            <h1 class="inner-page-title">Запознайте се с бръснарите зад изживяването</h1>
+            <p class="inner-page-text">
+                Свържете се директно с нас, разгледате екипа и изберте подходящия бръснар за следващото си преживяване.
+            </p>
+        </div>
     </div>
 </section>
 
-<section class="contacts-info">
+<section class="contact-info-strip">
     <div class="container">
-        <h2>Запознай се с нашите бръснари тук:</h2>
+        <div class="contact-info-grid">
+            <div class="contact-info-card">
+                <span class="contact-info-label">Телефон</span>
+                <strong>+359 XXX XXX XXX</strong>
+                <p>Основен телефон за резервации и информация.</p>
+            </div>
+
+            <div class="contact-info-card">
+                <span class="contact-info-label">Локация</span>
+                <strong>Redjo Barbers Studio</strong>
+                <p>Премиум пространство за подстригване с модерна атмосфера.</p>
+            </div>
+
+            <div class="contact-info-card">
+                <span class="contact-info-label">Резервации</span>
+                <strong>Онлайн система за записване</strong>
+                <p>Използвайте удобната ни система за запазване на час.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="team-contacts-section">
+    <div class="container">
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Нашият екип</span>
+                <h2 class="section-title mb-2">Бръснари за контакт</h2>
+                <p class="section-subtitle mb-0">
+                    Вашите майстори, с които може бързо и лесно да се свържете за въпроси или резервации.
+                </p>
+            </div>
+
+            <a href="@bookingUrl" class="btn btn-gold">Запазете час</a>
+        </div>
+
         @if (!Model.Any())
         {
-            <p>В момента няма налични контакти на бръснари. Моля, свържете се с нас на общия имейл или телефон за повече информация.</p>
+            <div class="empty-box">
+                <p class="mb-0">
+                    В момента няма налични контакти на бръснари. Използвайте основния телефон или формата за резервации.
+                </p>
+            </div>
         }
         else
         {
-            <div class="contacts-list">
+            <div class="team-contact-grid">
                 @foreach (Barber b in Model)
                 {
                     string? safePhotoUrl = UrlSecurityHelper.SafeHttpUrlOrNull(b.PhotoUrl);
@@ -37,35 +88,39 @@
                     string? safeFacebookUrl = UrlSecurityHelper.SafeHttpUrlOrNull(b.FacebookUrl);
                     string? safePhoneHref = UrlSecurityHelper.SafeTelHrefOrNull(b.PhoneNumber);
 
-                    <div class="contact-item">
-                        <img class="contact-photo" src="@finalPhotoUrl" alt="@b.Name" loading="lazy" />
+                    <article class="team-contact-card">
+                        <div class="team-contact-image-wrap">
+                            <img src="@finalPhotoUrl" alt="@b.Name" class="team-contact-image" loading="lazy" />
+                        </div>
 
-                        <div class="contact-details">
-                            <div class="contact-header">
-                                <span class="contact-name">@b.Name</span>
+                        <div class="team-contact-body">
+                            <div class="team-contact-top">
+                                <h3>@b.Name</h3>
 
                                 @if (!string.IsNullOrWhiteSpace(safePhoneHref))
                                 {
-                                    <a class="contact-phone"
-                                           href="@safePhoneHref"
-                                           aria-label="Обадете се на @b.Name на телефон @b.PhoneNumber">
-                                        @b.PhoneNumber
-                                    </a>
+                                    <a class="team-contact-phone" href="@safePhoneHref">@b.PhoneNumber</a>
                                 }
                             </div>
 
                             @if (!string.IsNullOrWhiteSpace(b.Bio))
                             {
-                                <p class="contact-bio">@b.Bio</p>
+                                <p class="team-contact-bio">@b.Bio</p>
+                            }
+                            else
+                            {
+                                <p class="team-contact-bio">
+                                    Опитен бръснар с фокус върху прецизни подстригвания, детайл и увереност на клиента.
+                                </p>
                             }
 
-                            <div class="contact-links">
+                            <div class="team-contact-actions">
                                 @if (!string.IsNullOrWhiteSpace(safeInstagramUrl))
                                 {
                                     <a href="@safeInstagramUrl"
                                            target="_blank"
                                            rel="noopener noreferrer"
-                                           class="social-link"
+                                           class="social-link-lux"
                                            aria-label="Instagram профил на @b.Name">
                                         <i class="bi bi-instagram"></i>
                                     </a>
@@ -76,18 +131,32 @@
                                     <a href="@safeFacebookUrl"
                                            target="_blank"
                                            rel="noopener noreferrer"
-                                           class="social-link"
+                                           class="social-link-lux"
                                            aria-label="Facebook профил на @b.Name">
                                         <i class="bi bi-facebook"></i>
                                     </a>
                                 }
                             </div>
                         </div>
-                    </div>
+                    </article>
                 }
             </div>
         }
+    </div>
+</section>
 
-        <partial name="_GoogleLocation" />
+<section class="contact-location-section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-kicker">Посетете ни</span>
+            <h2 class="section-title">Локация на студиото</h2>
+            <p class="section-subtitle">
+                Мястото, на което може да ни видите.
+            </p>
+        </div>
+
+        <div class="location-panel">
+            <partial name="_GoogleLocation" />
+        </div>
     </div>
 </section>

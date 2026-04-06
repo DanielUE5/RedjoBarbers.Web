@@ -17,6 +17,7 @@
 
             <form asp-area="Identity"
                   asp-page="/Account/Logout"
+                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
                   method="post"
                   class="d-inline">
                 <button type="submit" class="btn btn-danger me-2">
@@ -30,31 +31,6 @@
                class="btn btn-secondary">
                 Към началната страница
             </a>
-        }
-        else
-        {
-            <div id="logoutMessage"
-                 class="alert alert-success text-center"
-                 data-redirect="@Url.Action("Index", "Home", new { area = "" })">
-
-                <h5>Успешно излязохте от профила си.</h5>
-
-                <p class="mt-2 mb-2">
-                    Ще бъдете пренасочени към началната страница след
-                    <strong id="countdown">2</strong> секунди...
-                </p>
-
-                <div class="mt-2">
-                    <div class="spinner-border text-success" role="status"></div>
-                </div>
-
-                <a asp-area=""
-                       asp-controller="Home"
-                       asp-action="Index"
-                       class="btn btn-primary mt-3">
-                    Към началната страница
-                </a>
-            </div>
         }
     </div>
 </div>

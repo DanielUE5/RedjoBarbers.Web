@@ -1,158 +1,108 @@
-﻿@using RedjoBarbers.Web.Data.Models
-@using RedjoBarbers.Web.Data.Models.Enums
-@model RedjoBarbers.Web.ViewModels.AppointmentFilterViewModel
+﻿@using RedjoBarbers.Web.ViewModels.Appointments
+@model IEnumerable<RedjoBarbers.Web.ViewModels.Appointments.AppointmentListItemViewModel>
 
 @{
-    ViewData["Title"] = "График";
+    ViewData["Title"] = "Резервации";
 }
-<form method="get" class="appointments-filter-card">
-    <input type="hidden" name="Page" value="1" />
-    <div class="filter-header">
-        <h2>Филтриране на часове</h2>
-        <p>Избери период и допълнителни критерии, за да видиш по-точно записаните часове.</p>
-    </div>
 
-    <div class="filter-grid">
-        <div class="filter-group">
-            <label for="FromDate">От дата</label>
-            <input asp-for="FromDate" class="filter-input datepicker" />
-
-        </div>
-
-        <div class="filter-group">
-            <label for="ToDate">До дата</label>
-            <input asp-for="ToDate" class="filter-input datepicker" />
-        </div>
-
-        <div class="filter-group">
-            <label for="Status">Статус</label>
-            <select id="Status" name="Status" class="filter-input">
-                <option value="">Всички статуси</option>
-                @foreach (Object status in Enum.GetValues(typeof(AppointmentStatus)))
-                {
-                    <option value="@status" selected="@(Model.Status?.ToString() == status.ToString())">
-                        @status
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label for="BarberId">Бръснар</label>
-            <select id="BarberId" name="BarberId" class="filter-input">
-                <option value="">Всички бръснари</option>
-                @foreach (SelectListItem b in Model.Barbers)
-                {
-                    <option value="@b.Value" selected="@(Model.BarberId?.ToString() == b.Value)">
-                        @b.Text
-                    </option>
-                }
-            </select>
+<section class="inner-hero-section">
+    <div class="container">
+        <div class="inner-hero-content">
+            <span class="section-kicker">Резервации</span>
+            <h1 class="inner-page-title">Управление на запазени часове</h1>
+            <p class="inner-page-text">
+                Премиум преглед на всички резервации с бърз достъп до редакция и изтриване.
+            </p>
         </div>
     </div>
+</section>
 
-    <div class="filter-actions">
-        <button type="submit" class="filter-btn primary-btn">Филтрирай</button>
-        <a asp-action="Index" class="filter-btn secondary-btn">Изчисти</a>
-    </div>
-</form>
-<h2>Записани часове</h2>
+<section class="appointments-page-section">
+    <div class="container">
+        <partial name="_StatusMessagesPartial" />
 
-@{
-    string returnUrl = Url.Action("Create", "Appointment")!;
-}
-<p>
-    @if (User.Identity?.IsAuthenticated ?? false)
-    {
-        <a asp-action="Create"
-           class="btn btn-primary cta-btn">
-            Планирай посещение
-        </a>
-    }
-    else
-    {
-        <a asp-area="Identity"
-           asp-page="/Account/Login"
-           asp-route-returnUrl="@returnUrl"
-           class="btn btn-primary cta-btn">
-            Планирай посещение
-        </a>
-    }
-</p>
+        <div class="section-heading d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3">
+            <div>
+                <span class="section-kicker">Преглед</span>
+                <h2 class="section-title mb-2">Всички запазени посещения</h2>
+                <p class="section-subtitle mb-0">
+                    Удобен начин да следите и управлявате своите посещения.
+                </p>
+            </div>
 
-@if (Model == null || !Model.Appointments.Any())
-{
-    <tr> 
-        <td colspan="3" class="text-lg text-muted mt-2"> 
-            <i class="bi bi-calendar-x me-2"></i> Все още няма записани часове. Натиснете "Планирай посещение".
-        </td> 
-    </tr>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Статус</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Appointment a in Model.Appointments)
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                <tr>
-                    <td>@Html.DisplayFor(_ => a.AppointmentDate)</td>
-                    <td>@a.Status</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-@if (Model?.TotalPages > 1)
-{
-    <nav aria-label="Навигация по страници" class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-FromDate="@Model.FromDate"
-                       asp-route-ToDate="@Model.ToDate"
-                       asp-route-Status="@Model.Status"
-                       asp-route-BarberId="@Model.BarberId"
-                       asp-route-Page="@(Model.Page - 1)">
-                    Предишна
+                <a asp-controller="Appointment" asp-action="Create" class="btn btn-gold">
+                    Нова резервация
                 </a>
-            </li>
-
-            @for (int i = 1; i <= Model.TotalPages; i++)
+            }
+            else
             {
-                <li class="page-item @(i == Model.Page ? "active" : "")">
-                    <a class="page-link"
-                           asp-action="Index"
-                           asp-route-FromDate="@Model.FromDate"
-                           asp-route-ToDate="@Model.ToDate"
-                           asp-route-Status="@Model.Status"
-                           asp-route-BarberId="@Model.BarberId"
-                           asp-route-Page="@i">
-                        @i
-                    </a>
-                </li>
-            }
-
-            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-FromDate="@Model.FromDate"
-                       asp-route-ToDate="@Model.ToDate"
-                       asp-route-Status="@Model.Status"
-                       asp-route-BarberId="@Model.BarberId"
-                       asp-route-Page="@(Model.Page + 1)">
-                    Следваща
+                <a asp-area="Identity"
+                       asp-page="/Account/Login"
+                       asp-route-returnUrl="/Appointment/Create"
+                       class="btn btn-gold">
+                    Нова резервация
                 </a>
-            </li>
+            }
+        </div>
 
-        </ul>
-    </nav>
-}
+        @if (!Model.Any())
+        {
+            <div class="empty-box">
+                <p class="mb-0">В момента няма налични резервации.</p>
+            </div>
+        }
+        else
+        {
+            <div class="appointments-grid">
+                @foreach (AppointmentListItemViewModel appointment in Model)
+                {
+                    <article class="appointment-card">
+                        <div class="appointment-card-top">
+                            <div>
+                                <span class="appointment-badge">Планирана</span>
+                                <h3>@appointment.CustomerName</h3>
+                            </div>
+
+                            <div class="appointment-date-block">
+                                <strong>@appointment.AppointmentDate.ToString("dd")</strong>
+                                <span>@appointment.AppointmentDate.ToString("MMM")</span>
+                            </div>
+                        </div>
+
+                        <div class="appointment-meta-list">
+                            <div class="appointment-meta-item">
+                                <span>Бръснар</span>
+                                <strong>@appointment.BarberName</strong>
+                            </div>
+
+                            <div class="appointment-meta-item">
+                                <span>Услуга</span>
+                                <strong>@appointment.BarberServiceName</strong>
+                            </div>
+
+                            <div class="appointment-meta-item">
+                                <span>Дата и час</span>
+                                <strong>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</strong>
+                            </div>
+
+                            <div class="appointment-meta-item">
+                                <span>Статус</span>
+                                <strong>@appointment.Status</strong>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(appointment.Notes))
+                        {
+                            <div class="appointment-note-box">
+                                <span>Бележки</span>
+                                <p>@appointment.Notes</p>
+                            </div>
+                        }      
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

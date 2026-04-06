@@ -107,7 +107,7 @@ namespace RedjoBarbers.Web.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("Потребителят е излязъл от профила си.");
+                    _logger.LogInformation("Потребителят е влязъл успешно в профила си.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

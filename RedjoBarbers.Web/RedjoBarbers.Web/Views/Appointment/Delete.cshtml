@@ -1,28 +1,86 @@
-﻿@model RedjoBarbers.Web.Data.Models.Appointment
+﻿@model RedjoBarbers.Web.ViewModels.Appointments.AppointmentDetailsViewModel
 
-<h2>Изтриване</h2>
+@{
+    ViewData["Title"] = "Изтриване на резервация";
+}
 
-<p class="text-danger">Сигурни ли сте, че искаш да изтриете този час?</p>
+<section class="inner-hero-section">
+    <div class="container">
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">Изтриване на резервация</span>
+            <h1 class="inner-page-title">Преглед на резервацията преди изтриване</h1>
+            <p class="inner-page-text">
+                Потвърдете детайлите по-долу преди да премахнете резервацията от системата.
+            </p>
+        </div>
+    </div>
+</section>
 
-<dl class="row">
-    <dt class="col-sm-3">Дата на посещение:</dt>
-    <dd class="col-sm-9">@Html.DisplayFor(m => m.AppointmentDate)</dd>
+<section class="appointment-delete-section">
+    <div class="container">
+        <partial name="_StatusMessagesPartial" />
 
-    <dt class="col-sm-3">Клиент:</dt>
-    <dd class="col-sm-9">@Model.CustomerName</dd>
+        <div class="delete-appointment-shell">
+            <div class="delete-appointment-card">
+                <div class="delete-appointment-head">
+                    <span class="section-kicker">Внимание</span>
+                    <h2>Сигурни ли сте, че искате да изтриете тази резервация?</h2>
+                    <p>
+                        Това действие ще премахне резервацията и трябва да се използва само ако тя вече не е необходима.
+                    </p>
+                </div>
 
-    <dt class="col-sm-3">Бръснар:</dt>
-    <dd class="col-sm-9">@Model.Barber?.Name</dd>
+                <div class="delete-appointment-summary">
+                    <div class="appointment-meta-item">
+                        <span>Клиент</span>
+                        <strong>@Model.CustomerName</strong>
+                    </div>
 
-    <dt class="col-sm-3">Услуга:</dt>
-    <dd class="col-sm-9">@Model.BarberService?.Name</dd>
+                    <div class="appointment-meta-item">
+                        <span>Бръснар</span>
+                        <strong>@Model.BarberName</strong>
+                    </div>
 
-    <dt class="col-sm-3">Забележка:</dt>
-    <dd class="col-sm-9">@Model.Notes</dd>
-</dl>
+                    <div class="appointment-meta-item">
+                        <span>Услуга</span>
+                        <strong>@Model.BarberServiceName</strong>
+                    </div>
 
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Изтриване</button>
-    <a asp-action="MyAppointments" class="btn btn-secondary">Отказ</a>
-</form>
+                    <div class="appointment-meta-item">
+                        <span>Дата и час</span>
+                        <strong>@Model.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</strong>
+                    </div>
+
+                    <div class="appointment-meta-item">
+                        <span>Имейл</span>
+                        <strong>@Model.CustomerEmail</strong>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                    {
+                        <div class="appointment-meta-item">
+                            <span>Телефон</span>
+                            <strong>@Model.CustomerPhone</strong>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                {
+                    <div class="appointment-note-box mt-4">
+                        <span>Бележки</span>
+                        <p>@Model.Notes</p>
+                    </div>
+                }
+
+                <form asp-action="Delete" method="post" class="lux-form-actions mt-4">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <button type="submit" class="btn btn-gold">Изтрий резервацията</button>
+                    <a asp-action="Index" class="btn btn-outline-lux">Връщане назад</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

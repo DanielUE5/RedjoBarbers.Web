@@ -1,68 +1,143 @@
-﻿@model AppointmentFormViewModel
+﻿@model RedjoBarbers.Web.ViewModels.AppointmentFormViewModel
 
-<h2>Промяна на час</h2>
+@{
+    ViewData["Title"] = "Редактиране на резервация";
+}
 
-<form asp-action="Update" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="AppointmentDate" class="form-label"></label>
-        <input asp-for="AppointmentDate" class="form-control" id="appointmentDate" />
-        <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+<section class="inner-hero-section">
+    <div class="container">
+        <div class="inner-hero-content narrow">
+            <span class="section-kicker">Редакция на резервация</span>
+            <h1 class="inner-page-title">Редактирай съществуващ час</h1>
+            <p class="inner-page-text">
+                Промените детайлите по твоята резервация бързо и удобно.
+            </p>
+        </div>
     </div>
+</section>
 
-    <div class="mb-3">
-        <label for="appointmentTime" class="form-label">Час</label>
-        <select class="form-select" id="appointmentTime">
-            <option value="">Изберете час</option>
-        </select>
+<section class="booking-page-section">
+    <div class="container">
+        <partial name="_StatusMessagesPartial" />
+
+        <div class="booking-layout">
+            <div class="booking-info-panel">
+                <span class="section-kicker">Процес на редакция</span>
+                <h2 class="section-title">Актуализирайте своята резервация</h2>
+                <p>
+                    Изберете нови стандарти за Вашия бръснар, услуга или час и запазете промените.
+                </p>
+            </div>
+
+            <div class="booking-form-panel">
+                <div class="booking-form-shell">
+                    <div class="booking-form-head">
+                        <span class="section-kicker">Форма за редакция</span>
+                        <h3>Редакция на резервация</h3>
+                        <p>Променете желаните полета и запази.</p>
+                    </div>
+
+                    <form asp-action="Update"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          class="lux-form">
+
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+                        <div class="lux-form-grid two-cols">
+                            <div class="lux-form-group">
+                                <label asp-for="BarberId" class="lux-label"></label>
+                                <select asp-for="BarberId"
+                                        asp-items="Model.Barbers"
+                                        class="lux-input"
+                                        id="barberId">
+                                    <option value="">Изберете бръснар</option>
+                                </select>
+                                <span asp-validation-for="BarberId" class="field-validation"></span>
+                            </div>
+
+                            <div class="lux-form-group">
+                                <label asp-for="BarberServiceId" class="lux-label"></label>
+                                <select asp-for="BarberServiceId"
+                                        asp-items="Model.BarberServices"
+                                        class="lux-input"
+                                        id="barberServiceId">
+                                    <option value="">Изберете услуга</option>
+                                </select>
+                                <span asp-validation-for="BarberServiceId" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid two-cols">
+                            <div class="lux-form-group">
+                                <label asp-for="AppointmentDate" class="lux-label"></label>
+                                <input asp-for="AppointmentDate"
+                                       class="lux-input"
+                                       id="appointmentDate" />
+                                <span asp-validation-for="AppointmentDate" class="field-validation"></span>
+                            </div>
+
+                            <div class="lux-form-group">
+                                <label for="appointmentTime" class="lux-label">Час</label>
+                                <select id="appointmentTime" class="lux-input">
+                                    <option value="">Изберете час</option>
+                                </select>
+                                <small class="lux-help-text">
+                                    Свободните часове ще се обновят автоматично.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid two-cols">
+                            <div class="lux-form-group">
+                                <label asp-for="CustomerName" class="lux-label"></label>
+                                <input asp-for="CustomerName" class="lux-input" />
+                                <span asp-validation-for="CustomerName" class="field-validation"></span>
+                            </div>
+
+                            <div class="lux-form-group">
+                                <label asp-for="CustomerEmail" class="lux-label"></label>
+                                <input asp-for="CustomerEmail" class="lux-input" />
+                                <span asp-validation-for="CustomerEmail" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="CustomerPhone" class="lux-label"></label>
+                                <input asp-for="CustomerPhone" class="lux-input" />
+                                <span asp-validation-for="CustomerPhone" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Notes" class="lux-label"></label>
+                                <textarea asp-for="Notes"
+                                          class="lux-input lux-textarea"
+                                          rows="5"></textarea>
+                                <span asp-validation-for="Notes" class="field-validation"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-actions">
+                            <a asp-action="MyAppointments" class="btn btn-outline-lux">
+                                Назад
+                            </a>
+
+                            <button type="submit" class="btn btn-gold">
+                                Запази промените
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="CustomerName" class="form-label"></label>
-        <input asp-for="CustomerName" class="form-control" />
-        <span asp-validation-for="CustomerName" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="CustomerEmail" class="form-label"></label>
-        <input asp-for="CustomerEmail" class="form-control" />
-        <span asp-validation-for="CustomerEmail" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="CustomerPhone" class="form-label"></label>
-        <input asp-for="CustomerPhone" class="form-control" />
-        <span asp-validation-for="CustomerPhone" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Notes" class="form-label"></label>
-        <textarea asp-for="Notes" class="form-control"></textarea>
-        <span asp-validation-for="Notes" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="BarberId" class="form-label"></label>
-        <select asp-for="BarberId" class="form-select" asp-items="Model.Barbers" id="barberId">
-            <option value="">Изберете бръснар</option>
-        </select>
-        <span asp-validation-for="BarberId" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="BarberServiceId" class="form-label"></label>
-        <select asp-for="BarberServiceId" class="form-select" asp-items="Model.BarberServices" id="barberServiceId">
-            <option value="">Изберете услуга</option>
-        </select>
-        <span asp-validation-for="BarberServiceId" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">Запази</button>
-    <a asp-action="MyAppointments" class="btn btn-secondary">Назад</a>
-</form>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

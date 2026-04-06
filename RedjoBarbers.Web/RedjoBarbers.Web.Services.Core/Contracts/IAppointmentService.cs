@@ -1,13 +1,12 @@
 ﻿using RedjoBarbers.Web.Data.Models;
 using RedjoBarbers.Web.Services.Results;
 using RedjoBarbers.Web.ViewModels;
+using RedjoBarbers.Web.ViewModels.Appointments;
 
 namespace RedjoBarbers.Web.Services.Contracts
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<Appointment>> GetAllAsync();
-
         Task<Appointment?> GetByIdAsync(int id);
 
         Task<AppointmentFormViewModel> GetCreateFormModelAsync();
@@ -28,12 +27,14 @@ namespace RedjoBarbers.Web.Services.Contracts
 
         Task<bool> DeleteAsync(int id);
 
-        Task<bool> ExistsAsync(int id);
-
         Task<bool> HasBusyTimeSlotAsync(DateTime newStart, int newDurationMinutes, int? excludedAppointmentId, int? barberId);
 
         Task<IEnumerable<string>> GetAvailableSlotsAsync(DateTime date, int barberId, int barberServiceId);
 
         Task<AppointmentFilterViewModel> GetFilteredAsync(AppointmentFilterViewModel model);
+
+        Task<IEnumerable<AppointmentListItemViewModel>> GetAllForListAsync();
+
+        Task<AppointmentDetailsViewModel?> GetDetailsForDeleteAsync(int id);
     }
 }

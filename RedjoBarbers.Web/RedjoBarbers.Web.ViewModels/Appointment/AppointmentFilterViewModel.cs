@@ -11,7 +11,7 @@ namespace RedjoBarbers.Web.ViewModels
 
         public DateTime? ToDate { get; set; }
 
-        public AppointmentStatus? Status { get; set; }
+        public AppointmentStatus? Status { get; set; } 
 
         public int? BarberId { get; set; }
 

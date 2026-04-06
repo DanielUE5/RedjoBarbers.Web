@@ -4,21 +4,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Redjo Barbers</title>
+
     <script type="importmap"></script>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RedjoBarbers.Web.styles.css" asp-append-version="true" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-
-                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logo/logo.png" alt="Redjo Barbers" style="height:75px;" />
-                    <span class="fw-semibold">Redjo Barbers</span>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg custom-navbar">
+            <div class="container">
+                <a class="navbar-brand brand-wrap" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo/logo.png" alt="Redjo Barbers" class="brand-logo" />
+                    <div class="brand-copy">
+                        <span class="brand-kicker">Premium Grooming</span>
+                        <span class="brand-title">Redjo Barbers</span>
+                    </div>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
@@ -27,52 +36,41 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-center-links">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Начална страница</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Review" asp-action="Index">Отзиви</a>
-                        </li>
-
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="BarberServices" asp-action="Index">Услуги</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">За нас</a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Review" asp-action="Index">Отзиви</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Appointment" asp-action="Index">График</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contacts">Контакти</a>
                         </li>
                     </ul>
 
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 nav-actions">
                         @{
                             bool isLogged = User.Identity?.IsAuthenticated ?? false;
-
                             string homeUrl = Url.Action("Index", "Home", new { area = "" }) ?? "/";
-
-                            string url = isLogged
-                            ? Url.Action("Create", "Appointment", new { area = "" }) ?? "/Appointment/Create"
-                            : Url.Page("/Account/Login", new
-                            {
-                                area = "Identity",
-                                returnUrl = homeUrl
-                            }) ?? "/Identity/Account/Login";
+                            string bookingUrl = isLogged
+                                ? Url.Action("Create", "Appointment", new { area = "" }) ?? "/Appointment/Create"
+                                : Url.Page("/Account/Login", new
+                                {
+                                    area = "Identity",
+                                    returnUrl = homeUrl
+                                }) ?? "/Identity/Account/Login";
                         }
 
-                        <a class="btn cta-btn" href="@url">
-                            Запазете час
-                        </a>
-
+                        <a class="btn btn-gold" href="@bookingUrl">Запазете час</a>
                         <partial name="_UserMenuPartial" />
                     </div>
                 </div>
@@ -80,34 +78,60 @@
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <main role="main">
+        <div class="container pt-3">
+            <partial name="_StatusMessagesPartial" />
+        </div>
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container py-3 d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        @RenderBody()
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
             <div>
-                &copy; 2026 - Redjo Barbers
+                <p class="footer-eyebrow">Redjo Barbers</p>
+                <h3 class="footer-title">Classic craft. Modern presence.</h3>
+                <p class="footer-text">
+                    Първокласно бръснарско изживяване с внимание към детайла, персонализирано стилизиране и прецизна грижа.
+                </p>
             </div>
 
-            <div class="d-flex gap-3 flex-wrap">
-                <a class="text-muted text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Политика за поверителност</a>
-                <a class="text-muted text-decoration-none" asp-area="" asp-controller="Home" asp-action="CookiePolicy">Политика за бисквитките</a>
-                <a class="text-muted text-decoration-none" asp-area="" asp-controller="BarberServices" asp-action="Index">Услуги</a>
+            <div>
+                <h4 class="footer-heading">Бързи връзки</h4>
+                <ul class="footer-links">
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Начало</a></li>
+                    <li><a asp-area="" asp-controller="BarberServices" asp-action="Index">Услуги</a></li>
+                    <li><a asp-area="" asp-controller="Review" asp-action="Index">Отзиви</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contacts">Контакти</a></li>
+                </ul>
             </div>
+
+            <div>
+                <h4 class="footer-heading">Политики</h4>
+                <ul class="footer-links">
+                    <li><a asp-area="" asp-controller="Home" asp-action="Privacy">Политика за поверителност</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="CookiePolicy">Политика за бисквитки</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <span>&copy; 2026 - Redjo Barbers</span>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="~/js/date-picker.js"></script>
-    <script src="~/js/appointment-booking.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/handle-logout-redirect.js" asp-append-version="true"></script>
+    <script src="~/js/date-picker.js" asp-append-version="true"></script>
+    <script src="~/js/appointment-booking.js" asp-append-version="true"></script>
+
     <partial name="_CookieConsent" />
     <script src="~/js/cookie-consent.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
