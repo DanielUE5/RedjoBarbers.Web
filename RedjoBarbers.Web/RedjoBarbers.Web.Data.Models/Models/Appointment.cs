@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using RedjoBarbers.Web.Data.Models.Enums;
+﻿using RedjoBarbers.Web.Data.Models.Enums;
+using RedjoBarbers.Web.Data.Models.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static RedjoBarbers.Web.Data.Common.EntityValidation.Appointment;
@@ -43,7 +43,7 @@ namespace RedjoBarbers.Web.Data.Models
 
         // Foreign Key to IdentityUser (Customer)
         [ForeignKey(nameof(User))]
-        public string UserId { get; set; } = null!;
-        public IdentityUser User { get; set; } = null!;
+        public Guid UserId { get; set; }
+        public ApplicationUser User { get; set; } = null!;
     }
 }

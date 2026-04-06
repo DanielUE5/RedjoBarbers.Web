@@ -28,9 +28,7 @@ namespace RedjoBarbers.Web.Services
 
             query = sortReviews switch
             {
-                "newest" => query
-                    .OrderByDescending(r => r.ReviewDate),
-
+                "newest" => query.OrderByDescending(r => r.ReviewDate),
                 _ => query
                     .OrderByDescending(r => r.Rating)
                     .ThenByDescending(r => r.ReviewDate)
@@ -98,7 +96,7 @@ namespace RedjoBarbers.Web.Services
             });
         }
 
-        public async Task<bool> CreateAsync(ReviewCreateViewModel model, string userId)
+        public async Task<bool> CreateAsync(ReviewCreateViewModel model, Guid userId)
         {
             Review review = new Review
             {
@@ -116,28 +114,23 @@ namespace RedjoBarbers.Web.Services
             return true;
         }
 
-        public async Task<bool> IsOwnerAsync(int reviewId, string userId)
+        public async Task<bool> IsOwnerAsync(int reviewId, Guid userId)
         {
             return await dbContext.Reviews
                 .AsNoTracking()
                 .AnyAsync(r => r.Id == reviewId && r.UserId == userId);
         }
 
-        public async Task<bool> IsOwnerOrAdminAsync(int reviewId, string userId, bool isAdmin)
+        public async Task<bool> IsOwnerOrAdminAsync(int reviewId, Guid userId, bool isAdmin)
         {
-            if (isAdmin)
-            {
-                return await dbContext.Reviews
-                    .AsNoTracking()
-                    .AnyAsync(r => r.Id == reviewId);
-            }
-
             return await dbContext.Reviews
                 .AsNoTracking()
-                .AnyAsync(r => r.Id == reviewId && r.UserId == userId);
+                .AnyAsync(r =>
+                    r.Id == reviewId &&
+                    (isAdmin || r.UserId == userId));
         }
 
-        public async Task<IEnumerable<Review>> GetUserReviewsAsync(string userId)
+        public async Task<IEnumerable<Review>> GetUserReviewsAsync(Guid userId)
         {
             return await dbContext.Reviews
                 .AsNoTracking()

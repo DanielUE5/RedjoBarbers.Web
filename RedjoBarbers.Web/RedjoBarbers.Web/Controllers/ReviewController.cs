@@ -24,13 +24,22 @@ namespace RedjoBarbers.Web.Controllers
             return View(model);
         }
 
-
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Create(int? barberServiceId)
         {
+            Guid? userId = GetCurrentUserId();
+
+            if (!userId.HasValue)
+            {
+                return Unauthorized();
+            }
+
             ViewBag.Services = await reviewService.GetAllServicesAsync();
-            ReviewCreateViewModel model = await reviewService.GetCreateModelAsync(barberServiceId);
+
+            ReviewCreateViewModel model =
+                await reviewService.GetCreateModelAsync(barberServiceId);
+
             return View(model);
         }
 
@@ -39,9 +48,9 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Create(ReviewCreateViewModel model)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid? userId = GetCurrentUserId();
 
-            if (string.IsNullOrEmpty(userId))
+            if (!userId.HasValue)
             {
                 return Unauthorized();
             }
@@ -52,26 +61,27 @@ namespace RedjoBarbers.Web.Controllers
                 return View(model);
             }
 
-            await reviewService.CreateAsync(model, userId);
+            await reviewService.CreateAsync(model, userId.Value);
+
+            TempData["SuccessMessage"] = "Отзивът беше добавен успешно.";
             return RedirectToAction("MyAppointments", "Appointment");
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid? userId = GetCurrentUserId();
 
-            if (string.IsNullOrEmpty(userId))
+            if (!userId.HasValue)
             {
                 return Unauthorized();
             }
 
             bool canAccess = await reviewService.IsOwnerOrAdminAsync(
                 id,
-                userId,
+                userId.Value,
                 User.IsInRole("Admin"));
 
             if (!canAccess)
@@ -86,24 +96,24 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
+            TempData["SuccessMessage"] = "Отзивът беше изтрит успешно.";
             return RedirectToAction("MyAppointments", "Appointment");
         }
-
 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Update(int id)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid? userId = GetCurrentUserId();
 
-            if (string.IsNullOrEmpty(userId))
+            if (!userId.HasValue)
             {
                 return Unauthorized();
             }
 
             bool canAccess = await reviewService.IsOwnerOrAdminAsync(
                 id,
-                userId,
+                userId.Value,
                 User.IsInRole("Admin"));
 
             if (!canAccess)
@@ -126,16 +136,16 @@ namespace RedjoBarbers.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Update(ReviewUpdateViewModel model)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid? userId = GetCurrentUserId();
 
-            if (string.IsNullOrEmpty(userId))
+            if (!userId.HasValue)
             {
                 return Unauthorized();
             }
 
             bool canAccess = await reviewService.IsOwnerOrAdminAsync(
                 model.Id,
-                userId,
+                userId.Value,
                 User.IsInRole("Admin"));
 
             if (!canAccess)
@@ -155,7 +165,20 @@ namespace RedjoBarbers.Web.Controllers
                 return NotFound();
             }
 
+            TempData["SuccessMessage"] = "Отзивът беше обновен успешно.";
             return RedirectToAction("MyAppointments", "Appointment");
+        }
+
+        private Guid? GetCurrentUserId()
+        {
+            string? userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!Guid.TryParse(userIdValue, out Guid userId))
+            {
+                return null;
+            }
+
+            return userId;
         }
     }
 }

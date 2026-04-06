@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data.Models;
+using RedjoBarbers.Web.Data.Models.Models;
 
 namespace RedjoBarbers.Web.Data
 {
-    public class RedjoBarbersDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class RedjoBarbersDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public RedjoBarbersDbContext(DbContextOptions<RedjoBarbersDbContext> dbContextOptions)
             : base(dbContextOptions)

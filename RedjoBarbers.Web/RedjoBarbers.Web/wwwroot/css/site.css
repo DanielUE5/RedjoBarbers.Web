@@ -513,7 +513,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .review-top {
+    align-items: center;
     gap: 10px;
+    margin-bottom: 14px;
+}
+
+    .review-top small,
+    .review-showcase-top small {
+        color: var(--muted);
+    }
+
+.review-date {
+    color: var(--muted);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.review-stars {
+    color: var(--gold);
     margin-bottom: 16px;
 }
 

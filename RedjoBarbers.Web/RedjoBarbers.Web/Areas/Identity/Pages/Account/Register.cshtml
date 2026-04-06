@@ -51,13 +51,37 @@
                     </div>
 
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="lux-form">
-                        <div asp-validation-summary="ModelOnly" class="form-error-summary" role="alert"></div>
+                        <div asp-validation-summary="ModelOnly" class="form-error-summary text-danger" role="alert"></div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Input.FirstName" class="lux-label"></label>
+                                <input asp-for="Input.FirstName" class="lux-input" autocomplete="given-name" />
+                                <span asp-validation-for="Input.FirstName" class="field-validation text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Input.LastName" class="lux-label"></label>
+                                <input asp-for="Input.LastName" class="lux-input" autocomplete="family-name" />
+                                <span asp-validation-for="Input.LastName" class="field-validation text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="lux-form-grid">
+                            <div class="lux-form-group">
+                                <label asp-for="Input.DateOfBirth" class="lux-label"></label>
+                                <input asp-for="Input.DateOfBirth" class="lux-input" />
+                                <span asp-validation-for="Input.DateOfBirth" class="field-validation text-danger"></span>
+                            </div>
+                        </div>
 
                         <div class="lux-form-grid">
                             <div class="lux-form-group">
                                 <label asp-for="Input.Email" class="lux-label"></label>
                                 <input asp-for="Input.Email" class="lux-input" autocomplete="username" />
-                                <span asp-validation-for="Input.Email" class="field-validation"></span>
+                                <span asp-validation-for="Input.Email" class="field-validation text-danger"></span>
                             </div>
                         </div>
 
@@ -65,7 +89,7 @@
                             <div class="lux-form-group">
                                 <label asp-for="Input.Password" class="lux-label"></label>
                                 <input asp-for="Input.Password" class="lux-input" autocomplete="new-password" />
-                                <span asp-validation-for="Input.Password" class="field-validation"></span>
+                                <span asp-validation-for="Input.Password" class="field-validation text-danger"></span>
                             </div>
                         </div>
 
@@ -73,7 +97,7 @@
                             <div class="lux-form-group">
                                 <label asp-for="Input.ConfirmPassword" class="lux-label"></label>
                                 <input asp-for="Input.ConfirmPassword" class="lux-input" autocomplete="new-password" />
-                                <span asp-validation-for="Input.ConfirmPassword" class="field-validation"></span>
+                                <span asp-validation-for="Input.ConfirmPassword" class="field-validation text-danger"></span>
                             </div>
                         </div>
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RedjoBarbers.Web.Data;
 using RedjoBarbers.Web.Data.Configuration;
+using RedjoBarbers.Web.Data.Models.Models;
 using RedjoBarbers.Web.Services;
 using RedjoBarbers.Web.Services.Contracts;
 
@@ -23,7 +24,7 @@ namespace RedjoBarbers.Web
                 /// EF Core currently relies on the synchonous version of the method and will not seed the database correctly
                 /// if the UseSeeding method is not implemented. (Information from the official documentation: https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding)
                 /// </summary>
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection"));
+                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 
                 opt.UseSeeding((context, migrated) =>
                 {
@@ -40,7 +41,7 @@ namespace RedjoBarbers.Web
                 });
             });
 
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
+            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
             {
                 opt.SignIn.RequireConfirmedAccount = false;
                 opt.SignIn.RequireConfirmedEmail = false;
@@ -94,21 +95,26 @@ namespace RedjoBarbers.Web
 
                 if (!string.IsNullOrWhiteSpace(adminEmail))
                 {
-                    UserManager<IdentityUser> userManager =
-                        scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                    UserManager<ApplicationUser> userManager =
+                        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                    RoleManager<IdentityRole> roleManager =
-                        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    RoleManager<ApplicationRole> roleManager =
+                        scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
 
                     const string adminRole = "Admin";
 
                     bool roleExists = await roleManager.RoleExistsAsync(adminRole);
                     if (!roleExists)
                     {
-                        await roleManager.CreateAsync(new IdentityRole(adminRole));
+                        await roleManager.CreateAsync(new ApplicationRole
+                        {
+                            Name = adminRole,
+                            NormalizedName = adminRole.ToUpper(),
+                            Label = adminRole
+                        });
                     }
 
-                    IdentityUser? user =
+                    ApplicationUser? user =
                         await userManager.FindByEmailAsync(adminEmail);
 
                     if (user != null)
