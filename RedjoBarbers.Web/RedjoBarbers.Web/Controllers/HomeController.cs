@@ -31,6 +31,12 @@ namespace RedjoBarbers.Web.Controllers
             return View(owner);
         }
 
+        [HttpGet]
+        public IActionResult CookiePolicy()
+        {
+            return View();
+        }
+
         public IActionResult About()
         {
             return View();

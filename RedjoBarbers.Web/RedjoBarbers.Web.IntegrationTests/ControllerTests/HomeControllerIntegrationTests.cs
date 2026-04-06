@@ -60,6 +60,13 @@ namespace RedjoBarbers.Web.IntegrationTests.Tests.ControllerTests
         }
 
         [Test]
+        public void CookiePolicy_ShouldReturnView()
+        {
+            IActionResult result = controller.CookiePolicy();
+            Assert.That(result, Is.TypeOf<ViewResult>());
+        }
+
+        [Test]
         public void About_ShouldReturnView()
         {
             IActionResult result = controller.About();
