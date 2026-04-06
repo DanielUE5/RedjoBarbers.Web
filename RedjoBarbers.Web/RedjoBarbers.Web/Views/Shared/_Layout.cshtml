@@ -92,8 +92,9 @@
                 &copy; 2026 - Redjo Barbers
             </div>
 
-            <div class="d-flex gap-3">
+            <div class="d-flex gap-3 flex-wrap">
                 <a class="text-muted text-decoration-none" asp-area="" asp-controller="Home" asp-action="Privacy">Политика за поверителност</a>
+                <a class="text-muted text-decoration-none" asp-area="" asp-controller="Home" asp-action="CookiePolicy">Политика за бисквитките</a>
                 <a class="text-muted text-decoration-none" asp-area="" asp-controller="BarberServices" asp-action="Index">Услуги</a>
             </div>
         </div>
@@ -105,6 +106,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="~/js/date-picker.js"></script>
     <script src="~/js/appointment-booking.js"></script>
+    <partial name="_CookieConsent" />
+    <script src="~/js/cookie-consent.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
