@@ -8,161 +8,224 @@ using RedjoBarbers.Web.Data.Models.Models;
 using RedjoBarbers.Web.Services;
 using RedjoBarbers.Web.Services.Contracts;
 
-namespace RedjoBarbers.Web
+namespace RedjoBarbers.Web;
+
+public class Program
 {
-    public class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+        builder.Services
+            .AddApplicationDbContext(connectionString)
+            .AddApplicationIdentity()
+            .AddApplicationServices()
+            .AddApplicationMvc()
+            .AddApplicationCookiePolicy();
+
+        WebApplication app = builder.Build();
+
+        await ApplyMigrationsAndSeedAsync(app);
+        await AssignAdminRoleAsync(app, builder.Configuration);
+
+        ConfigureMiddleware(app);
+        ConfigureEndpoints(app);
+
+        await app.RunAsync();
+    }
+
+    private static async Task ApplyMigrationsAndSeedAsync(WebApplication app)
+    {
+        using IServiceScope scope = app.Services.CreateScope();
+
+        RedjoBarbersDbContext dbContext =
+            scope.ServiceProvider.GetRequiredService<RedjoBarbersDbContext>();
+
+        await dbContext.Database.MigrateAsync();
+    }
+
+    private static async Task AssignAdminRoleAsync(WebApplication app, IConfiguration configuration)
+    {
+        string? adminEmail = configuration["AdminSettings:Email"];
+        if (string.IsNullOrWhiteSpace(adminEmail))
         {
-            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            return;
+        }
 
+        using IServiceScope scope = app.Services.CreateScope();
 
-            builder.Services.AddDbContext<RedjoBarbersDbContext>(opt =>
+        UserManager<ApplicationUser> userManager =
+            scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        RoleManager<ApplicationRole> roleManager =
+            scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+
+        const string adminRoleName = "Admin";
+
+        bool roleExists = await roleManager.RoleExistsAsync(adminRoleName);
+        if (!roleExists)
+        {
+            IdentityResult roleCreationResult = await roleManager.CreateAsync(new ApplicationRole
             {
-                /// <summary>
-                /// I chose belt-and-suspenders seeding cause its recommended to implement both methods using similar logic.
-                /// EF Core currently relies on the synchonous version of the method and will not seed the database correctly
-                /// if the UseSeeding method is not implemented. (Information from the official documentation: https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding)
-                /// </summary>
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-                opt.UseSeeding((context, migrated) =>
-                {
-                    BarberServiceConfig.Seed((RedjoBarbersDbContext)context);
-                    BarberConfig.Seed((RedjoBarbersDbContext)context);
-                    RoleConfig.Seed((RedjoBarbersDbContext)context);
-                });
-
-                opt.UseAsyncSeeding(async (context, migrated, ct) =>
-                {
-                    await BarberServiceConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
-                    await BarberConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
-                    await RoleConfig.SeedAsync((RedjoBarbersDbContext)context, ct);
-                });
+                Name = adminRoleName,
+                NormalizedName = adminRoleName.ToUpperInvariant(),
+                Label = adminRoleName
             });
 
-            builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(opt =>
+            if (!roleCreationResult.Succeeded)
             {
-                opt.SignIn.RequireConfirmedAccount = false;
-                opt.SignIn.RequireConfirmedEmail = false;
-                opt.SignIn.RequireConfirmedPhoneNumber = false;
+                throw new InvalidOperationException(
+                    $"Failed to create role '{adminRoleName}': {string.Join(", ", roleCreationResult.Errors.Select(e => e.Description))}");
+            }
+        }
 
-                opt.Lockout.MaxFailedAccessAttempts = 5;
-                opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+        ApplicationUser? adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser is null)
+        {
+            return;
+        }
 
-                opt.Password.RequireDigit = true;
-                opt.Password.RequireLowercase = false;
-                opt.Password.RequireUppercase = false;
-                opt.Password.RequireNonAlphanumeric = false;
-                opt.Password.RequiredLength = 6;
+        bool isAlreadyInRole = await userManager.IsInRoleAsync(adminUser, adminRoleName);
+        if (isAlreadyInRole)
+        {
+            return;
+        }
+
+        IdentityResult addToRoleResult = await userManager.AddToRoleAsync(adminUser, adminRoleName);
+        if (!addToRoleResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Failed to assign role '{adminRoleName}' to user '{adminEmail}': {string.Join(", ", addToRoleResult.Errors.Select(e => e.Description))}");
+        }
+    }
+
+    private static void ConfigureMiddleware(WebApplication app)
+    {
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Home/Error/500");
+            app.UseHsts();
+        }
+
+        app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseCookiePolicy();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+    }
+
+    private static void ConfigureEndpoints(WebApplication app)
+    {
+        app.MapStaticAssets();
+
+        app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+            .WithStaticAssets();
+
+        app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}")
+            .WithStaticAssets();
+
+        app.MapRazorPages();
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddApplicationDbContext(
+        this IServiceCollection services,
+        string connectionString)
+    {
+        services.AddDbContext<RedjoBarbersDbContext>(options =>
+        {
+            options.UseSqlServer(connectionString);
+
+            options.UseSeeding((context, _) =>
+            {
+                RedjoBarbersDbContext dbContext = (RedjoBarbersDbContext)context;
+                BarberServiceConfig.Seed(dbContext);
+                BarberConfig.Seed(dbContext);
+                RoleConfig.Seed(dbContext);
+            });
+
+            options.UseAsyncSeeding(async (context, _, cancellationToken) =>
+            {
+                RedjoBarbersDbContext dbContext = (RedjoBarbersDbContext)context;
+                await BarberServiceConfig.SeedAsync(dbContext, cancellationToken);
+                await BarberConfig.SeedAsync(dbContext, cancellationToken);
+                await RoleConfig.SeedAsync(dbContext, cancellationToken);
+            });
+        });
+
+        return services;
+    }
+
+    public static IServiceCollection AddApplicationIdentity(this IServiceCollection services)
+    {
+        services
+            .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
+
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
             })
             .AddEntityFrameworkStores<RedjoBarbersDbContext>()
             .AddDefaultTokenProviders();
 
-            builder.Services.AddAuthorization();
+        services.AddAuthorization();
 
-            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
-            builder.Services.AddScoped<IBarberServiceService, BarberServiceService>();
-            builder.Services.AddScoped<IHomeService, HomeService>();
+        return services;
+    }
 
-            // Adding AutoValidateAntiforgeryToken filter globally to all controllers and actions that use the [HttpPost] attribute, to protect against CSRF attacks.
-            builder.Services.AddControllersWithViews(options =>
-            {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            });
-            builder.Services.AddRazorPages();
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IBarberServiceService, BarberServiceService>();
+        services.AddScoped<IHomeService, HomeService>();
 
-            builder.Services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
-                options.Secure = CookieSecurePolicy.Always;
-                options.HttpOnly = HttpOnlyPolicy.None;
-            });
+        return services;
+    }
 
-            WebApplication app = builder.Build();
+    public static IServiceCollection AddApplicationMvc(this IServiceCollection services)
+    {
+        services.AddControllersWithViews(options =>
+        {
+            options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        });
 
-            using (IServiceScope scope = app.Services.CreateScope())
-            {
-                RedjoBarbersDbContext db =
-                    scope.ServiceProvider.GetRequiredService<RedjoBarbersDbContext>();
+        services.AddRazorPages();
 
-                await db.Database.MigrateAsync();
+        return services;
+    }
 
-                string? adminEmail =
-                    builder.Configuration["AdminSettings:Email"];
+    public static IServiceCollection AddApplicationCookiePolicy(this IServiceCollection services)
+    {
+        services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.CheckConsentNeeded = _ => true;
+            options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            options.Secure = CookieSecurePolicy.Always;
+            options.HttpOnly = HttpOnlyPolicy.None;
+        });
 
-                if (!string.IsNullOrWhiteSpace(adminEmail))
-                {
-                    UserManager<ApplicationUser> userManager =
-                        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-                    RoleManager<ApplicationRole> roleManager =
-                        scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-
-                    const string adminRole = "Admin";
-
-                    bool roleExists = await roleManager.RoleExistsAsync(adminRole);
-                    if (!roleExists)
-                    {
-                        await roleManager.CreateAsync(new ApplicationRole
-                        {
-                            Name = adminRole,
-                            NormalizedName = adminRole.ToUpper(),
-                            Label = adminRole
-                        });
-                    }
-
-                    ApplicationUser? user =
-                        await userManager.FindByEmailAsync(adminEmail);
-
-                    if (user != null)
-                    {
-                        bool isInRole =
-                            await userManager.IsInRoleAsync(user, adminRole);
-
-                        if (!isInRole)
-                        {
-                            await userManager.AddToRoleAsync(user, adminRole);
-                        }
-                    }
-                }
-            }
-
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error/500");
-                app.UseHsts();
-            }
-            app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseCookiePolicy();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-
-            // Areas route should be registered before the default one, otherwise it will never be hit.
-            app.MapControllerRoute(
-                name: "areas",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.MapRazorPages();
-
-            app.Run();
-        }
+        return services;
     }
 }
