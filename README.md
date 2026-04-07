@@ -155,6 +155,10 @@
 - Интеграционни тестове
 - ~99% покритие на слоя с услуги (ако тестовете не са грешни)
 
+Изпълнете тестове:
+
+dotnet test
+
 ---
 
 ## 🌐 Разгръщане
@@ -265,7 +269,7 @@ Filtering and pagination implemented where applicable.
 
 - Unit Tests
 - Integration Tests
-- ~99% coverage on services layer
+- ~99% coverage on services layer (if the tests are not wrong)
 
 Run tests:
 
