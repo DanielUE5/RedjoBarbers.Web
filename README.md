@@ -1,4 +1,4 @@
-# ✂️ Redjo Barbers
+# 💈 Redjo Barbers
 
 > 🇧🇬 Уеб приложение за управление на барбършоп  
 > 🇬🇧 Barber shop management web application
@@ -22,75 +22,78 @@
 
 ## 📌 Обща информация
 
-**Redjo Barbers** е уеб приложение за управление на барбършоп, разработено с ASP.NET Core MVC (.NET 10), използващо Entity Framework Core (Code First) и ASP.NET Core Identity.
+**RedjoBarbers** е пълнофункционално *ASP.NET Core* уеб приложение, предназначено за управление на модерна бръснарница. Платформата позволява на потребителите да разглеждат услуги, да си запазват час, да оставят отзиви и да взаимодействат с бръснари, докато администраторите управляват цялата система чрез специална администраторска зона.
+
+Проектът демонстрира напреднали умения за разработка с *ASP.NET Core*, включително многопластова архитектура, инжектиране на зависимости, сигурност, валидиране, тестване и внедряване.
 
 ---
 
-## 🎯 Цел на проекта
+## 🎯 Функции
 
-- MVC архитектура  
-- EF Core (Code First)  
-- Identity и роли  
-- Реална бизнес логика  
+### 👤 Функции за потребителя
+- Регистрация / Вход (ASP.NET Identity)
+- Разглеждане на бръснарски услуги
+- Запазване на час
+- Оставяне на отзиви
+- Филтриране и номериране на данни
 
----
-
-## 🛠️ Технологии
-
-- .NET 10  
-- ASP.NET Core MVC  
-- Entity Framework Core  
-- ASP.NET Core Identity  
-- SQL Server / LocalDB  
-- Bootstrap 5  
-- Razor Views  
+### 🛠️ Функции за администратор
+- Управление на услуги
+- Управление на срещи
+- Административно табло
+- Контрол на достъпа, базиран на роли
 
 ---
 
 ## 🏗️ Архитектура
 
-Controllers → Services → Data Layer → Database  
-Views → Razor Rendering  
-ViewModels → Presentation Layer  
+Приложението следва многопластова архитектура:
+
+- Уеб слой – Контролери, Изгледи, Области
+- Слой за услуги – Бизнес логика (Services.Core)
+- Слой за данни – EF Core, DbContext
+- Слой за модели – Модели на обекти
+- Слой за ViewModels – Модели, специфични за потребителския интерфейс
 
 ---
 
-## 🔐 Роли
+## 🧩 Използвани технологии
 
-- User  
-- Admin  
-
----
-
-## 🧱 Areas
-
-- Admin  
-
----
-
-## 🗄️ База данни
-
-Модели:
-
-- Barber  
-- BarberService  
-- BarberBarberService  
-- Appointment  
-- Review  
+- ASP.NET Core (.NET 10)  
+- Entity Framework Core
+- Microsoft SQL Server
+- ASP.NET Identity
+- Razor Views
+- Bootstrap
+- NUnit
+- Coverlet + ReportGenerator 
 
 ---
 
-## 🔄 Миграции и Seeding
+## 🔐 Сигурност и валидиране
 
-    Database.MigrateAsync();
+- ASP.NET удостоверяване на самоличността и роли (потребител / администратор)
+- Токени против фалшифициране
+- Защита срещу:
+- SQL инжектиране
+- XSS (Cross-Site Scripting)
+- CSRF
+- Подмяна на параметри
+- Валидиране от страна на сървъра и клиента
 
 ---
 
-## 🚀 Стартиране
+## 🗄️ База данни и начално ниво
 
-    git clone ...
-    dotnet restore
-    dotnet run
+Приложението използва Entity Framework Core със SQL Server.
+
+---
+
+## 📄 Страници и структура
+
+- 10+ преглеждания
+- 5+ контролера
+- MVC области (Администрация, Идентичност)
 
 ---
 
@@ -98,23 +101,15 @@ ViewModels → Presentation Layer
 
 Проектът използва **User Secrets (secrets.json)** за съхранение на connection string с цел по-добра сигурност.
 
-Пример:
-
-    {
-      "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost\SQLEXPRESS01;Database=RedjoBarbers2026;Trusted_Connection=True;TrustServerCertificate=True;"
-      }
-    }
-
 ⚠️ Важно:
 
-- Всеки разработчик трябва да си конфигурира собствен connection string  
+- Всеки разработчик трябва да си конфигурира собствен connection string, въпреки, че ще има fallback такъв.
 
-Възможни варианти:
+Възможни варианти къде да го направите:
 
 - appsettings.json  
 - appsettings.Development.json  
-- User Secrets (препоръчително)  
+- User Secrets (препоръчително, ако е за production)  
 
 ---
 
@@ -142,58 +137,30 @@ ViewModels → Presentation Layer
 
 ## 🔍 Филтриране
 
-- Филтриране на отзиви по най-нови и с най-висок рейтинг  
+- Филтриране и номериране на страници, внедрени където е приложимо.
 
 ⚠️ Няма реализирана текстова търсачка, защото структурата не ми го позволява
 
 ---
 
-## 📄 Пагинация
+## 📑 Добавени custom страници за грешки (404 и 500)
 
-- Услуги  
-- Резервации  
-- Ревюта  
+В проекта са създадени и интегрирани персонализирани (custom) страници за обработка на грешки 404 (Not Found) и 500 (Internal Server Error).
 
 ---
 
-## ✔️ Валидации
+## 🧪 Тестване и покритие
 
-Client + Server  
-
----
-
-## ⚠️ Грешки
-Добавени са персонализирани страници за съответните грешки:
-- 404 
-- 500 
+- Модулни тестове
+- Интеграционни тестове
+- ~99% покритие на слоя с услуги (ако тестовете не са грешни)
 
 ---
 
-## 🛡️ Сигурност
+## 🌐 Разгръщане
 
-- SQL Injection  
-- XSS  (Cross-Site Scripting)
-- CSRF  (Cross-Site Request Forgery)
-- Parameter Tampering (промяна на параметри)
-
----
-
-## 🧩 Dependency Injection
-
-Вградената DI система  
-
----
-
-## 🧪 Unit Tests и Coverage
-
-- coverlet.collector  
-- ReportGenerator  
-
----
-
-## 🌐 Deployment
-
-В момента само в GitHub.
+GitHub хранилище:
+https://github.com/DanielUE5/RedjoBarbers.Web
 
 ---
 
@@ -204,79 +171,105 @@ Client + Server
 
 ---
 
+## 👨‍💻 Автор на уеб приложението
+- Даниел
+
+---
+
 # 🇬🇧 Documentation (English)
 
-## 📌 Overview
+## 📌 Project Overview
 
-**Redjo Barbers** is a barber shop management web application built with ASP.NET Core MVC (.NET 10), using Entity Framework Core (Code First) and ASP.NET Core Identity.
+**RedjoBarbers** is a full-stack *ASP.NET Core* web application designed to manage a modern barber shop. The platform allows users to browse services, book appointments, leave reviews, and interact with barbers, while administrators manage the entire system through a dedicated admin area.
 
----
-
-## 🎯 Project Purpose
-
-- MVC architecture  
-- EF Core (Code First)  
-- Identity and role management  
-- Real-world business logic  
+The project demonstrates advanced *ASP.NET Core* development skills, including layered architecture, dependency injection, security, validation, testing, and deployment.
 
 ---
 
-## 🛠️ Technologies
+## 🎯 Features
 
-- .NET 10  
-- ASP.NET Core MVC  
-- Entity Framework Core  
-- ASP.NET Core Identity  
-- SQL Server / LocalDB  
-- Bootstrap 5  
-- Razor Views  
+### 👤 User Features
+- Register / Login (ASP.NET Identity)
+- Browse barber services
+- Book appointments
+- Leave reviews
+- Filter and paginate data
+
+### 🛠️ Admin Features
+- Manage services
+- Manage appointments
+- Administrative dashboard
+- Role-based access control
 
 ---
 
 ## 🏗️ Architecture
 
-Controllers → Services → Data Layer → Database  
-Views → Razor Rendering  
-ViewModels → Presentation Layer  
+The application follows a layered architecture:
+
+- Web Layer – Controllers, Views, Areas
+- Services Layer – Business logic (Services.Core)
+- Data Layer – EF Core, DbContext
+- Models Layer – Entity models
+- ViewModels Layer – UI-specific models
 
 ---
 
-## 🔐 Roles
+## 🧩 Technologies Used
 
-- User  
-- Admin  
-
----
-
-## 🧱 Areas
-
-- Admin  
-
----
-
-## 🗄️ Database
-
-Models:
-
-- Barber  
-- BarberService  
-- BarberBarberService  
-- Appointment  
-- Review  
+- ASP.NET Core (.NET 6+)
+- Entity Framework Core
+- Microsoft SQL Server
+- ASP.NET Identity
+- Razor Views
+- Bootstrap
+- xUnit
+- Coverlet + ReportGenerator
 
 ---
 
-## 🔄 Migrations and Seeding
+## 🔐 Security & Validation
 
-    Database.MigrateAsync();
+- ASP.NET Authentication and Roles (User/Admin)
+- Anti-Forgery Tokens
+- Protection against:
+- SQL Injection
+- XSS (Cross-Site Scripting)
+- CSRF
+- Parameter Substitution
+- Server-side and Client-side Validation
 
 ---
 
-## 🚀 Run
+## 🗄️ Database & Seeding
 
-    git clone ...
-    dotnet restore
-    dotnet run
+The application uses Entity Framework Core with SQL Server.
+
+---
+
+## 📄 Pages & Structure
+
+- 10+ Views
+- 5+ Controllers
+- MVC Areas (Admin, Identity)
+
+---
+
+## 🔎 Filtering & Pagination
+
+Filtering and pagination implemented where applicable.
+
+---
+
+## 🧪 Testing & Coverage
+
+- Unit Tests
+- Integration Tests
+- ~99% coverage on services layer
+
+Run tests:
+
+dotnet test
 
 ---
 
@@ -284,35 +277,24 @@ Models:
 
 The project uses **User Secrets (secrets.json)** to store the connection string for better security.
 
-Example:
-
-    {
-      "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost\\SQLEXPRESS01;Database=RedjoBarbers2026;Trusted_Connection=True;TrustServerCertificate=True;"
-      }
-    }
-
 ⚠️ Important:
 
-- Each developer must configure their own connection string  
+- Each developer must configure their own connection string, although there will be a backup one.
 
-Possible options:
+Possible options where to do it:
 
-- appsettings.json  
-- appsettings.Development.json  
-- User Secrets (recommended)  
+- appsettings.json
+- appsettings.Development.json
+- User Secrets (recommended if for production)
 
 ---
 
-## 👑 Admin Configuration
+## 🌐 Deployment
 
-In **appsettings.json**, there is an **AdminSettings** section that contains the administrator email.
+GitHub repository:
+https://github.com/DanielUE5/RedjoBarbers.Web
 
-The administrator must register using this email in order to receive admin privileges.
+---
 
-```json
-{
-  "AdminSettings": {
-    "AdminEmail": "admin321@gmail.com"
-  }
-}
+## 👨‍💻 Web Application Author
+- Daniel
